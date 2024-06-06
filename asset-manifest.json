@@ -1,0 +1,16 @@
+{
+  "files": {
+    "main.css": "/flexi-sessions-cal/static/css/main.f855e6bc.css",
+    "main.js": "/flexi-sessions-cal/static/js/main.98bfffd7.js",
+    "static/js/453.082c6646.chunk.js": "/flexi-sessions-cal/static/js/453.082c6646.chunk.js",
+    "static/media/logo.svg": "/flexi-sessions-cal/static/media/logo.6ce24c58023cc2f8fd88fe9d219db6c6.svg",
+    "index.html": "/flexi-sessions-cal/index.html",
+    "main.f855e6bc.css.map": "/flexi-sessions-cal/static/css/main.f855e6bc.css.map",
+    "main.98bfffd7.js.map": "/flexi-sessions-cal/static/js/main.98bfffd7.js.map",
+    "453.082c6646.chunk.js.map": "/flexi-sessions-cal/static/js/453.082c6646.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.f855e6bc.css",
+    "static/js/main.98bfffd7.js"
+  ]
+}
