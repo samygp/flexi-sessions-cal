@@ -10,7 +10,8 @@ import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
-import CalendarioPerron from '../components/CalendarioPerron';
+import EventCalendar from '../components/EventCalendar/EventCalendar';
+import { EventType } from '../models/events';
 
 export default function Login() {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -99,7 +100,7 @@ export default function Login() {
                   </Link>
                 </Grid>
               </Grid>
-              <CalendarioPerron />
+              <EventCalendar eventType={EventType.Session}/>
             </Box>
           </Box>
         </Grid>
