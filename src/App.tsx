@@ -17,12 +17,15 @@ function AppRoutes() {
     <>
       {authLoading ? <CircularProgress />
         : (
-          <BrowserRouter>
+          <BrowserRouter >
             <RefreshDialog open={shouldRefresh} onConfirm={refreshSession} onCancel={logout} />
             <Routes>
-              <Route path="/" element={isAuthenticated ? <Navigate replace to="/calendar" /> : <Navigate replace to="/login" />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/calendar" element={isAuthenticated ? <Calendar /> : <Navigate replace to="/login" />} />
+              <Route path="/" element={<Navigate replace to="/flexi-sessions-cal" />} />
+              <Route path="/flexi-sessions-cal">
+                <Route index element={isAuthenticated ? <Navigate replace to="calendar" /> : <Navigate replace to="login" />} />
+                <Route path="login" element={<Login />} />
+                <Route path="calendar" element={isAuthenticated ? <Calendar /> : <Navigate replace to="login" />} />
+              </Route>
             </Routes>
           </BrowserRouter>
         )}

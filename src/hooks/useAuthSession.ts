@@ -1,21 +1,19 @@
 import React, { useContext, useState } from "react";
 import { useInterval, useAsyncFn } from "react-use";
 import { CognitoJwtVerifier } from "aws-jwt-verify";
-import { clientId, userPoolId } from '../config.json';
+import cfg from '../config.json';
 import { isNil } from "lodash";
-import { useNavigate } from "react-router-dom";
 import SessionContext from "../models/SessionContext";
 
 interface IAuthState {
     expiresAt?: number;
     isAuthenticated: boolean;
 }
-const verifier = CognitoJwtVerifier.create({ userPoolId, clientId, tokenUse: "access" });
+const verifier = CognitoJwtVerifier.create({ userPoolId: cfg.userPoolId, clientId: cfg.clientId, tokenUse: "access" });
 
 export default function useAuthSession() {
     const {accessToken, clearSession} = useContext(SessionContext);
     const [shouldRefresh, setShouldRefresh] = useState<boolean>(false);
-    const navigate = useNavigate();
     
     const [{ loading: authLoading, value: authState }, verifyAuth] = useAsyncFn(async (): Promise<IAuthState> => {
         const response: IAuthState = {isAuthenticated: false};
@@ -35,13 +33,13 @@ export default function useAuthSession() {
 
     const refreshSession = React.useCallback(() => {
         // TODO
-        // verifyAuth();
-    }, [accessToken, verifyAuth]);
+        verifyAuth();
+    }, [verifyAuth]);
 
     const logout = React.useCallback(() => {
         clearSession();
-        navigate('/');
-    }, []);
+        window.location.href = '/';
+    }, [clearSession]);
 
     const refreshCheckInterval = React.useMemo<number|null>(() => {
         if(authLoading || isNil(authState) || !authState.isAuthenticated) return null;

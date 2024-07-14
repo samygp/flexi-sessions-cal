@@ -3,7 +3,7 @@ import SessionContext from "../../models/SessionContext";
 import { useSessionStorage } from "react-use";
 
 
-export default function ({ children }: PropsWithChildren) {
+export default function SessionContextProvider ({ children }: PropsWithChildren) {
     const [accessToken, setAccessToken] = useSessionStorage<string>('accessToken', '');
     const [idToken, setIdToken] = useSessionStorage<string>('idToken', '');
     const [refreshToken, setRefreshToken] = useSessionStorage<string>('refreshToken', '');
