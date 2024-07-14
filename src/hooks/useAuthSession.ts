@@ -1,25 +1,23 @@
 import React, { useContext, useState } from "react";
-import { useInterval, useAsyncFn } from "react-use";
-import { CognitoJwtVerifier } from "aws-jwt-verify";
-import cfg from '../config.json';
+import { useInterval, useAsync } from "react-use";
 import { isNil } from "lodash";
 import SessionContext from "../models/SessionContext";
+import AuthService from "../services/AuthService";
 
 interface IAuthState {
     expiresAt?: number;
     isAuthenticated: boolean;
 }
-const verifier = CognitoJwtVerifier.create({ userPoolId: cfg.userPoolId, clientId: cfg.clientId, tokenUse: "access" });
 
 export default function useAuthSession() {
     const {accessToken, clearSession} = useContext(SessionContext);
     const [shouldRefresh, setShouldRefresh] = useState<boolean>(false);
     
-    const [{ loading: authLoading, value: authState }, verifyAuth] = useAsyncFn(async (): Promise<IAuthState> => {
+    const { loading: authLoading, value: authState } = useAsync(async (): Promise<IAuthState> => {
         const response: IAuthState = {isAuthenticated: false};
         if (!accessToken) return response;
         try {
-            const payload = await verifier.verify(accessToken);
+            const payload = await AuthService.verify(accessToken);
             console.log("Token is valid. Payload:", payload);
             response.isAuthenticated = true;
             response.expiresAt = payload.exp;
@@ -33,8 +31,7 @@ export default function useAuthSession() {
 
     const refreshSession = React.useCallback(() => {
         // TODO
-        verifyAuth();
-    }, [verifyAuth]);
+    }, []);
 
     const logout = React.useCallback(() => {
         clearSession();

@@ -1,9 +1,8 @@
 import React, { useContext } from "react";
 import { capitalize } from "lodash";
-import { signIn } from "../../services/authService";
-import { Box, TextField, Button, TextFieldProps } from "@mui/material";
+import { Box, TextField, Button, TextFieldProps, Alert } from "@mui/material";
 import SessionContext from "../../models/SessionContext";
-
+import AuthService from "../../services/AuthService";
 
 function LoginTextField({name, ...rest}: TextFieldProps){
     const id = name!;
@@ -17,6 +16,8 @@ export default function LoginForm() {
     const sessCtx = useContext(SessionContext);
     const [email, setEmail] = React.useState<string>('');
     const [password, setPassword] = React.useState<string>('');
+    const challengeRequired = React.useRef<string>();
+
     const onEmailChange = React.useCallback((evt: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
         setEmail(evt.target.value);
     }, []);
@@ -24,16 +25,27 @@ export default function LoginForm() {
         setPassword(evt.target.value);
     }, []);
 
-    const handleSignIn = async (e: { preventDefault: () => void; }) => {
+    const handleSubmit = async (e: { preventDefault: () => void; }) => {
         e.preventDefault();
         try {
-            const session = await signIn(email, password);
-            console.log('Sign in successful', session);
-            if (session) {
-                sessCtx.setAccessToken(session.AccessToken ?? '');
-                sessCtx.setIdToken(session.IdToken ?? '');
-                sessCtx.setRefreshToken(session.RefreshToken ?? '');
-            }
+            const challengeType = challengeRequired.current;
+            const {requiresChallenge, session, tokens} = await (!challengeType
+                ? AuthService.signIn(email, password)
+                : AuthService.respondToChallenge({
+                    challengeType,
+                    values: {
+                        userName: email,
+                        newPassword: password,
+                        session: sessCtx.session,
+                    },
+                })
+            );
+
+            challengeRequired.current = requiresChallenge;
+            if (session) sessCtx.setSession(session);
+            if (tokens) sessCtx.setTokens(tokens);
+            // Clear password if password reset challenge is required
+            if(requiresChallenge) setPassword('');
         } catch (error) {
             alert(`Sign in failed: ${error}`);
             sessCtx.clearSession();
@@ -41,11 +53,12 @@ export default function LoginForm() {
     };
 
     return (
-    <Box component="form" noValidate onSubmit={handleSignIn} sx={{ mt: 1 }}>
-        <LoginTextField label="Email" name="username" value={email} onChange={onEmailChange} autoFocus />
-        <LoginTextField  name="password" type="password" value={password} onChange={onPasswordChange} autoComplete="current-password" />
+    <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 }}>
+        <LoginTextField label="Email" disabled={!!challengeRequired.current} name="username" value={email} onChange={onEmailChange} autoFocus />
+        {!!challengeRequired.current && <Alert severity="info">Please enter a new password to replace your default-provided one.</Alert>}
+        <LoginTextField name="password" type="password" value={password} onChange={onPasswordChange} autoComplete="current-password" />
         <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
-            Log In
+            {!challengeRequired.current ? 'Log In' : 'Update Password'}
         </Button>
     </Box>
     );

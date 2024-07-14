@@ -1,5 +1,7 @@
 {
-    "region": "us-west-2",
-    "userPoolId": "us-west-2_1SESgWg0D",
-    "clientId": "74avt8eiagdild0a7gbn2bum96"
+    "aws-cognito": {
+        "region": "us-west-2",
+        "userPoolId": "us-west-2_1SESgWg0D",
+        "clientId": "74avt8eiagdild0a7gbn2bum96"
+    }
 }

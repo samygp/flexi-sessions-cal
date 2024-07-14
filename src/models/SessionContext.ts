@@ -1,12 +1,13 @@
 import { createContext } from "react";
+import { IOAuthTokens } from "./Auth";
 
-interface ISessionContext {
-    accessToken: string;
+interface ISessionContext extends IOAuthTokens {
+    setTokens: (t: IOAuthTokens) => void;
     setAccessToken: (v: string) => void;
-    idToken: string;
     setIdToken: (v: string) => void;
-    refreshToken: string;
     setRefreshToken: (v: string) => void;
+    session: string;
+    setSession: (v: string) => void;
     clearSession: () => void;
 }
 
@@ -17,5 +18,8 @@ export default createContext<ISessionContext>({
     setIdToken: (_v: string) => {},
     refreshToken: '',
     setRefreshToken: (_v: string) => {},
+    setTokens: (_t: IOAuthTokens) => {},
+    session: '',
+    setSession: (_v: string) => {},
     clearSession: () => {},
 });
