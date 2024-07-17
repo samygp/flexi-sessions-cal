@@ -5,30 +5,44 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
 import { CircularProgress, CssBaseline, ThemeProvider, createTheme } from '@mui/material';
 import Calendar from './views/Calendar';
-import useAuthSession from './hooks/useAuthSession';
 import SessionContextProvider from './components/ContextProviders/SessionContextProvider';
-import RefreshDialog from './components/login/RefreshDialog';
+import { useContext, useMemo } from 'react';
+import SessionContext from './models/SessionContext';
+import Header from './components/Header';
 
 const defaultTheme = createTheme();
 
+const basePath = "/flexi-sessions-cal";
+const PATHS = {
+  CALENDAR: `${basePath}/calendar`,
+  LOGIN: `${basePath}/login`
+}
+
 function AppRoutes() {
-  const { authLoading, isAuthenticated, shouldRefresh, refreshSession, logout } = useAuthSession();
+  const { authState } = useContext(SessionContext);
+  const isAuthenticated = useMemo(() => authState === "authenticated", [authState]);
+
+  if (authState === "loading") return <CircularProgress />;
   return (
     <>
-      {authLoading ? <CircularProgress />
-        : (
-          <BrowserRouter >
-            <RefreshDialog open={shouldRefresh} onConfirm={refreshSession} onCancel={logout} />
-            <Routes>
-              <Route path="/" element={<Navigate replace to="/flexi-sessions-cal" />} />
-              <Route path="/flexi-sessions-cal">
-                <Route index element={isAuthenticated ? <Navigate replace to="calendar" /> : <Navigate replace to="login" />} />
-                <Route path="login" element={<Login />} />
-                <Route path="calendar" element={isAuthenticated ? <Calendar /> : <Navigate replace to="login" />} />
-              </Route>
-            </Routes>
-          </BrowserRouter>
-        )}
+      <Header />
+      <BrowserRouter >
+        <Routes>
+          <Route path="/" element={<Navigate replace to={basePath} />} />
+          <Route path={basePath} index element={isAuthenticated 
+            ? <Navigate replace to={PATHS.CALENDAR} />
+            : <Navigate replace to={PATHS.LOGIN} />}
+          />
+          <Route path={PATHS.LOGIN} element={isAuthenticated 
+            ? <Navigate replace to={PATHS.CALENDAR} /> 
+            : <Login />} 
+          />
+          <Route path={PATHS.CALENDAR} element={isAuthenticated 
+            ? <Calendar /> 
+            : <Navigate replace to={PATHS.LOGIN} />} 
+          />
+        </Routes>
+      </BrowserRouter>
     </>
   );
 }

@@ -1,16 +1,16 @@
-import React, { PropsWithChildren, useCallback } from "react";
+import { PropsWithChildren, useCallback, useMemo } from "react";
 import SessionContext from "../../models/SessionContext";
-import { useSessionStorage } from "react-use";
-import { IOAuthTokens } from "../../models/Auth";
-
+import { useAsync, useSessionStorage } from "react-use";
+import { AuthState, IOAuthTokens } from "../../models/Auth";
+import AuthService from "../../services/AuthService";
 
 export default function SessionContextProvider({ children }: PropsWithChildren) {
     const [accessToken, setAccessToken] = useSessionStorage<string>('accessToken', '');
-    const [idToken, setIdToken] = useSessionStorage<string>('idToken', '');
+    const [, setIdToken] = useSessionStorage<string>('idToken', '');
     const [refreshToken, setRefreshToken] = useSessionStorage<string>('refreshToken', '');
     const [session, setSession] = useSessionStorage<string>('session', '');
 
-    const setTokens = React.useCallback(({ accessToken, idToken, refreshToken }: IOAuthTokens) => {
+    const setTokens = useCallback(({ accessToken, idToken, refreshToken }: IOAuthTokens) => {
         if (accessToken) setAccessToken(accessToken);
         if (idToken) setIdToken(idToken);
         if (refreshToken) setRefreshToken(refreshToken);
@@ -18,18 +18,45 @@ export default function SessionContextProvider({ children }: PropsWithChildren) 
 
     const clearSession = useCallback(() => { sessionStorage.clear() }, []);
 
+    const logout = useCallback(() => {
+        clearSession();
+        window.location.href = '/';
+    }, [clearSession]);
+    
+    const { loading: authLoading, value: sessionExp } = useAsync(async (): Promise<number|undefined> => {
+        if (!accessToken) return;
+        try {
+            const payload = await AuthService.verify(accessToken);
+            // console.log("Access Token is valid. Payload:", payload);
+            return payload.exp;
+        } catch (ex){
+            console.log("Token not valid!");
+            logout();
+            console.error(ex);
+        }
+    }, [accessToken]);
+
+    const refreshSession = useCallback(() => {
+        if(!refreshToken) return;
+        alert('syke, refresh not implemented yet');
+    }, [refreshToken]);
+
+    const authState = useMemo<AuthState>(() => {
+        if(authLoading) return "loading";
+        else if(!sessionExp) return "unauthenticated";
+        return "authenticated";
+    }, [sessionExp, authLoading]);
+
     return (
         <SessionContext.Provider value={{
-            accessToken,
-            setAccessToken,
-            idToken,
-            setIdToken,
-            refreshToken,
-            setRefreshToken,
+            authState,
+            sessionExp,
             setTokens,
             session,
             setSession,
             clearSession,
+            logout,
+            refreshSession,
         }}>
             {children}
         </SessionContext.Provider>

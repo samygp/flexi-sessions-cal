@@ -12,18 +12,16 @@ function LoginTextField({name, ...rest}: TextFieldProps){
     return <TextField  margin="normal" required fullWidth {...rest} {...props} />
 }
 
+type TextInputEvent = React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>;
+
 export default function LoginForm() {
     const sessCtx = useContext(SessionContext);
     const [email, setEmail] = React.useState<string>('');
     const [password, setPassword] = React.useState<string>('');
     const challengeRequired = React.useRef<string>();
 
-    const onEmailChange = React.useCallback((evt: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
-        setEmail(evt.target.value);
-    }, []);
-    const onPasswordChange = React.useCallback((evt: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
-        setPassword(evt.target.value);
-    }, []);
+    const onEmailChange = React.useCallback((evt: TextInputEvent) => setEmail(evt.target.value), []);
+    const onPasswordChange = React.useCallback((evt: TextInputEvent) => setPassword(evt.target.value), []);
 
     const handleSubmit = async (e: { preventDefault: () => void; }) => {
         e.preventDefault();

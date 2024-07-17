@@ -4,6 +4,8 @@ export enum AuthServiceProvider {
     AWS_COGNITO = "aws-cognito",
 };
 
+export type AuthState = "loading" | "authenticated" | "unauthenticated";
+
 const serviceProviderSet = new Set<string>(Object.values(AuthServiceProvider));
 export const isServiceProvider = (k: string) => serviceProviderSet.has(k);
 

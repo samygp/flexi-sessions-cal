@@ -26,16 +26,15 @@ export default function RefreshDialog(props: IRefreshDialogProps) {
             onClose={onCancel}
             aria-describedby="alert-dialog-slide-description"
         >
-            <DialogTitle>{"Use Google's location service?"}</DialogTitle>
+            <DialogTitle>Your session is about to expire</DialogTitle>
             <DialogContent>
                 <DialogContentText id="alert-dialog-slide-description">
-                    Let Google help apps determine location. This means sending anonymous
-                    location data to Google, even when no apps are running.
+                    Do you want to keep your session alive?
                 </DialogContentText>
             </DialogContent>
             <DialogActions>
-                <Button onClick={onCancel}>Disagree</Button>
-                <Button onClick={onConfirm}>Agree</Button>
+                <Button onClick={onCancel}>No, logout</Button>
+                <Button onClick={onConfirm}>Yes, refresh</Button>
             </DialogActions>
         </Dialog>
     );

@@ -17,7 +17,6 @@ function fakeFetch(date: Moment, { signal }: { signal: AbortSignal }) {
         const newDate = moment(dString, "DD-MM-YYYY");
         daysToHighlight.set(newDate.toISOString(), "evento de Fulanito");
       });
-      console.log(daysToHighlight);
       resolve({ daysToHighlight });
     }, 500);
 
