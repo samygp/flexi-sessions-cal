@@ -7,7 +7,7 @@ import moment, { Moment } from 'moment';
 import useCalendarFetch from '../../hooks/useCalendarFetch';
 import { Tooltip } from '@mui/material';
 import { CalendarContext, useCalendarContext } from '../../hooks/useCalendarContext';
-import { EventColorMap, EventType, EventTypeLabels } from '../../models/events';
+import { EventColorMap, EventType, EventTypeLabels } from '../../models/CalendarEvents';
 
 function DayFormatter(props: PickersDayProps<Moment> & { highlightedDays?: Map<string, string> }) {
   const { highlightedDays, day, outsideCurrentMonth, ...other } = props;

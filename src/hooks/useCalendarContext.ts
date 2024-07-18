@@ -1,6 +1,6 @@
 import { BadgeOwnProps } from '@mui/material';
 import { createContext, useContext } from 'react';
-import { EventType } from '../models/events';
+import { EventType } from '../models/CalendarEvents';
 
 interface ICalendarContext {
     color: BadgeOwnProps["color"],
