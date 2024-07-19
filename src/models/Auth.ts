@@ -32,4 +32,6 @@ export interface IAuthService {
     signIn: (userName: string, password: string) => Promise<IAuthResponse>;
     respondToChallenge: (r: IRespondToChallengeRequest) => Promise<IAuthResponse>;
     verify: (token: string) => Promise<JwtPayload>;
+    forgotPassword: (userName: string) => Promise<boolean>;
+    updateForgottenPassword: (userName: string, newPassword: string, verificationCode: string) => Promise<boolean>;
 }

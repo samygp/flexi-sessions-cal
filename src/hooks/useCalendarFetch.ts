@@ -56,6 +56,7 @@ export default function useCalendarFetch(initialValue: Moment) {
     fetchHighlightedDays(initialValue);
     // abort request on unmount
     return () => requestAbortController.current?.abort();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleMonthChange = (date: Moment) => {
