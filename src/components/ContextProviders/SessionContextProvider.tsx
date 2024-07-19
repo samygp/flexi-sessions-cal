@@ -16,15 +16,19 @@ export default function SessionContextProvider({ children }: PropsWithChildren) 
         if (refreshToken) setRefreshToken(refreshToken);
     }, [setAccessToken, setIdToken, setRefreshToken]);
 
-    const clearSession = useCallback(() => { sessionStorage.clear() }, []);
+    const clearSession = useCallback(() => { 
+        setAccessToken('');
+        setIdToken('');
+        setRefreshToken('');
+        setSession('');
+    }, [setAccessToken, setIdToken, setRefreshToken, setSession]);
 
     const logout = useCallback(() => {
         clearSession();
-        window.location.href = '/';
     }, [clearSession]);
     
     const { loading: authLoading, value: sessionExp } = useAsync(async (): Promise<number|undefined> => {
-        if (!accessToken) return;
+        if (!accessToken) return 0;
         try {
             const payload = await AuthService.verify(accessToken);
             // console.log("Access Token is valid. Payload:", payload);

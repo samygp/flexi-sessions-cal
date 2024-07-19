@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, HashRouter } from 'react-router-dom';
 import './App.css';
 import Login from './views/Login';
 import { LocalizationProvider } from '@mui/x-date-pickers';
@@ -16,10 +16,9 @@ const defaultTheme = createTheme({
   },
 });
 
-const basePath = "/flexi-sessions-cal";
 const PATHS = {
-  CALENDAR: `${basePath}/calendar`,
-  LOGIN: `${basePath}/login`
+  CALENDAR: `/calendar`,
+  LOGIN: `/login`
 }
 
 function AppRoutes() {
@@ -30,23 +29,22 @@ function AppRoutes() {
   return (
     <>
       <Header />
-      <BrowserRouter >
+      <HashRouter>
         <Routes>
-          <Route path="/" element={<Navigate replace to={basePath} />} />
-          <Route path={basePath} index element={isAuthenticated 
+          <Route index element={isAuthenticated
             ? <Navigate replace to={PATHS.CALENDAR} />
             : <Navigate replace to={PATHS.LOGIN} />}
           />
-          <Route path={PATHS.LOGIN} element={isAuthenticated 
-            ? <Navigate replace to={PATHS.CALENDAR} /> 
-            : <Login />} 
+          <Route path={PATHS.LOGIN} element={isAuthenticated
+            ? <Navigate replace to={PATHS.CALENDAR} />
+            : <Login />}
           />
-          <Route path={PATHS.CALENDAR} element={isAuthenticated 
-            ? <Calendar /> 
-            : <Navigate replace to={PATHS.LOGIN} />} 
+          <Route path={PATHS.CALENDAR} element={isAuthenticated
+            ? <Calendar />
+            : <Navigate replace to={PATHS.LOGIN} />}
           />
         </Routes>
-      </BrowserRouter>
+      </HashRouter>
     </>
   );
 }
