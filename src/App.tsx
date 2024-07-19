@@ -10,7 +10,11 @@ import { useContext, useMemo } from 'react';
 import SessionContext from './models/SessionContext';
 import Header from './components/Header';
 
-const defaultTheme = createTheme();
+const defaultTheme = createTheme({
+  palette: {
+    mode: 'dark',
+  },
+});
 
 const basePath = "/flexi-sessions-cal";
 const PATHS = {

@@ -27,7 +27,7 @@ export default function Header() {
     }, [logout]);
 
     return (
-        <AppBar position="static" >
+        <AppBar position="static" color="transparent" >
             <RefreshDialog open={shouldRefresh} onConfirm={refreshSession} onCancel={logout} />
             <Toolbar>
                 <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
