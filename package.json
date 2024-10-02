@@ -20,6 +20,7 @@
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "aws-jwt-verify": "^4.0.1",
+    "axios": "^1.7.7",
     "dayjs": "^1.11.11",
     "jwt-decode": "^4.0.0",
     "lodash": "^4.17.21",

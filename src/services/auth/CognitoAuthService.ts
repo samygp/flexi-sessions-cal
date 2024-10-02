@@ -1,6 +1,20 @@
-import { AuthenticationResultType, AuthFlowType, ChallengeNameType, CognitoIdentityProviderClient, ConfirmForgotPasswordCommand, ConfirmForgotPasswordCommandInput, ForgotPasswordCommand, ForgotPasswordCommandInput, InitiateAuthCommand, InitiateAuthCommandInput, InitiateAuthCommandOutput, RespondToAuthChallengeCommand, RespondToAuthChallengeCommandInput } from "@aws-sdk/client-cognito-identity-provider";
+import {
+  AuthenticationResultType,
+  AuthFlowType,
+  ChallengeNameType,
+  CognitoIdentityProviderClient,
+  ConfirmForgotPasswordCommand,
+  ConfirmForgotPasswordCommandInput,
+  ForgotPasswordCommand,
+  ForgotPasswordCommandInput,
+  InitiateAuthCommand,
+  InitiateAuthCommandInput,
+  InitiateAuthCommandOutput,
+  RespondToAuthChallengeCommand,
+  RespondToAuthChallengeCommandInput
+} from "@aws-sdk/client-cognito-identity-provider";
 import config from "../../config.json";
-import { IAuthResponse, IOAuthTokens, IRespondToChallengeRequest } from "../../models/Auth";
+import { DEFAULT_SCOPES, IAuthResponse, IOAuthTokens, IRespondToChallengeRequest, Scopes } from "../../models/Auth";
 import { CognitoJwtVerifier } from "aws-jwt-verify";
 
 interface ICognitoConfig {
@@ -9,10 +23,10 @@ interface ICognitoConfig {
   region: string,
 };
 
-const _COGNITO_CONFIG:ICognitoConfig = config['aws-cognito'];
+const _COGNITO_CONFIG: ICognitoConfig = config['aws-cognito'];
 
-const tokensFromResult = (result?: AuthenticationResultType): IOAuthTokens|undefined => {
-  if(!result) return;
+const tokensFromResult = (result?: AuthenticationResultType): IOAuthTokens | undefined => {
+  if (!result) return;
   return {
     accessToken: result.AccessToken ?? '',
     refreshToken: result.RefreshToken ?? '',
@@ -20,11 +34,11 @@ const tokensFromResult = (result?: AuthenticationResultType): IOAuthTokens|undef
   }
 }
 
-function formatCognitoResponse<T extends InitiateAuthCommandOutput>({AuthenticationResult, ChallengeName, Session}: T): IAuthResponse {
+function formatCognitoResponse<T extends InitiateAuthCommandOutput>({ AuthenticationResult, ChallengeName, Session }: T): IAuthResponse {
   return {
     tokens: tokensFromResult(AuthenticationResult),
     requiresChallenge: ChallengeName,
-    session: Session,      
+    session: Session,
   };
 }
 
@@ -38,23 +52,24 @@ export default class CognitoAuthService {
     return CognitoAuthService.verifier.verify(token);
   }
 
-  private async sendCommand <T>(command: SupportedCognitoCommand, callback?: (response: any) => T): Promise<T> {
+  private async sendCommand<T>(command: SupportedCognitoCommand, callback?: (response: any) => T): Promise<T> {
     try {
-    const response = await CognitoAuthService.cognitoClient.send(command as any);
-    return callback ? callback(response): response as T;
-    } catch(error){
+      const response = await CognitoAuthService.cognitoClient.send(command as any);
+      return callback ? callback(response) : response as T;
+    } catch (error) {
       console.error(error);
       throw error;
     }
   }
 
-  public signIn = async (userName: string, password: string): Promise<IAuthResponse> => {
+  public signIn = async (userName: string, password: string, scopes?: Scopes[]): Promise<IAuthResponse> => {
     const params: InitiateAuthCommandInput = {
       AuthFlow: AuthFlowType.USER_PASSWORD_AUTH,
       ClientId: _COGNITO_CONFIG.clientId,
       AuthParameters: {
         USERNAME: userName,
         PASSWORD: password,
+        SCOPE: scopes?.join(' ') ?? DEFAULT_SCOPES.join(' '),
       },
     };
     return this.sendCommand(new InitiateAuthCommand(params), formatCognitoResponse);
@@ -73,14 +88,14 @@ export default class CognitoAuthService {
     return this.sendCommand(new RespondToAuthChallengeCommand(params), formatCognitoResponse);
   }
 
-  public respondToChallenge = async ({challengeType, values}: IRespondToChallengeRequest): Promise<IAuthResponse> => {
-    if(challengeType === ChallengeNameType.NEW_PASSWORD_REQUIRED) {
-      const {userName, newPassword, session} = values;
+  public respondToChallenge = async ({ challengeType, values }: IRespondToChallengeRequest): Promise<IAuthResponse> => {
+    if (challengeType === ChallengeNameType.NEW_PASSWORD_REQUIRED) {
+      const { userName, newPassword, session } = values;
       return this.updatePasswordChallenge(userName, newPassword, session);
     }
     throw new Error(`Challenge type ${challengeType} not supported`);
   }
-  
+
   public forgotPassword = async (userName: string): Promise<boolean> => {
     const params: ForgotPasswordCommandInput = {
       ClientId: _COGNITO_CONFIG.clientId,
