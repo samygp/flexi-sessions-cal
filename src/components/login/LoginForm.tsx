@@ -1,10 +1,11 @@
 import React, { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { startCase } from "lodash";
 import { Box, TextField, Button, TextFieldProps, Alert, Snackbar, AlertColor } from "@mui/material";
-import useLoginActions from "../../hooks/useLoginActions";
-import SessionContext from "../../models/SessionContext";
+import useLoginActions from "../../hooks/useLoginActions"
+
 import { useInterval } from "react-use";
 import { Email } from "@mui/icons-material";
+import SessionContext from "../../shared/models/SessionContext";
 
 type TextInputEvent = React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>;
 

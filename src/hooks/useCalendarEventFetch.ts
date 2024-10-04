@@ -1,10 +1,9 @@
 import React, { useContext } from 'react';
-import { CalendarEvent, EventMap, ICalendarEventQuery } from '../models/CalendarEvents';
 import EventsAPI, { EventAPICall, IEventsAPIFetchOptions } from '../services/calendarEvents/CalendarService';
-import _ from 'lodash';
-import SessionContext from '../models/SessionContext';
-import { IFetchResponse } from '../models/Rest';
 import { useAsyncFn } from 'react-use';
+import { EventMap, CalendarEvent, ICalendarEventQuery } from '../shared/models/CalendarEvents';
+import { IFetchResponse } from '../shared/models/Rest';
+import SessionContext from '../shared/models/SessionContext';
 
 
 export default function useCalendarEventFetch() {
@@ -20,8 +19,8 @@ export default function useCalendarEventFetch() {
   }, [setcalendarEventMap]);
 
   const eventAPIFetch = React.useCallback(async <T>(opts: IEventsAPIFetchOptions, eventAPICall: EventAPICall<T>, callback?: (r: T) => any) => {
-    if (requestAbortController.current) requestAbortController.current.abort();
     if (authState !== 'authenticated' || !accessToken) return;
+    if (requestAbortController.current) requestAbortController.current.abort();
 
     const controller = new AbortController();
 
@@ -42,8 +41,8 @@ export default function useCalendarEventFetch() {
     return fetchPromise;
   }, [authState, accessToken]);
 
-  const [{ loading: fetchLoading, error: fetchError }, fetchCalendarEvents] = useAsyncFn((filter: ICalendarEventQuery) => {
-    return eventAPIFetch<CalendarEvent[]>({ params: filter }, EventsAPI.fetchEvents, updateCalendarEventMap);
+  const [{ loading: fetchLoading, error: fetchError }, fetchCalendarEvents] = useAsyncFn(async (filter: ICalendarEventQuery) => {
+    return await eventAPIFetch<CalendarEvent[]>({ params: filter }, EventsAPI.fetchEvents, updateCalendarEventMap);
   }, [eventAPIFetch, updateCalendarEventMap]);
 
   const loading = React.useMemo<boolean>(() => fetchLoading, [fetchLoading]);

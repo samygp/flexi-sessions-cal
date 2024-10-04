@@ -7,8 +7,8 @@ import { CircularProgress, CssBaseline, ThemeProvider, createTheme } from '@mui/
 import Calendar from './views/EventCalendar';
 import SessionContextProvider from './components/ContextProviders/SessionContextProvider';
 import { useContext, useMemo } from 'react';
-import SessionContext from './models/SessionContext';
 import Header from './components/Header';
+import SessionContext from './shared/models/SessionContext';
 
 const defaultTheme = createTheme({
   palette: {

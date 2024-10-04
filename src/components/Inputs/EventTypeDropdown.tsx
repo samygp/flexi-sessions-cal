@@ -1,6 +1,6 @@
 import { MenuItem, Select } from "@mui/material";
-import { EventType, EventTypeLabels } from "../../models/CalendarEvents";
 import { useCallback } from "react";
+import { EventType, EventTypeLabels } from "../../shared/models/CalendarEvents";
 
 const EventTypeOption = ({ value }: { value: EventType }) => (
     <MenuItem value={value}>{EventTypeLabels[value]}</MenuItem>

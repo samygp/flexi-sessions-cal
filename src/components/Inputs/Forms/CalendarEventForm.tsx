@@ -1,9 +1,9 @@
 import { Box, FormControl, TextField } from "@mui/material";
 import { useCallback, useMemo, useState } from "react";
-import { CalendarEvent, calendarEventKeys, defaultDummyCalendarEvent, EventType } from "../../../models/CalendarEvents";
-import moment, { Moment } from "moment";
+import { Moment } from "moment";
 import EventTypeDropdown from "../EventTypeDropdown";
 import { DateTimePicker } from "@mui/x-date-pickers";
+import { CalendarEvent, defaultDummyCalendarEvent, EventType } from "../../../shared/models/CalendarEvents";
 
 
 interface ICalendarEventFormProps {
@@ -55,7 +55,7 @@ function FormField(props: IFormFieldProps) {
 export default function CalendarEventForm({ readOnly, originalEvent = defaultDummyCalendarEvent }: ICalendarEventFormProps) {
     const [event, setCalendarEvent] = useState<CalendarEvent>(originalEvent);
     const updateEventValue = useCallback(async (k: keyof CalendarEvent, v: CalendarEvent[keyof CalendarEvent]) => {
-        setCalendarEvent(prev => ({...prev, [k]: v}));
+        setCalendarEvent((prev: CalendarEvent) => ({...prev, [k]: v}));
     }, [setCalendarEvent]);
 
     return (

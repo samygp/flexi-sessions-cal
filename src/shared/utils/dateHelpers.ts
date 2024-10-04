@@ -12,3 +12,5 @@ export const endOf = Object.freeze({
     year: (year: number) => timestamp(moment([year]).endOf('year')),
 });
 
+const ymdFormat = 'YYY-MM-dd';
+export const getDayID = (date: Moment) => date.format(ymdFormat);

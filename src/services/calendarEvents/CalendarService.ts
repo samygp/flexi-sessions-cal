@@ -1,7 +1,7 @@
-import { CalendarEvent, ICalendarEventQuery } from "../../models/CalendarEvents"
-import { apiFetch } from "../restService"
 import config from "../../config.json";
-import { IFetchOptions, IFetchResponse } from "../../models/Rest";
+import { ICalendarEventQuery, CalendarEvent } from "../../shared/models/CalendarEvents";
+import { IFetchOptions, IFetchResponse } from "../../shared/models/Rest";
+import { apiFetch } from "../restService";
 
 const eventsEndpoint = `${config.calendarEventsUrl}/api/events`;
 

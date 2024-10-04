@@ -1,12 +1,14 @@
-import { CalendarEvent, EventMap } from '../../../models/CalendarEvents';
+
 import EventTypeTag from './EventTypeTag';
 import Calendar from '../Calendar';
+import { EventMap, CalendarEvent } from '../../../shared/models/CalendarEvents';
+import { Moment } from 'moment';
 
 // types
 interface IEventCalendarProps {
   calendarEventMap: EventMap;
   loading?: boolean;
-  onYearChange?: (year: number) => void;
+  onYearChange?: (year: Moment) => void;
 };
 
 // helpers
@@ -22,6 +24,6 @@ export default function EventCalendar({ calendarEventMap, loading, onYearChange 
     getEntryId={e => e.id}
     getEntryDate={e => e.date}
     getDescription={getEventDescription}
-    getAvatar={e => <EventTypeTag {...e} />}
+    getAvatar={EventTypeTag}
   />
 }
