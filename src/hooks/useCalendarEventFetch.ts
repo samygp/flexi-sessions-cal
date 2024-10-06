@@ -45,8 +45,12 @@ export default function useCalendarEventFetch() {
     return await eventAPIFetch<CalendarEvent[]>({ params: filter }, EventsAPI.fetchEvents, updateCalendarEventMap);
   }, [eventAPIFetch, updateCalendarEventMap]);
 
-  const loading = React.useMemo<boolean>(() => fetchLoading, [fetchLoading]);
-  const error = React.useMemo<Error | undefined>(() => fetchError, [fetchError]);
+  const [{ loading: postLoading, error: postError }, createCalendarEvent] = useAsyncFn(async (body: Partial<CalendarEvent>) => {
+    return await eventAPIFetch<CalendarEvent>({ body }, EventsAPI.createEvent, e => updateCalendarEventMap([e]));
+  }, [eventAPIFetch, updateCalendarEventMap]);
 
-  return { fetchCalendarEvents, loading, error, calendarEventMap };
+  const loading = React.useMemo<boolean>(() => fetchLoading || postLoading, [fetchLoading, postLoading]);
+  const error = React.useMemo<Error | undefined>(() => fetchError || postError, [fetchError, postError]);
+
+  return { fetchCalendarEvents, createCalendarEvent, loading, error, calendarEventMap };
 }

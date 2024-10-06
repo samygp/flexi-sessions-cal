@@ -103,6 +103,7 @@ export default function Calendar<T>(props: ICalendarProps<T>) {
         setEntries(entryIDs.map(id => highlightedEntryMap.get(id)!));
         setTitle(dayID);
         setOpen(true);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
 

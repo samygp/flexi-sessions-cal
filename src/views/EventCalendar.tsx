@@ -2,12 +2,14 @@ import { useCallback, useEffect, useState } from "react";
 import EventCalendar from "../components/Calendars/EventCalendar/EventCalendar";
 import useCalendarEvents from "../hooks/useCalendarEventFetch";
 import { beginningOf, endOf } from "../shared/utils/dateHelpers";
-import { Alert } from "@mui/material";
+import { Alert, Grid } from "@mui/material";
 import moment, { Moment } from "moment";
+import NewEventButton from "../components/Inputs/Buttons/NewEventButton";
 
 
 export default function EventCalendarView() {
-    const { fetchCalendarEvents, loading, error, calendarEventMap } = useCalendarEvents();
+    const { loading, error, calendarEventMap, ...calendarAPI } = useCalendarEvents();
+    const { fetchCalendarEvents, createCalendarEvent } = calendarAPI;
     const [errorMessage, setErrorMessage] = useState<string>("");
     const [fetchedYears, setFetchedYears] = useState<number[]>([]);
 
@@ -24,9 +26,16 @@ export default function EventCalendarView() {
     useEffect(() => { onYearChange(moment()); }, []);
 
     return (
-        <>
-            <EventCalendar {...{ loading, calendarEventMap, onYearChange }} />
+        <Grid container spacing={2} wrap="wrap">
+            <Grid item xs={6} >
+                <NewEventButton onSubmit={createCalendarEvent} disabled={loading} />
+                <EventCalendar {...{ loading, calendarEventMap, onYearChange }} />
+            </Grid>
+            <Grid item xs={6}>
+                
+            </Grid>
+
             {errorMessage && <Alert severity="error" onClose={() => setErrorMessage("")}>{errorMessage}</Alert>}
-        </>
+        </Grid>
     );
 }

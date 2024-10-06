@@ -7,7 +7,7 @@ const eventsEndpoint = `${config.calendarEventsUrl}/api/events`;
 
 export interface IEventsAPIFetchOptions extends Omit<IFetchOptions, 'params' | 'body' | 'method'> {
     params?: ICalendarEventQuery;
-    body?: CalendarEvent;
+    body?: Partial<CalendarEvent>;
 }
 
 export type EventAPICall<T> = (opts: IEventsAPIFetchOptions) => Promise<IFetchResponse<T>>;
