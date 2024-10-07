@@ -4,7 +4,7 @@ import Login from './views/Login';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
 import { CircularProgress, CssBaseline, ThemeProvider, createTheme } from '@mui/material';
-import Calendar from './views/EventCalendar';
+import Calendar from './views/EventCalendarView';
 import SessionContextProvider from './components/ContextProviders/SessionContextProvider';
 import { useContext, useMemo } from 'react';
 import Header from './components/Header';

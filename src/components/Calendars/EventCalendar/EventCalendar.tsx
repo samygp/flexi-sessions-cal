@@ -1,29 +1,28 @@
 
 import EventTypeTag from './EventTypeTag';
 import Calendar from '../Calendar';
-import { EventMap, CalendarEvent } from '../../../shared/models/CalendarEvents';
+import { CalendarEvent } from '../../../shared/models/CalendarEvents';
 import { Moment } from 'moment';
+import { useContext } from 'react';
+import { EventCalendarContext } from '../../ContextProviders/CalendarEventContextProvider';
 
 // types
 interface IEventCalendarProps {
-  calendarEventMap: EventMap;
-  loading?: boolean;
   onYearChange?: (year: Moment) => void;
+  onDaySelect?: (day: Moment) => void;
 };
 
 // helpers
-const getEventDescription = (event: CalendarEvent): string => {
+const getDescription = (event: CalendarEvent): string => {
   return `${event.date.format('hh:mm')} | [${event.userName}-${event.userEmail}] - ${event.title}`;
 }
 
-export default function EventCalendar({ calendarEventMap, loading, onYearChange }: IEventCalendarProps) {
+export default function EventCalendar({ onYearChange, onDaySelect }: IEventCalendarProps) {
+  const { loading, dateGroupedEventMap } = useContext(EventCalendarContext);
+
   return <Calendar<CalendarEvent>
-    highlightedEntryMap={calendarEventMap}
-    onYearChange={onYearChange}
-    loading={loading}
-    getEntryId={e => e.id}
-    getEntryDate={e => e.date}
-    getDescription={getEventDescription}
+    {...{ onDaySelect, onYearChange, loading, getDescription }}
+    entryMap={dateGroupedEventMap}
     getAvatar={EventTypeTag}
   />
 }

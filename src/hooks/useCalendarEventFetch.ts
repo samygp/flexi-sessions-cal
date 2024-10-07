@@ -1,10 +1,9 @@
 import React, { useContext } from 'react';
 import EventsAPI, { EventAPICall, IEventsAPIFetchOptions } from '../services/calendarEvents/CalendarService';
 import { useAsyncFn } from 'react-use';
-import { EventMap, CalendarEvent, ICalendarEventQuery } from '../shared/models/CalendarEvents';
+import { EventMap, CalendarEvent, ICalendarEventQuery, IPostEventRequest } from '../shared/models/CalendarEvents';
 import { IFetchResponse } from '../shared/models/Rest';
 import SessionContext from '../shared/models/SessionContext';
-
 
 export default function useCalendarEventFetch() {
   const requestAbortController = React.useRef<AbortController | null>(null);
@@ -45,7 +44,8 @@ export default function useCalendarEventFetch() {
     return await eventAPIFetch<CalendarEvent[]>({ params: filter }, EventsAPI.fetchEvents, updateCalendarEventMap);
   }, [eventAPIFetch, updateCalendarEventMap]);
 
-  const [{ loading: postLoading, error: postError }, createCalendarEvent] = useAsyncFn(async (body: Partial<CalendarEvent>) => {
+  const [{ loading: postLoading, error: postError }, createCalendarEvent] = useAsyncFn(async (evt: IPostEventRequest) => {
+    const body = { ...evt, date: evt.date?.unix() };
     return await eventAPIFetch<CalendarEvent>({ body }, EventsAPI.createEvent, e => updateCalendarEventMap([e]));
   }, [eventAPIFetch, updateCalendarEventMap]);
 

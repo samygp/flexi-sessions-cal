@@ -33,10 +33,16 @@ export type CalendarEvent = {
     userName: string;
 };
 
+export interface ICalendarEventBody extends Omit<CalendarEvent, 'date'> {
+    date: number;
+}
+
 export interface ICalendarEventQuery extends Partial<Omit<CalendarEvent, 'date'>> {
     from: number;
     to?: number;
 };
+
+export interface IPostEventRequest extends Partial<Omit<CalendarEvent, 'id'>> {}
 
 export type EventMap = Map<string, CalendarEvent>;
 

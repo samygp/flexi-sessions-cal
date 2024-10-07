@@ -10,7 +10,6 @@
     "@fontsource/roboto": "^5.0.13",
     "@mui/icons-material": "^5.15.19",
     "@mui/material": "^5.15.19",
-    "@mui/x-data-grid": "^7.6.2",
     "@mui/x-date-pickers": "^7.6.2",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
@@ -65,8 +64,10 @@
     ]
   },
   "devDependencies": {
+    "@mui/x-data-grid": "^7.19.0",
     "@types/lodash": "^4.17.6",
     "eslint-plugin-react": "^7.37.1",
-    "gh-pages": "^6.1.1"
+    "gh-pages": "^6.1.1",
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11"
   }
 }

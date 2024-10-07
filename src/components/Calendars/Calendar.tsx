@@ -16,21 +16,22 @@ import {
     Tooltip,
 } from '@mui/material';
 import { getDayID } from '../../shared/utils/dateHelpers';
-
-
+import { DateGroupedEntryMap } from '../../shared/models/DateGroupedEntryMap';
+import { get } from 'lodash';
 
 // types
 interface ICalendarEntryFormatters<T> {
-    getEntryId: (e: T) => string | number;
-    getEntryDate: (e: T) => Moment;
+    getEntryId?: (e: T) => string | number;
     getDescription: (e: T) => React.ReactNode;
     getAvatar?: (v: T) => React.ReactNode;
 }
 
 interface ICalendarProps<T> extends ICalendarEntryFormatters<T> {
     loading?: boolean;
-    highlightedEntryMap: Map<string, T>;
+    entryMap: DateGroupedEntryMap<T>;
     onYearChange?: (year: Moment) => void;
+    onDaySelect?: (day: Moment) => void;
+    onDaySelectOverride?: (day: Moment) => void;
 }
 
 interface IDayEntriesModalProps<T> extends ICalendarEntryFormatters<T> {
@@ -59,13 +60,14 @@ function DayDetailListItem<T>({ entry, getAvatar, getDescription }: ICalendarEnt
 }
 
 function DayDetailsModal<T>(props: IDayEntriesModalProps<T>) {
-    const {entries, open, title, onClose, getEntryId} = props;
+    const { entries, open, title, onClose, getEntryId } = props;
+    const getId = useCallback((e: T) => getEntryId ? getEntryId(e) : get(e, 'id'), [getEntryId]);
     return (
         <Dialog maxWidth='lg' {...{ onClose, open }}>
             <DialogTitle>{title}</DialogTitle>
             <DialogContent>
                 <List>
-                    {entries.map(entry => <DayDetailListItem<T> key={getEntryId(entry)} {...{ entry, ...props}} />)}
+                    {entries.map(entry => <DayDetailListItem<T> key={getId(entry)} entry={entry} {...props } />)}
                 </List>
             </DialogContent>
         </Dialog>
@@ -73,38 +75,33 @@ function DayDetailsModal<T>(props: IDayEntriesModalProps<T>) {
 }
 
 export default function Calendar<T>(props: ICalendarProps<T>) {
+    const { entryMap, onYearChange } = props;
+    const onDaySelectProps = useMemo(() => {
+        return { onDaySelect: props.onDaySelect, onDaySelectOverride: props.onDaySelectOverride };
+    }, [props.onDaySelect, props.onDaySelectOverride]);
     const initialValue = useMemo(() => moment(new Date()), []);
 
-    const [entries, setEntries] = useState<T[]>([]);
-    const [open, setOpen] = useState(false);
-    const [title, setTitle] = useState('');
+    const [open, setOpen] = useState<boolean>(false);
+    const [title, setTitle] = useState<string>('');
     const onModalClose = useCallback(() => setOpen(false), []);
+    const [selectedDay, setSelectedDay] = useState<Moment>(initialValue);
+
     const modalProps = useMemo<IDayEntriesModalProps<T>>(() => {
+        const entries = entryMap.getEntriesForDate(selectedDay);
         return { entries, onClose: onModalClose, open, title, ...props };
-    }, [entries, open, title, props, onModalClose]);
+    }, [open, title, props, onModalClose, selectedDay, entryMap]);
 
-    const {highlightedEntryMap, getEntryDate, onYearChange} = props;
-
-    const groupedEntriesByDay = useMemo<Map<string, string[]>>(() => {
-        const groupedEntriesByDay = new Map<string, string[]>();
-        highlightedEntryMap.forEach((entry, id) => {
-            const date = getEntryDate(entry);
-            const k = getDayID(date);
-            if (!groupedEntriesByDay.has(k)) groupedEntriesByDay.set(k, []);
-            groupedEntriesByDay.get(k)?.push(id);
-        });
-        return groupedEntriesByDay;
-    }, [highlightedEntryMap, getEntryDate]);
 
     const onDaySelect = useCallback((day: Moment) => {
-        const dayID = getDayID(day);
-        const entryIDs = groupedEntriesByDay.get(dayID) ?? [];
-        
-        setEntries(entryIDs.map(id => highlightedEntryMap.get(id)!));
-        setTitle(dayID);
+        setSelectedDay(day);
+        const { onDaySelectOverride, onDaySelect } = onDaySelectProps;
+        if (onDaySelectOverride) return onDaySelectOverride(day);
+        else if (onDaySelect) return onDaySelect(day);
+
+        setTitle(getDayID(day));
         setOpen(true);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [entryMap, onDaySelectProps]);
 
 
     return (
@@ -119,13 +116,14 @@ export default function Calendar<T>(props: ICalendarProps<T>) {
                         const { day } = props;
                         const isFirstVisibleCell = day.day() === 1;
                         const isLastVisibleCell = day.day() === day.daysInMonth();
-                        const pickerDayProps = {...props, isFirstVisibleCell, isLastVisibleCell, onDaySelect};
+                        const pickerDayProps = { ...props, isFirstVisibleCell, isLastVisibleCell, onDaySelect };
+                        const count = entryMap.getEntriesForDate(day).length;
 
-                        if (!entries?.length) return <PickersDay {...pickerDayProps} />;
+                        if (!count) return <PickersDay {...pickerDayProps} />;
 
                         return (
                             <Badge key={getDayID(day)} overlap="circular" variant='dot' color="primary">
-                                <Tooltip placement='right-end' title={`${entries.length} events`}>
+                                <Tooltip placement='right-end' title={`${count} events`}>
                                     <PickersDay {...pickerDayProps} />
                                 </Tooltip>
                             </Badge>

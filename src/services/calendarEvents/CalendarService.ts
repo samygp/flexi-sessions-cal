@@ -1,5 +1,5 @@
 import config from "../../config.json";
-import { ICalendarEventQuery, CalendarEvent } from "../../shared/models/CalendarEvents";
+import { ICalendarEventQuery, CalendarEvent, ICalendarEventBody } from "../../shared/models/CalendarEvents";
 import { IFetchOptions, IFetchResponse } from "../../shared/models/Rest";
 import { apiFetch } from "../restService";
 
@@ -7,14 +7,14 @@ const eventsEndpoint = `${config.calendarEventsUrl}/api/events`;
 
 export interface IEventsAPIFetchOptions extends Omit<IFetchOptions, 'params' | 'body' | 'method'> {
     params?: ICalendarEventQuery;
-    body?: Partial<CalendarEvent>;
+    body?: Partial<ICalendarEventBody>;
 }
 
 export type EventAPICall<T> = (opts: IEventsAPIFetchOptions) => Promise<IFetchResponse<T>>;
 
-const eventsAPIFetch = async <T>(options: IFetchOptions) => {
+const eventsAPIFetch = async <T>(options: IFetchOptions, callback?: (r: T) => any) => {
     if (!options.authToken) throw new Error('Missing auth');
-    return apiFetch<T>(eventsEndpoint, options);
+    return apiFetch<T>(eventsEndpoint, options).then(r => (callback && r.result) ? callback(r.result) : r);
 }
 
 const fetchEvents = async (opts: IEventsAPIFetchOptions) => {
