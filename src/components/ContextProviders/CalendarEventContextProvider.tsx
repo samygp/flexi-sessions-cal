@@ -1,7 +1,8 @@
 import { createContext, PropsWithChildren, useMemo } from "react";
-import { EventMap, CalendarEvent, ICalendarEventQuery, IPostEventRequest } from "../../shared/models/CalendarEvents";
+import { CalendarEvent, ICalendarEventQuery, IPostEventRequest } from "../../shared/models/CalendarEvents";
 import useCalendarEventFetch from "../../hooks/useCalendarEventFetch";
 import { DateGroupedEntryMap } from "../../shared/models/DateGroupedEntryMap";
+import { keyBy } from "lodash";
 
 interface ICalendarEventAPI {
     fetchCalendarEvents: (filter: ICalendarEventQuery) => Promise<void>;
@@ -9,20 +10,20 @@ interface ICalendarEventAPI {
 }
 
 interface IEventCalendarContext {
-    calendarEventMap: EventMap;
+    calendarEventMap: Record<string, CalendarEvent>;
     api: ICalendarEventAPI;
     dateGroupedEventMap: DateGroupedEntryMap<CalendarEvent>;
     loading: boolean;
     error?: Error;
 }
 
-const createGroupedEventMap = (entries: Map<string, CalendarEvent>) => {
-    return new DateGroupedEntryMap<CalendarEvent>(entries, e => e.date);
+const createGroupedEventMap = (eventMap: Record<string, CalendarEvent>) => {
+    return new DateGroupedEntryMap<CalendarEvent>(eventMap, e => e.date);
 }
 
 export const EventCalendarContext = createContext<IEventCalendarContext>({
-    calendarEventMap: new Map<string, CalendarEvent>(),
-    dateGroupedEventMap: createGroupedEventMap(new Map<string, CalendarEvent>()),
+    calendarEventMap: {},
+    dateGroupedEventMap: createGroupedEventMap({}),
     api: {
         fetchCalendarEvents: async (_q: ICalendarEventQuery) => { },
         createCalendarEvent: async (_r: IPostEventRequest) => { },
@@ -31,9 +32,14 @@ export const EventCalendarContext = createContext<IEventCalendarContext>({
 });
 
 export default function EventCalendarContextProvider({ children }: PropsWithChildren) {
-    const { fetchCalendarEvents, createCalendarEvent, loading, error, calendarEventMap } = useCalendarEventFetch();
+    const { fetchCalendarEvents, createCalendarEvent, loading, error, calendarEvents } = useCalendarEventFetch();
     const api = useMemo(() => ({ fetchCalendarEvents, createCalendarEvent }), [fetchCalendarEvents, createCalendarEvent]);
-    const dateGroupedEventMap = useMemo(() => createGroupedEventMap(calendarEventMap), [calendarEventMap]);
+    const {calendarEventMap, dateGroupedEventMap} = useMemo(() => {
+        const calendarEventMap = keyBy(calendarEvents, 'id');
+        const dateGroupedEventMap = createGroupedEventMap(calendarEventMap);
+
+        return {calendarEventMap, dateGroupedEventMap};
+    }, [calendarEvents]);
 
     return (
         <EventCalendarContext.Provider value={{ calendarEventMap, dateGroupedEventMap, api, loading, error }}>

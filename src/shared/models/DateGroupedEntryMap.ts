@@ -1,38 +1,41 @@
 import { Moment } from "moment";
 import { destructureDate } from "../utils/dateHelpers";
-import moment from "moment";
+
+type GroupedEntryMap = Map<number, Map<number, Map<number, Set<string>>>>;
+
+const hasYear = (groupedEntries: GroupedEntryMap, year: number) => !!groupedEntries.has(year);
+const hasMonth = (groupedEntries: GroupedEntryMap, year: number, month: number) => !!groupedEntries.get(year)?.has(month);
+const hasDay = (groupedEntries: GroupedEntryMap, year: number, month: number, day: number) => !!groupedEntries.get(year)?.get(month)?.has(day);
+
+const initializeDate = (entryMap: GroupedEntryMap, year: number, month: number, day: number) => {
+    if (!hasYear(entryMap, year)) entryMap.set(year, new Map<number, Map<number, Set<string>>>());
+    if (!hasMonth(entryMap, year, month)) entryMap.get(year)!.set(month, new Map<number, Set<string>>());
+    if (!hasDay(entryMap, year, month, day)) entryMap.get(year)!.get(month)!.set(day, new Set<string>());
+}
 
 export class DateGroupedEntryMap<T> {
-    private entries: Map<string, T>;
+    private entries: Record<string, T>;
     // ************************ year ****** month ***** day ****** entryIDs
-    private groupedEntries: Map<number, Map<number, Map<number, Set<string>>>>;
-    
-    private hasYear = (year: number) => !!this.groupedEntries.has(year);
-    private hasMonth = (year: number, month: number) => !!this.groupedEntries.get(year)?.has(month);
-    private hasDay = (year: number, month: number, day: number) => !!this.groupedEntries.get(year)?.get(month)?.has(day);
+    private groupedEntries: GroupedEntryMap;
 
-    private initializeDate = (year: number, month: number, day: number) => {
-        if (!this.hasYear(year)) this.groupedEntries.set(year, new Map<number, Map<number, Set<string>>>());
-        if (!this.hasMonth(year, month)) this.groupedEntries.get(year)!.set(month, new Map<number, Set<string>>());
-        if (!this.hasDay(year, month, day)) this.groupedEntries.get(year)!.get(month)!.set(day, new Set<string>());
-    }
-    
     public getIdsForDate = (date: Moment): string[] => {
         const { year, month, day } = destructureDate(date);
-        if (!this.hasDay(year, month, day)) return [];
+        if (!hasDay(this.groupedEntries, year, month, day)) return [];
         return Array.from(this.groupedEntries.get(year)!.get(month)!.get(day)!);
     }
 
     public getEntriesForDate = (date: Moment): T[] => {
-        return this.getIdsForDate(date).map(id => this.entries.get(id)!);
+        return this.getIdsForDate(date).map(id => this.entries[id]);
     }
 
     private getValuesForDateRange = <VT>(start: Moment, end: Moment, callback: (date: Moment) => VT[]): VT[] => {
         const result: VT[] = [];
-        const date = moment(start).startOf('day');
-        while(date.isSameOrBefore(end)) {
+        let date = start.startOf('day');
+        let iter = 0;
+        while (date.isSameOrBefore(end) && iter < 40) {
             result.push(...callback(date));
-            date.add(1, 'day');
+            date = date.add(1, 'day');
+            iter++;
         }
         return result;
     }
@@ -42,17 +45,26 @@ export class DateGroupedEntryMap<T> {
     }
 
     public getEntriesForDateRange = (start: Moment, end: Moment): T[] => {
-        return this.getValuesForDateRange<T>(start, end, this.getEntriesForDate);        
+        return this.getValuesForDateRange<T>(start, end, this.getEntriesForDate);
     }
 
-    constructor (entries: Map<string, T>, getEntryDate: (e: T) => Moment) {
+
+    constructor(entries: Record<string, T>, getEntryDate: (e: T) => Moment) {
         this.entries = entries;
-        this.groupedEntries = new Map<number, Map<number, Map<number, Set<string>>>>();
-        entries.forEach((entry, id) => {
+        const groupedEntries = new Map<number,
+            Map<number,
+                Map<number, Set<string>>
+            >
+        >();
+
+        Object.keys(entries).forEach(id => {
+            const entry = entries[id]!;
             const { year, month, day } = destructureDate(getEntryDate(entry));
-            this.initializeDate(year, month, day);
-            this.groupedEntries.get(year)!.get(month)!.get(day)!.add(id);
+            initializeDate(groupedEntries, year, month, day);
+            groupedEntries.get(year)!.get(month)!.get(day)!.add(id);
         });
+
+        this.groupedEntries = groupedEntries;
     }
 
 }

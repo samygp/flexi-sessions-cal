@@ -2,6 +2,7 @@ import { Button, Dialog, DialogContent, DialogTitle } from "@mui/material";
 import { CalendarEvent } from "../../../shared/models/CalendarEvents";
 import { useCallback, useState } from "react";
 import CalendarEventForm from "../Forms/CalendarEventForm";
+import { AddRounded } from "@mui/icons-material";
 
 interface INewEventButtonProps {
     disabled?: boolean;
@@ -11,10 +12,8 @@ interface INewEventButtonProps {
 export default function NewEventButton({ disabled, onSubmit }: INewEventButtonProps) {
     const [open, setOpen] = useState(false);
 
-    // eslint-disable-next-line
-    const onClose = useCallback(() => setOpen(false), []);
-    // eslint-disable-next-line
-    const onClick = useCallback(() => setOpen(true), []);
+    const onClose = useCallback(() => setOpen(false), [setOpen]);
+    const onClick = useCallback(() => setOpen(true), [setOpen]);
 
     const onSave = useCallback(async (e: CalendarEvent) => await onSubmit(e).then(onClose), [onSubmit, onClose]);
     return (
@@ -25,7 +24,7 @@ export default function NewEventButton({ disabled, onSubmit }: INewEventButtonPr
                     <CalendarEventForm readOnly={disabled} onSave={onSave} onCancel={onClose} />
                 </DialogContent>
             </Dialog>
-            <Button variant="contained" color="primary" {...{ disabled, onClick }}>
+            <Button startIcon={<AddRounded />} variant="contained" color="primary" {...{ disabled, onClick }} sx={{ margin: '10px 0' }}>
                 New Event
             </Button>
         </>

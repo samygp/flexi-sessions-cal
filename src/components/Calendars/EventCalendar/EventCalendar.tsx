@@ -8,13 +8,14 @@ import { EventCalendarContext } from '../../ContextProviders/CalendarEventContex
 
 // types
 interface IEventCalendarProps {
+  onMonthChange?: (month: Moment) => void;
   onYearChange?: (year: Moment) => void;
   onDaySelect?: (day: Moment) => void;
 };
 
 // helpers
 const getDescription = (event: CalendarEvent): string => {
-  return `${event.date.format('hh:mm')} | [${event.userName}-${event.userEmail}] - ${event.title}`;
+  return `${event.date.format('hh:mm A')} | [${event.userName}-${event.userEmail}] - ${event.title}`;
 }
 
 export default function EventCalendar({ onYearChange, onDaySelect }: IEventCalendarProps) {

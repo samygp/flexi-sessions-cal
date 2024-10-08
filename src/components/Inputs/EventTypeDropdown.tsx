@@ -15,7 +15,7 @@ export default function EventTypeDropdown({value, setEventType}: IEventTypeDropd
         
         <Select {...{ value, onChange }} id="event-type-select" required label="Event Type">
             {Object.values(EventType).map(e => {
-                return <MenuItem value={e}>{EventTypeLabels[e]}</MenuItem>
+                return <MenuItem key={e} value={e}>{EventTypeLabels[e]}</MenuItem>
                 })}
         </Select>
         </>

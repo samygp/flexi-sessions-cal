@@ -5,17 +5,19 @@ export const timestamp = (date: Moment): number => {
 }
 
 export const beginningOf = Object.freeze({
+    month: (year: number, month: number) => timestamp(moment({year, month}).startOf('month')),
     year: (year: number) => timestamp(moment([year]).startOf('year')),
 });
 
 export const endOf = Object.freeze({
+    month: (year: number, month: number) => timestamp(moment({year, month}).endOf('month')),
     year: (year: number) => timestamp(moment([year]).endOf('year')),
 });
 
-const ymdFormat = 'YYY-MM-dd';
+const ymdFormat = 'YYYY-MM-DD';
 export const getDayID = (date: Moment) => date.format(ymdFormat);
 
-export const readableDateTime = (date: Moment) => date.toLocaleString();
+export const readableDateTime = (date: Moment) => date.local(true).format('YYYY-MM-DD, hh:mm A');
 
 export const destructureDate = (date: Moment) => {
     return {

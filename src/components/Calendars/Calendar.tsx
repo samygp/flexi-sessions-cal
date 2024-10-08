@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import Badge from '@mui/material/Badge';
 import { PickersDay } from '@mui/x-date-pickers/PickersDay';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
@@ -8,6 +8,7 @@ import {
     Dialog,
     DialogContent,
     DialogTitle,
+    FormControl,
     List,
     ListItem,
     ListItemAvatar,
@@ -29,6 +30,7 @@ interface ICalendarEntryFormatters<T> {
 interface ICalendarProps<T> extends ICalendarEntryFormatters<T> {
     loading?: boolean;
     entryMap: DateGroupedEntryMap<T>;
+    onMonthChange?: (month: Moment) => void;
     onYearChange?: (year: Moment) => void;
     onDaySelect?: (day: Moment) => void;
     onDaySelectOverride?: (day: Moment) => void;
@@ -44,13 +46,9 @@ interface IDayEntriesModalProps<T> extends ICalendarEntryFormatters<T> {
 // components
 
 function DayDetailListItem<T>({ entry, getAvatar, getDescription }: ICalendarEntryFormatters<T> & { entry: T }) {
-    const avatarRef = useRef<React.ReactNode>();
-    const descriptionRef = useRef<React.ReactNode>();
+    const avatarRef = useRef<React.ReactNode>(getAvatar && getAvatar(entry));
+    const descriptionRef = useRef<React.ReactNode>(getDescription(entry));
 
-    useEffect(() => {
-        if (getAvatar) avatarRef.current = getAvatar(entry);
-        descriptionRef.current = getDescription(entry);
-    }, [getAvatar, entry, getDescription]);
     return (
         <ListItem divider>
             {avatarRef.current ? <ListItemAvatar>{avatarRef.current}</ListItemAvatar> : ''}
@@ -67,7 +65,7 @@ function DayDetailsModal<T>(props: IDayEntriesModalProps<T>) {
             <DialogTitle>{title}</DialogTitle>
             <DialogContent>
                 <List>
-                    {entries.map(entry => <DayDetailListItem<T> key={getId(entry)} entry={entry} {...props } />)}
+                    {entries.map(entry => <DayDetailListItem<T> key={getId(entry)} entry={entry} {...props} />)}
                 </List>
             </DialogContent>
         </Dialog>
@@ -75,16 +73,16 @@ function DayDetailsModal<T>(props: IDayEntriesModalProps<T>) {
 }
 
 export default function Calendar<T>(props: ICalendarProps<T>) {
-    const { entryMap, onYearChange } = props;
+    const { entryMap, onYearChange, onMonthChange, loading } = props;
     const onDaySelectProps = useMemo(() => {
         return { onDaySelect: props.onDaySelect, onDaySelectOverride: props.onDaySelectOverride };
     }, [props.onDaySelect, props.onDaySelectOverride]);
-    const initialValue = useMemo(() => moment(new Date()), []);
+    const defaultValue = useMemo(() => moment(new Date()), []);
 
     const [open, setOpen] = useState<boolean>(false);
     const [title, setTitle] = useState<string>('');
     const onModalClose = useCallback(() => setOpen(false), []);
-    const [selectedDay, setSelectedDay] = useState<Moment>(initialValue);
+    const [selectedDay, setSelectedDay] = useState<Moment>(defaultValue);
 
     const modalProps = useMemo<IDayEntriesModalProps<T>>(() => {
         const entries = entryMap.getEntriesForDate(selectedDay);
@@ -97,7 +95,9 @@ export default function Calendar<T>(props: ICalendarProps<T>) {
         const { onDaySelectOverride, onDaySelect } = onDaySelectProps;
         if (onDaySelectOverride) return onDaySelectOverride(day);
         else if (onDaySelect) return onDaySelect(day);
+        else if (!entryMap.getEntriesForDate(day).length) return;
 
+        setSelectedDay(day);
         setTitle(getDayID(day));
         setOpen(true);
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -107,32 +107,32 @@ export default function Calendar<T>(props: ICalendarProps<T>) {
     return (
         <>
             <DayDetailsModal<T> {...modalProps} />
-            <DateCalendar
-                defaultValue={initialValue}
-                loading={props.loading}
-                onYearChange={onYearChange}
-                slots={{
-                    day: props => {
-                        const { day } = props;
-                        const isFirstVisibleCell = day.day() === 1;
-                        const isLastVisibleCell = day.day() === day.daysInMonth();
-                        const pickerDayProps = { ...props, isFirstVisibleCell, isLastVisibleCell, onDaySelect };
-                        const count = entryMap.getEntriesForDate(day).length;
+            <FormControl required size="medium" fullWidth margin="normal" >
+                <DateCalendar
+                    {...{ defaultValue, loading, onYearChange, onMonthChange }}
+                    slots={{
+                        day: props => {
+                            const { day } = props;
+                            const isFirstVisibleCell = day.day() === 1;
+                            const isLastVisibleCell = day.day() === day.daysInMonth();
+                            const pickerDayProps = { ...props, isFirstVisibleCell, isLastVisibleCell, onDaySelect };
+                            const count = entryMap.getEntriesForDate(day).length;
 
-                        if (!count) return <PickersDay {...pickerDayProps} />;
+                            if (!count) return <PickersDay {...pickerDayProps} />;
 
-                        return (
-                            <Badge key={getDayID(day)} overlap="circular" variant='dot' color="primary">
-                                <Tooltip placement='right-end' title={`${count} events`}>
-                                    <PickersDay {...pickerDayProps} />
-                                </Tooltip>
-                            </Badge>
-                        );
-                    }
-                }}
-                renderLoading={() => <DayCalendarSkeleton />}
-                readOnly
-            />
+                            return (
+                                <Badge key={getDayID(day)} overlap="circular" variant='dot' color="primary">
+                                    <Tooltip placement='right-end' title={`${count} events`}>
+                                        <PickersDay {...pickerDayProps} />
+                                    </Tooltip>
+                                </Badge>
+                            );
+                        }
+                    }}
+                    renderLoading={() => <DayCalendarSkeleton />}
+                    readOnly
+                />
+            </FormControl>
         </>
     );
 }

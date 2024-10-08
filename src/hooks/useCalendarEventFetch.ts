@@ -1,21 +1,19 @@
 import React, { useContext } from 'react';
 import EventsAPI, { EventAPICall, IEventsAPIFetchOptions } from '../services/calendarEvents/CalendarService';
 import { useAsyncFn } from 'react-use';
-import { EventMap, CalendarEvent, ICalendarEventQuery, IPostEventRequest } from '../shared/models/CalendarEvents';
+import { CalendarEvent, ICalendarEventQuery, IPostEventRequest } from '../shared/models/CalendarEvents';
 import { IFetchResponse } from '../shared/models/Rest';
 import SessionContext from '../shared/models/SessionContext';
 
 export default function useCalendarEventFetch() {
   const requestAbortController = React.useRef<AbortController | null>(null);
-  const [calendarEventMap, setcalendarEventMap] = React.useState<EventMap>(new Map<string, CalendarEvent>());
+  const [calendarEvents, setcalendarEvents] = React.useState<CalendarEvent[]>([]);
   const { authState, accessToken } = useContext(SessionContext);
 
   const updateCalendarEventMap = React.useCallback((events: CalendarEvent[]) => {
-    setcalendarEventMap(prev => {
-      events.forEach(evt => prev.set(evt.id, evt));
-      return prev;
-    });
-  }, [setcalendarEventMap]);
+    const newIDs = new Set<string>(events.map(e => e.id));
+    setcalendarEvents(prev => prev.filter(e => !newIDs.has(e.id)).concat(events));
+  }, [setcalendarEvents]);
 
   const eventAPIFetch = React.useCallback(async <T>(opts: IEventsAPIFetchOptions, eventAPICall: EventAPICall<T>, callback?: (r: T) => any) => {
     if (authState !== 'authenticated' || !accessToken) return;
@@ -52,5 +50,5 @@ export default function useCalendarEventFetch() {
   const loading = React.useMemo<boolean>(() => fetchLoading || postLoading, [fetchLoading, postLoading]);
   const error = React.useMemo<Error | undefined>(() => fetchError || postError, [fetchError, postError]);
 
-  return { fetchCalendarEvents, createCalendarEvent, loading, error, calendarEventMap };
+  return { fetchCalendarEvents, createCalendarEvent, loading, error, calendarEvents };
 }
