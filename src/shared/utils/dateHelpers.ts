@@ -17,7 +17,7 @@ export const endOf = Object.freeze({
 const ymdFormat = 'YYYY-MM-DD';
 export const getDayID = (date: Moment) => date.format(ymdFormat);
 
-export const readableDateTime = (date: Moment) => date.local(true).format('YYYY-MM-DD, hh:mm A');
+export const readableDateTime = (date: Moment) => date.local(true).format('ddd YYYY-MM-DD');
 
 export const destructureDate = (date: Moment) => {
     return {

@@ -2,7 +2,7 @@ import { Box, Button, ButtonGroup, FormControl, TextField } from "@mui/material"
 import { useCallback, useMemo, useState } from "react";
 import { Moment } from "moment";
 import EventTypeDropdown from "../EventTypeDropdown";
-import { DateTimePicker } from "@mui/x-date-pickers";
+import { DatePicker } from "@mui/x-date-pickers";
 import { CalendarEvent, defaultDummyCalendarEvent, EventType } from "../../../shared/models/CalendarEvents";
 
 
@@ -36,7 +36,7 @@ function CalendarEventFieldInput({ fieldName, event, updateEventValue }: IFormFi
 
     switch (fieldName) {
         case "date":
-            return <DateTimePicker {...{ onChange, label }} value={event[fieldName] as Moment} />;
+            return <DatePicker {...{ onChange, label }} value={event[fieldName] as Moment} />;
         case "eventType":
             return <EventTypeDropdown value={event[fieldName] as EventType} setEventType={onChange} />;
         default:
