@@ -5,6 +5,7 @@ import { CalendarEvent } from '../../../shared/models/CalendarEvents';
 import { Moment } from 'moment';
 import { useContext } from 'react';
 import { EventCalendarContext } from '../../ContextProviders/CalendarEventContextProvider';
+import { readableDateTime } from '../../../shared/utils/dateHelpers';
 
 // types
 interface IEventCalendarProps {
@@ -15,7 +16,7 @@ interface IEventCalendarProps {
 
 // helpers
 const getDescription = (event: CalendarEvent): string => {
-  return `${event.date.format('hh:mm A')} | [${event.userName}-${event.userEmail}] - ${event.title}`;
+  return `${readableDateTime(event.date)} | [${event.userName}] - ${event.title}`;
 }
 
 export default function EventCalendar({ onYearChange, onDaySelect }: IEventCalendarProps) {
