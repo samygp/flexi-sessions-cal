@@ -2,6 +2,7 @@ import { createContext } from "react";
 import { AuthState, IOAuthTokens } from "./Auth";
 
 interface ISessionContext {
+    accessToken?: string,
     setTokens: (t: IOAuthTokens) => void;
     session?: string;
     setSession: (v: string) => void;

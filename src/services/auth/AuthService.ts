@@ -1,6 +1,6 @@
-import config from "../config.json";
-import { AuthServiceProvider, IAuthService, isServiceProvider } from "../models/Auth";
-import CognitoAuthService from "./auth/CognitoAuthService";
+import { AuthServiceProvider, IAuthService, isServiceProvider } from "../../shared/models/Auth";
+import config from "../../config.json";
+import CognitoAuthService from "./CognitoAuthService";
 
 function newAuthServiceProvider(sp: AuthServiceProvider): IAuthService {
     switch (sp) {

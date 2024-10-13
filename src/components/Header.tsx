@@ -1,8 +1,8 @@
 import { useCallback, useContext, useMemo, useState } from "react";
-import SessionContext from "../models/SessionContext";
 import { useInterval } from "react-use";
 import RefreshDialog from './login/RefreshDialog';
 import { AppBar, Button, Toolbar, Typography } from "@mui/material";
+import SessionContext from "../shared/models/SessionContext";
 
 const BASE_INTERVAL = 5000;
 

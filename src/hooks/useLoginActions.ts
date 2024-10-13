@@ -1,7 +1,7 @@
 import { useContext, useState, useCallback, useMemo } from "react";
-import { IAuthResponse } from "../models/Auth";
-import SessionContext from "../models/SessionContext";
-import AuthService from "../services/AuthService";
+import AuthService from "../services/auth/AuthService";
+import { IAuthResponse } from "../shared/models/Auth";
+import SessionContext from "../shared/models/SessionContext";
 
 interface ILoginActionParams {
     email: string;
