@@ -1,6 +1,6 @@
 import { InputLabel, MenuItem, Select } from "@mui/material";
 import { useCallback } from "react";
-import { EventType, EventTypeLabels } from "../../shared/models/CalendarEvents";
+import { EventType, EventTypeLabels } from "../../../shared/models/CalendarEvents";
 
 interface IEventTypeDropdownProps {
     value: EventType;

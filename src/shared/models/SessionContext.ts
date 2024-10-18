@@ -9,6 +9,7 @@ interface ISessionContext {
     sessionExp?: number;
     clearSession: () => void;
     authState: AuthState;
+    isAuthenticated: boolean;
     logout: () => void;
     refreshSession: () => void;
 }
@@ -17,6 +18,7 @@ export default createContext<ISessionContext>({
     setTokens: (_t: IOAuthTokens) => {},
     setSession: (_v: string) => {},
     authState: "unauthenticated",
+    isAuthenticated: false,
     clearSession: () => {},
     logout: () => {},
     refreshSession: () => {},

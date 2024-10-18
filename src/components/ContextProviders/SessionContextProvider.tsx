@@ -4,7 +4,6 @@ import AuthService from "../../services/auth/AuthService";
 import { IOAuthTokens, AuthState } from "../../shared/models/Auth";
 import SessionContext from "../../shared/models/SessionContext";
 
-
 export default function SessionContextProvider({ children }: PropsWithChildren) {
     const [accessToken, setAccessToken] = useSessionStorage<string>('accessToken', '');
     const [, setIdToken] = useSessionStorage<string>('idToken', '');
@@ -52,11 +51,14 @@ export default function SessionContextProvider({ children }: PropsWithChildren) 
         return "authenticated";
     }, [sessionExp, authLoading]);
 
+    const isAuthenticated = useMemo(() => authState === "authenticated", [authState]);
+
     return (
         <SessionContext.Provider value={{
             authState,
             accessToken,
             sessionExp,
+            isAuthenticated,
             setTokens,
             session,
             setSession,

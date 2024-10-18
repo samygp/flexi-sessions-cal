@@ -1,6 +1,10 @@
 import { Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button, Slide } from "@mui/material";
 import { TransitionProps } from "@mui/material/transitions";
-import React from "react";
+import React, { useMemo, useState } from "react";
+import { useSessionContext } from "../../hooks/useCustomContext";
+import { useInterval } from "react-use";
+
+const BASE_INTERVAL = 5000;
 
 const Transition = React.forwardRef(function Transition(
     props: TransitionProps & {
@@ -11,19 +15,27 @@ const Transition = React.forwardRef(function Transition(
     return <Slide direction="up" ref={ref} {...props} />;
   });
 
-interface IRefreshDialogProps {
-    open: boolean;
-    onConfirm: () => void;
-    onCancel: () => void;
-}
-export default function RefreshDialog(props: IRefreshDialogProps) {
-    const {open, onCancel, onConfirm} = props;
+export default function RefreshDialog() {
+    const { isAuthenticated, sessionExp, logout, refreshSession } = useSessionContext();
+
+    const [remainingTime, setRemainingTime] = useState<number>();
+    const shouldRefresh = useMemo<boolean>(() => {
+        if(!isAuthenticated || remainingTime === undefined) return false;
+        return remainingTime < 20;
+    }, [isAuthenticated, remainingTime]);
+    
+    const refreshCheckInterval = useMemo(() => isAuthenticated ? BASE_INTERVAL: null, [isAuthenticated]);
+    useInterval(() => {
+        const diff = (sessionExp ?? 0) - Math.floor(Date.now() / 1000);
+        setRemainingTime(Math.max(0, diff));
+        if (diff < 0) return logout();
+    }, refreshCheckInterval);
+
     return (
         <Dialog
-            open={open}
+            open={shouldRefresh}
             TransitionComponent={Transition}
             keepMounted
-            onClose={onCancel}
             aria-describedby="alert-dialog-slide-description"
         >
             <DialogTitle>Your session is about to expire</DialogTitle>
@@ -33,8 +45,8 @@ export default function RefreshDialog(props: IRefreshDialogProps) {
                 </DialogContentText>
             </DialogContent>
             <DialogActions>
-                <Button onClick={onCancel}>No, logout</Button>
-                <Button onClick={onConfirm}>Yes, refresh</Button>
+                <Button onClick={logout}>No, logout</Button>
+                <Button onClick={refreshSession}>Yes, refresh</Button>
             </DialogActions>
         </Dialog>
     );

@@ -1,9 +1,9 @@
 import { Box, Button, ButtonGroup, FormControl, TextField } from "@mui/material";
 import { useCallback, useMemo, useState } from "react";
 import { Moment } from "moment";
-import EventTypeDropdown from "../EventTypeDropdown";
 import { DatePicker } from "@mui/x-date-pickers";
 import { CalendarEvent, defaultDummyCalendarEvent, EventType } from "../../../shared/models/CalendarEvents";
+import EventTypeDropdown from "../Dropdowns/EventTypeDropdown";
 
 
 interface ICalendarEventFormProps {
@@ -26,8 +26,7 @@ const eventFieldLabels: Record<keyof CalendarEvent, string> = {
     date: "Date",
     title: "Title",
     eventType: "Type",
-    userEmail: "Email",
-    userName: "Name(s)",
+    monkehId: "Monkeh",
 }
 
 function CalendarEventFieldInput({ fieldName, event, updateEventValue }: IFormFieldProps) {
@@ -67,8 +66,7 @@ export default function CalendarEventForm({ originalEvent = defaultDummyCalendar
             <FormField fieldName="title" {...fieldProps} />
             <FormField fieldName="date" {...fieldProps} />
             <FormField fieldName="eventType" {...fieldProps} />
-            <FormField fieldName="userName" {...fieldProps} />
-            <FormField fieldName="userEmail" {...fieldProps} />
+            <FormField fieldName="monkehId" {...fieldProps} />
             <ButtonGroup variant="contained" size="large" fullWidth>
                 {onSave && <Button disabled={readOnly} onClick={() => onSave(event)} color="primary">Save</Button>}
                 {onDelete && <Button disabled={readOnly} onClick={() => onDelete(event)}>Delete</Button>}

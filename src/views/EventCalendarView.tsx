@@ -1,15 +1,14 @@
-import { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import EventCalendar from "../components/Calendars/EventCalendar/EventCalendar";
 import { beginningOf, endOf } from "../shared/utils/dateHelpers";
 import { Alert, Grid, Typography } from "@mui/material";
 import moment, { Moment } from "moment";
 import NewEventButton from "../components/Inputs/Buttons/NewEventButton";
 import EventTable from "../components/Tables/EventTable";
-import EventCalendarContextProvider, { EventCalendarContext } from "../components/ContextProviders/CalendarEventContextProvider";
+import { useEventCalendarContext } from "../hooks/useCustomContext";
 
-
-function EventCalendarViewWrapper() {
-    const { loading, error, dateGroupedEventMap, api } = useContext(EventCalendarContext);
+export default function EventCalendarView() {
+    const { loading, error, dateGroupedEventMap, eventsAPI: api } = useEventCalendarContext();
     const [errorMessage, setErrorMessage] = useState<string>("");
     const [fetchedYears, setFetchedYears] = useState<number[]>([]);
     const [currYear, setCurrYear] = useState<number>(moment().year());
@@ -28,7 +27,6 @@ function EventCalendarViewWrapper() {
         const end = moment(currMonth).endOf("month");
         return dateGroupedEventMap.getEntriesForDateRange(start, end);
     }, [currMonth, dateGroupedEventMap]);
-    
 
     useEffect(() => setErrorMessage(error?.message ?? ""), [error]);
 
@@ -53,11 +51,4 @@ function EventCalendarViewWrapper() {
             {errorMessage && <Alert severity="error" onClose={() => setErrorMessage("")}>{errorMessage}</Alert>}
         </Grid>
     );
-}
-
-export default function EventCalendarView() {
-    return (
-        <EventCalendarContextProvider>
-            <EventCalendarViewWrapper />
-        </EventCalendarContextProvider>);
 }

@@ -29,8 +29,7 @@ export type CalendarEvent = {
     date: moment.Moment;
     title: string;
     eventType: EventType;
-    userEmail: string;
-    userName: string;
+    monkehId: string;
 };
 
 export interface ICalendarEventBody extends Omit<CalendarEvent, 'date'> {
@@ -42,7 +41,9 @@ export interface ICalendarEventQuery extends Partial<Omit<CalendarEvent, 'date'>
     to?: number;
 };
 
-export interface IPostEventRequest extends Partial<Omit<CalendarEvent, 'id'>> {}
+export interface IPostEventRequest extends Partial<Omit<CalendarEvent, 'id'>> {
+    id?: string;
+}
 
 export type EventMap = Map<string, CalendarEvent>;
 
@@ -51,8 +52,7 @@ export const defaultDummyCalendarEvent: CalendarEvent = Object.freeze({
     date: moment(),
     title: "",
     eventType: EventType.Session,
-    userEmail: "",
-    userName: "",
+    monkehId: "",
 })
 
 export const calendarEventKeys: readonly (keyof CalendarEvent)[] = Object.keys(defaultDummyCalendarEvent) as (keyof CalendarEvent)[];
