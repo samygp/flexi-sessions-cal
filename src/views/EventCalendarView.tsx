@@ -3,9 +3,11 @@ import EventCalendar from "../components/Calendars/EventCalendar/EventCalendar";
 import { beginningOf, endOf } from "../shared/utils/dateHelpers";
 import { Alert, Grid, Typography } from "@mui/material";
 import moment, { Moment } from "moment";
-import NewEventButton from "../components/Inputs/Buttons/NewEventButton";
 import EventTable from "../components/Tables/EventTable";
 import { useEventCalendarContext } from "../hooks/useCustomContext";
+import OpenModalButton from "../components/Inputs/Buttons/OpenModalButton";
+import CalendarEventModal, { ICalendarEventFormModalProps } from "../components/Modals/CalendarEventModal";
+import { defaultDummyCalendarEvent } from "../shared/models/CalendarEvents";
 
 export default function EventCalendarView() {
     const { loading, error, dateGroupedEventMap, eventsAPI: api } = useEventCalendarContext();
@@ -30,8 +32,7 @@ export default function EventCalendarView() {
 
     useEffect(() => setErrorMessage(error?.message ?? ""), [error]);
 
-    // eslint-disable-next-line
-    useEffect(() => { onYearChange(moment()); }, []);
+    useEffect(() => { onYearChange(moment()); }, [onYearChange]);
 
     return (
         <Grid container spacing={2} padding={'3vh'}>
@@ -44,7 +45,10 @@ export default function EventCalendarView() {
                 <EventCalendar {...{ loading, onYearChange }} onMonthChange={setCurrMonth} />
             </Grid>
             <Grid item xs={9}>
-                <NewEventButton onSubmit={api.createCalendarEvent} disabled={loading} />
+                <OpenModalButton<ICalendarEventFormModalProps> Modal={CalendarEventModal} label="New Event" modalProps={{
+                    originalEvent: defaultDummyCalendarEvent,
+                    title: "Create Event",
+                }} />
                 <EventTable rows={tableRows} />
             </Grid>
 
