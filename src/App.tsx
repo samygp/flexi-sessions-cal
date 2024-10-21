@@ -5,7 +5,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment'
 import { CircularProgress, CssBaseline, ThemeProvider, createTheme } from '@mui/material';
 import SessionContextProvider from './components/ContextProviders/SessionContextProvider';
-import Header from './components/Header';
+import Header from './components/Layout/Header';
 import { getPath, PathName } from './shared/models/Routes';
 import MainView from './views/MainView';
 import { useSessionContext } from './hooks/useCustomContext';

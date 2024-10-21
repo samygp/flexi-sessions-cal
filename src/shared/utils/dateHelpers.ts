@@ -26,3 +26,5 @@ export const destructureDate = (date: Moment) => {
         day: date.date(),
     }
 }
+
+export const getMonthDate = (date: Moment) => date.local(true).format('MM-DD (dddd)');

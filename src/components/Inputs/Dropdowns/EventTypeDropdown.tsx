@@ -4,10 +4,10 @@ import { EventType, EventTypeLabels } from "../../../shared/models/CalendarEvent
 
 interface IEventTypeDropdownProps {
     value: EventType;
-    setEventType: (e: EventType) => void;
+    onChange: (e: EventType) => void;
 }
 
-export default function EventTypeDropdown({value, setEventType}: IEventTypeDropdownProps) {
+export default function EventTypeDropdown({value, onChange: setEventType}: IEventTypeDropdownProps) {
     const onChange = useCallback((e: any) => setEventType(e.target.value as EventType), [setEventType]);
     return (
         <>

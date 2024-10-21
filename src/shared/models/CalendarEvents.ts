@@ -19,11 +19,6 @@ export const EventTypeLabels: Record<EventType, string> = Object.freeze({
     [EventType.OnCall]: "Guardia",
 });
 
-export interface IUser {
-    name: string;
-    email: string;
-}
-
 export type CalendarEvent = {
     id: string;
     date: moment.Moment;
@@ -37,7 +32,7 @@ export interface ICalendarEventBody extends Omit<CalendarEvent, 'date'> {
 }
 
 export interface ICalendarEventQuery extends Partial<Omit<CalendarEvent, 'date'>> {
-    from: number;
+    from?: number;
     to?: number;
 };
 

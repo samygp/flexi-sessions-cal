@@ -1,47 +1,57 @@
-import { Autocomplete, AutocompleteRenderInputParams, TextField } from "@mui/material";
-import { useCallback, useMemo } from "react";
+import { Autocomplete, AutocompleteRenderInputParams, createFilterOptions, TextField } from "@mui/material";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
-export interface ILookupEntry {
-    id: string;
-}
-
-interface ILookupProps<T extends ILookupEntry> {
+interface ILookupProps<T> {
     value: string;
-    setValue: (v: string | null) => void;
+    onChange: (v: string | null) => void;
     label: string;
     entries: T[] | Record<string, T>;
+    getCategory?: (e: T) => string;
     getOptionLabel?: (e: T) => string;
-    getOptionValue?: (e: T) => string;
+    getOptionValue: (e: T) => string;
 }
 
 interface IOption {
     id: string;
     label: string;
+    category?: string;
 }
 
-export default function Lookup<T extends ILookupEntry>(props: ILookupProps<T>) {
-    const { entries, getOptionLabel, getOptionValue, value, setValue, label } = props;
+const filterOptions = createFilterOptions({
+    stringify: ({ id, label }: IOption) => `${id}_${label}`,
+});
+
+export default function Lookup<T>(props: ILookupProps<T>) {
+    const { entries, getOptionLabel, getOptionValue, getCategory, value, onChange: setValue, label } = props;
 
     const getOptionFromEntry = useCallback((e: T): IOption => {
-        const id = getOptionValue ? getOptionValue(e) : e.id;
-        const label = getOptionLabel ? getOptionLabel(e) : e.id;
-        return { id, label };
-    }, [getOptionValue, getOptionLabel]);
+        const id = getOptionValue(e);
+        const label = getOptionLabel ? getOptionLabel(e) : id;
+        const category = getCategory && getCategory(e);
+        return { id, label, category };
+    }, [getOptionValue, getOptionLabel, getCategory]);
 
     const options = useMemo<IOption[]>(() => {
         const entryList = Array.isArray(entries) ? entries : Object.values(entries);
         return entryList.map(getOptionFromEntry);
     }, [entries, getOptionFromEntry]);
 
-    const onChange = useCallback((_e: any, v: IOption|null) => setValue(v && v.id), [setValue]);
-    const optionValue = useMemo(() => options.find(o => o.id === value), [options, value]);
+    const [optionValue, setOptionValue] = useState<IOption | null>(options.find(o => o.id === value) ?? null);
+    const onChange = useCallback((_e: any, v: IOption | null) => setOptionValue(v), [setOptionValue]);
 
-    const renderInput = useCallback((params: AutocompleteRenderInputParams) => <TextField {...{...params, label}} />, [label]);
+    useEffect(() => {
+        if (optionValue) setValue(optionValue.id);
+    }, [optionValue, setValue]);
+
+    const renderInput = useCallback((params: AutocompleteRenderInputParams) => <TextField {...{ ...params, label }} />, [label]);
+    const groupBy = useCallback((o: IOption) => o.category ?? '', []);
 
     return (
         <>
             {/* <InputLabel id="event-type-label" variant="outlined">Event Type</InputLabel> */}
-            <Autocomplete disablePortal {...{ options, renderInput, onChange }} value={optionValue}/>
+            <Autocomplete<IOption> disablePortal value={optionValue}
+                {...{ options, renderInput, filterOptions, groupBy, onChange }}
+            />
 
         </>
     );

@@ -1,16 +1,29 @@
 import { useCallback, useMemo, useState } from "react";
-import RefreshDialog from './login/RefreshDialog';
-import { AppBar, Box, Button, Divider, Drawer, IconButton, List, ListItem, ListItemButton, ListItemIcon, ListItemText, SxProps, Toolbar, Typography } from "@mui/material";
+import RefreshDialog from './Modals/RefreshDialog';
+import { AppBar, Box, Button, Drawer, IconButton, SxProps, Toolbar, Typography } from "@mui/material";
 import { styled, useTheme } from '@mui/material/styles';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import { useSessionContext } from "../hooks/useCustomContext";
+import { useSessionContext } from "../../hooks/useCustomContext";
 import { CalendarIcon } from "@mui/x-date-pickers";
 import Face5Icon from '@mui/icons-material/Face5';
-import { Biotech, Cake, Class, MenuBook, Snowshoeing, SportsKabaddi } from "@mui/icons-material";
+import { Biotech, Cake, Class, MenuBook, SportsKabaddi } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
-import { getPath, PathName } from "../shared/models/Routes";
+import { getPath, PathName } from "../../shared/models/Routes";
+import GenericList, { IListItemProps } from "../DataDisplay/Lists/GenericList";
+
+// ******** INTERFACES ********
+
+interface IDrawerProps {
+    open?: boolean;
+    onClick: () => void;
+}
+
+interface IHeaderListItem {
+    icon?: JSX.Element;
+    path: string;
+}
 
 // ******** STYLES ********
 
@@ -32,33 +45,36 @@ const StyledDrawer = styled(Drawer)(({ theme }) => ({
     },
 }));
 
-const CenteredItemsDiv = styled('div')(({ theme }) => ({
-    display: "flex",
-    alignItems: "center",
-    flexWrap: "nowrap",
-    flexDirection: "row",
-    gap: theme.spacing(0.7),
-}));
+// ******** DATA ********
 
-// ******** INTERFACES ********
+const sessionsListItemMap: Record<string, IHeaderListItem> = Object.freeze({
+    "Calendario": {
+        icon: <CalendarIcon />,
+        path: getPath(PathName.calendar),
+    },
+    "Bibliograficas": {
+        icon: <Class />,
+        path: getPath(PathName.calendar),
+    },
+    "Clínicas": {
+        icon: <Biotech />,
+        path: getPath(PathName.calendar),
+    },
+});
 
-interface IDrawerDividerProps {
-    icon: JSX.Element;
-    text: string;
-}
-
-interface IDrawerProps {
-    open?: boolean;
-    onClick: () => void;
-}
-
-interface IHeaderMenuItemProps {
-    text: string;
-    icon: JSX.Element;
-    onClick?: () => void;
-}
+const monkehsListItemMap: Record<string, IHeaderListItem> = Object.freeze({
+    "Todos los Monkehs": {
+        icon: <SportsKabaddi />,
+        path: getPath(PathName.monkeh),
+    },
+    "Cumpleaños": {
+        icon: <Cake />,
+        path: getPath(PathName.monkeh),
+    },
+});
 
 // ******** COMPONENTS ********
+
 function DrawerButton({ onClick, open }: IDrawerProps) {
     const sx = useMemo<SxProps>(() => [{ mr: 2 }, open ? { display: 'none' } : {}], [open]);
     return (
@@ -68,34 +84,26 @@ function DrawerButton({ onClick, open }: IDrawerProps) {
     );
 }
 
-
-function DrawerDivider({ icon, text }: IDrawerDividerProps) {
-    return (
-        <Divider>
-            <CenteredItemsDiv>
-                {icon}
-                <Typography variant="body1" display={"inline-flex"}>{text}</Typography>
-            </CenteredItemsDiv>
-        </Divider>
-    );
-};
-
-function HeaderMenuItem({ text, icon, onClick }: IHeaderMenuItemProps) {
-    return (
-        <ListItem disablePadding onClick={onClick}>
-            <ListItemButton >
-                <ListItemIcon sx={{ minWidth: 35 }}>{icon}</ListItemIcon>
-                <ListItemText primary={text} />
-            </ListItemButton>
-        </ListItem>
-    );
-}
-
 function HeaderDrawer({ onClick, open }: IDrawerProps) {
     const theme = useTheme();
     const navigate = useNavigate();
-    const onCalendarClick = useCallback(() => navigate(getPath(PathName.calendar)), [navigate]);
-    const onMonkehClick = useCallback(() => navigate(getPath(PathName.monkeh)), [navigate]);
+
+    const getListEntries = useCallback((itemMap: Record<string, IHeaderListItem>) => {
+        return Object.entries(itemMap).map(([text, { icon, path }]) => {
+            return {text, icon, onClick: () => navigate(path)};
+        });
+    }, [navigate]);
+
+    const sessionsList = useMemo<IListItemProps[]>(() => {
+        const sessionsDivider = { text: "Sesiones", icon: <MenuBook />, divider: true };
+        return [sessionsDivider, ...getListEntries(sessionsListItemMap)];
+    }, [getListEntries]);
+
+    const monkehsList = useMemo<IListItemProps[]>(() => {
+        const monkehsDivider = { text: "Monkehs", icon: <Face5Icon />, divider: true };
+        return [monkehsDivider, ...getListEntries(monkehsListItemMap)];
+    }, [getListEntries]);
+
     
     return (
         <StyledDrawer variant="persistent" anchor="left" open={open}>
@@ -104,18 +112,8 @@ function HeaderDrawer({ onClick, open }: IDrawerProps) {
                     {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
                 </IconButton>
             </DrawerHeader>
-            <DrawerDivider icon={<MenuBook />} text="Sesiones" />
-            <List>
-                <HeaderMenuItem text="Calendario" icon={<CalendarIcon />} onClick={onCalendarClick} />
-                <HeaderMenuItem text="Bibliográficas" icon={<Class />} onClick={onCalendarClick} />
-                <HeaderMenuItem text="Clínicas" icon={<Biotech />} onClick={onCalendarClick} />
-            </List>
-            <DrawerDivider icon={<Face5Icon />} text="Monkehs" />
-            <List>
-                <HeaderMenuItem text="All Monkehs" icon={<SportsKabaddi />} onClick={onMonkehClick} />
-                <HeaderMenuItem text="One Monkeh" icon={<Snowshoeing />} onClick={onMonkehClick}/>
-                <HeaderMenuItem text="Cumpleaños" icon={<Cake />} onClick={onMonkehClick}/>
-            </List>
+            <GenericList items={sessionsList} />
+            <GenericList items={monkehsList} />
         </StyledDrawer>
     );
 }

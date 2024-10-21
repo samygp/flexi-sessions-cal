@@ -1,6 +1,6 @@
 import { Avatar, Tooltip, Typography } from "@mui/material";
-import { CalendarEvent, EventColorMap, EventTypeLabels } from "../../../shared/models/CalendarEvents";
 import { useMemo } from "react";
+import { CalendarEvent, EventTypeLabels, EventColorMap } from "../../../shared/models/CalendarEvents";
 
 export default function EventTypeTag({eventType}: CalendarEvent) {
     const title = useMemo(() => EventTypeLabels[eventType], [eventType]);

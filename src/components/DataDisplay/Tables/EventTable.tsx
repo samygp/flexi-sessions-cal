@@ -1,9 +1,9 @@
 import Box from '@mui/material/Box';
 import { DataGrid, GridActionsCellItem, GridColDef } from '@mui/x-data-grid';
-import { readableDateTime } from '../../shared/utils/dateHelpers';
-import { CalendarEvent } from '../../shared/models/CalendarEvents';
 import { Delete, Edit } from '@mui/icons-material';
 import { useMemo } from 'react';
+import { CalendarEvent } from '../../../shared/models/CalendarEvents';
+import { readableDateTime } from '../../../shared/utils/dateHelpers';
 
 interface IEventTableProps {
     rows: CalendarEvent[];

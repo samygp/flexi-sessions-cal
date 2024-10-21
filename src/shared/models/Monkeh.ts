@@ -1,12 +1,12 @@
 import { colors } from "@mui/material";
-import { Moment } from "moment";
+import moment,  { Moment } from "moment";
 
 export interface IMonkeh {
     id: string; // P-key
     name: string;
     email: string;
     level: number;
-    birthDate: Moment;
+    birthday: Moment;
 };
 
 export const MonkehLevelColor: Record<number, string> = Object.freeze({
@@ -15,3 +15,11 @@ export const MonkehLevelColor: Record<number, string> = Object.freeze({
     3: colors.deepOrange[300],
     4: colors.deepPurple[200],
 });
+
+export const defaultDummyMonkeh: IMonkeh = Object.freeze({
+    id: "",
+    name: "",
+    email: "",
+    level: 1,
+    birthday: moment(),
+})

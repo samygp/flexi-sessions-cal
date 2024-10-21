@@ -1,12 +1,12 @@
-import React, { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { startCase } from "lodash";
-import { Box, TextField, Button, TextFieldProps, Alert, Snackbar, AlertColor } from "@mui/material";
-import useLoginActions from "../../hooks/useLoginActions"
-
+import { Box, TextField, Button, TextFieldProps, Alert } from "@mui/material";
 import { useInterval } from "react-use";
 import { Email } from "@mui/icons-material";
-import SessionContext from "../../shared/models/SessionContext";
-import { isValidEmail } from "../../shared/utils/stringHelpers";
+import useLoginActions from "../../../hooks/useLoginActions";
+import { useSessionContext } from "../../../hooks/useCustomContext";
+import { isValidEmail } from "../../../shared/utils/stringHelpers";
+import EventSnackbar, { IEventSnackProps } from "../../DataDisplay/EventSnackbar";
 
 type TextInputEvent = React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>;
 
@@ -85,23 +85,6 @@ function VerifyCodeInput(props: IVerifCodeProps) {
     );
 }
 
-interface IEventSnackProps { message: string, severity: AlertColor };
-function EventSnackbar({ message, severity }: IEventSnackProps) {
-    const [open, setOpen] = useState<boolean>(true);
-    const onClose = useCallback((_e: React.SyntheticEvent | Event, reason?: string) => {
-        if (reason === 'clickaway') return;
-        setOpen(false);
-    }, []);
-    useEffect(() => setOpen(!!message), [message]);
-
-    return (
-        <Snackbar anchorOrigin={{ vertical: 'top', horizontal: 'right' }} autoHideDuration={7000} {...{ open, onClose }} >
-            <Alert {...{ onClose, severity }} variant="filled" sx={{ width: '100%' }}>
-                {message}
-            </Alert>
-        </Snackbar>
-    );
-}
 
 export default function LoginForm() {
     const [email, setEmail] = useState<string>('');
@@ -109,7 +92,7 @@ export default function LoginForm() {
     const [verificationCode, setVerificationCode] = useState<string>('');
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
     const [eventMessage, setEventMessage] = useState<IEventSnackProps>({ message: '', severity: "success" });
-    const { clearSession } = useContext(SessionContext);
+    const { clearSession } = useSessionContext();
 
     const emailIsValid = useMemo(() => isValidEmail(email), [email]);
 

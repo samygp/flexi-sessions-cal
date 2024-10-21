@@ -1,9 +1,9 @@
-import EventTypeTag from './EventTypeTag';
-import Calendar from '../Calendar';
 import { CalendarEvent } from '../../../shared/models/CalendarEvents';
 import { Moment } from 'moment';
 import { readableDateTime } from '../../../shared/utils/dateHelpers';
-import { useEventCalendarContext } from '../../../hooks/useCustomContext';
+import { useEventsContext } from '../../../hooks/useCustomContext';
+import Calendar from './Calendar';
+import EventTypeTag from '../Tags/EventTypeTag';
 
 // types
 interface IEventCalendarProps {
@@ -18,7 +18,7 @@ const getDescription = (event: CalendarEvent): string => {
 }
 
 export default function EventCalendar({ onYearChange, onDaySelect }: IEventCalendarProps) {
-  const { loading, dateGroupedEventMap } = useEventCalendarContext();
+  const { loading, dateGroupedEventMap } = useEventsContext();
 
   return <Calendar<CalendarEvent>
     {...{ onDaySelect, onYearChange, loading, getDescription }}

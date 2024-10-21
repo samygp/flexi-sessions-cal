@@ -5,19 +5,26 @@ import { CalendarEvent } from "./CalendarEvents";
 import { DateGroupedEntryMap } from "./DateGroupedEntryMap";
 import { IMonkeh } from "./Monkeh";
 
-export interface IEventCalendarContext {
-    calendarEventMap: Record<string, CalendarEvent>;
-    monkehMap: Record<string, IMonkeh>;
-    eventsAPI: ICalendarEventAPI;
-    monkehAPI: IMonkehAPI;
-    dateGroupedEventMap: DateGroupedEntryMap<CalendarEvent>;
+interface IBaseContext {
     loading: boolean;
     error?: Error;
 }
+export interface IEventsContext extends IBaseContext {
+    calendarEventMap: Record<string, CalendarEvent>;
+    eventsAPI: ICalendarEventAPI;
+    dateGroupedEventMap: DateGroupedEntryMap<CalendarEvent>;
+}
+
+export interface IMonkehsContext extends IBaseContext {
+    monkehMap: Record<string, IMonkeh>;
+    monkehAPI: IMonkehAPI;
+}
+
+export interface IDataContext extends IEventsContext, IMonkehsContext {}
 
 const noopPromise = () => Promise.resolve(undefined);
 
-export default createContext<IEventCalendarContext>({
+export default createContext<IDataContext>({
     calendarEventMap: {},
     monkehMap: {},
     dateGroupedEventMap: new DateGroupedEntryMap<CalendarEvent>({}, e => e.date),

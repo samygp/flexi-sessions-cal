@@ -1,21 +1,19 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import EventCalendar from "../components/Calendars/EventCalendar/EventCalendar";
 import { beginningOf, endOf } from "../shared/utils/dateHelpers";
-import { Alert, Grid, Typography } from "@mui/material";
 import moment, { Moment } from "moment";
-import EventTable from "../components/Tables/EventTable";
-import { useEventCalendarContext } from "../hooks/useCustomContext";
 import OpenModalButton from "../components/Inputs/Buttons/OpenModalButton";
-import CalendarEventModal, { ICalendarEventFormModalProps } from "../components/Modals/CalendarEventModal";
-import { defaultDummyCalendarEvent } from "../shared/models/CalendarEvents";
+import EventCalendar from "../components/DataDisplay/Calendars/EventCalendar";
+import EventTable from "../components/DataDisplay/Tables/EventTable";
+import CalendarEventModal, { ICalendarEventFormModalProps } from "../components/Layout/Modals/CalendarEventModal";
+import { useEventsContext } from "../hooks/useCustomContext";
+import BaseViewLayout from "./BaseViewLayout";
 
 export default function EventCalendarView() {
-    const { loading, error, dateGroupedEventMap, eventsAPI: api } = useEventCalendarContext();
-    const [errorMessage, setErrorMessage] = useState<string>("");
+    const { loading, error, dateGroupedEventMap, eventsAPI: api } = useEventsContext();
     const [fetchedYears, setFetchedYears] = useState<number[]>([]);
     const [currYear, setCurrYear] = useState<number>(moment().year());
     const [currMonth, setCurrMonth] = useState<Moment>(moment());
-
+    
     const onYearChange = useCallback(async (m: Moment) => {
         const year = m.year();
         if (loading || fetchedYears.includes(year)) return;
@@ -24,35 +22,29 @@ export default function EventCalendarView() {
         await api.fetchCalendarEvents(query).then(() => setFetchedYears(prev => [...prev, year]));
     }, [api, fetchedYears, loading]);
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    useEffect(() => { onYearChange(moment()); }, []);
+
     const tableRows = useMemo(() => {
         const start = moment(currMonth).startOf("month");
         const end = moment(currMonth).endOf("month");
         return dateGroupedEventMap.getEntriesForDateRange(start, end);
     }, [currMonth, dateGroupedEventMap]);
+    
 
-    useEffect(() => setErrorMessage(error?.message ?? ""), [error]);
-
-    useEffect(() => { onYearChange(moment()); }, [onYearChange]);
+    const title = useMemo(() => `Eventotes ${currYear}`, [currYear]);
+    const calendarProps = useMemo(() => {
+        return { onMonthChange: setCurrMonth, onYearChange, loading };
+    }, [onYearChange, setCurrMonth, loading]);
 
     return (
-        <Grid container spacing={2} padding={'3vh'}>
-            <Grid item xs={12}>
-                <Typography variant="h1" gutterBottom>
-                    Eventotes {currYear}
-                </Typography>
-            </Grid>
-            <Grid item xs={3} >
-                <EventCalendar {...{ loading, onYearChange }} onMonthChange={setCurrMonth} />
-            </Grid>
-            <Grid item xs={9}>
-                <OpenModalButton<ICalendarEventFormModalProps> Modal={CalendarEventModal} label="New Event" modalProps={{
-                    originalEvent: defaultDummyCalendarEvent,
-                    title: "Create Event",
-                }} />
-                <EventTable rows={tableRows} />
-            </Grid>
-
-            {errorMessage && <Alert severity="error" onClose={() => setErrorMessage("")}>{errorMessage}</Alert>}
-        </Grid>
+        <BaseViewLayout {...{ title, error }} leftContent={<EventCalendar {...calendarProps} />} >
+            <OpenModalButton<ICalendarEventFormModalProps>
+                Modal={CalendarEventModal}
+                label="New Event"
+                modalProps={{title: "Create Event", operation: "create"}}
+            />
+            <EventTable rows={tableRows} />
+        </BaseViewLayout>
     );
 }

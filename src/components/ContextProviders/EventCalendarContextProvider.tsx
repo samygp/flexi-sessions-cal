@@ -4,7 +4,7 @@ import useCalendarEventAPI from "../../hooks/useCalendarEventAPI";
 import { DateGroupedEntryMap } from "../../shared/models/DateGroupedEntryMap";
 import { keyBy } from "lodash";
 import useMonkehAPI from "../../hooks/useMonkehAPI";
-import EventCalendarContext from "../../shared/models/EventCalendarContext";
+import EventCalendarContext from "../../shared/models/DataContext";
 
 const createGroupedEventMap = (eventMap: Record<string, CalendarEvent>) => {
     return new DateGroupedEntryMap<CalendarEvent>(eventMap, e => e.date);

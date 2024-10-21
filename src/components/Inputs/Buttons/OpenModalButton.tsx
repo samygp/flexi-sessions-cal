@@ -1,7 +1,6 @@
 import { Button, ButtonOwnProps } from "@mui/material";
 import { useCallback, useMemo, useState } from "react";
-import { AddRounded } from "@mui/icons-material";
-import { IBaseModalProps } from "../../Modals/BaseModal";
+import { IBaseModalProps } from "../../Layout/Modals/BaseModal";
 
 interface IOpenModalButtonProps<T extends IBaseModalProps> extends ButtonOwnProps {
     label: string;
