@@ -1,14 +1,16 @@
-import { Box, FormControl, TextField } from "@mui/material";
+import { Box, FormControl, FormControlOwnProps, TextField } from "@mui/material";
 import { useCallback, useMemo } from "react";
-import { DatePicker } from "@mui/x-date-pickers";
+import { DateField, DatePicker } from "@mui/x-date-pickers";
 import { firstToUpper } from "../../../shared/utils/stringHelpers";
+import MonthDayPicker from "../Dropdowns/MonthDayPicker";
 
-type SupportedFieldTypes = "date" | "text" | "hidden" | "number" | "custom";
+type SupportedFieldTypes = "date" | "text" | "hidden" | "number" | "custom" | "monthday";
 
 export interface IFieldMapping<T> {
     fieldType: SupportedFieldTypes;
     fieldName: keyof T
     label?: string;
+    margin?: FormControlOwnProps['margin'];
     customProps?: any;
     CustomFieldComponent?: (props: any) => JSX.Element;
 }
@@ -41,14 +43,16 @@ function GenericFieldInput<T>({ entry, updateEntryValue, fieldMapping, readOnly 
 
     switch (fieldType) {
         case "date":
-            return <DatePicker {...fieldProps} />;
+            return readOnly ? <DateField {...fieldProps} /> : <DatePicker {...fieldProps} />;
+        case "monthday":
+            return readOnly ? <DateField {...fieldProps} format="MMMM DD" /> : <MonthDayPicker {...fieldProps} />;
         case "text":
         case "number":
             return <TextField  {...fieldProps} fullWidth type={fieldType} onChange={e => onChange(e.target.value)} />;
         case "custom":
-            return CustomFieldComponent && <CustomFieldComponent {...fieldProps} />;
+            return CustomFieldComponent! && <CustomFieldComponent {...fieldProps} />;
         default:
-            return;
+            return <></>;
     }
 }
 
@@ -63,10 +67,11 @@ export default function GenericForm<T>(props: IGenericFormProps<T>) {
 
     return (
         <Box component="form" sx={{ display: 'flex', flexDirection: 'column' }} minWidth={window.innerWidth / 3}>
-            {Object.entries(fieldMappings).map(([k, fieldMapping]) => {
+            {Object.entries(fieldMappings).map(([, fieldMapping]) => {
+                const {fieldName, margin} = fieldMapping;
                 return (
-                    <FormControl key={String(fieldMapping.fieldName)} required size="medium" fullWidth margin="normal" >
-                        <GenericFieldInput<T> {...{ ...fieldProps, fieldMapping }} />;
+                    <FormControl key={String(fieldName)} required size="medium" fullWidth margin={margin ?? "normal"} >
+                        <GenericFieldInput<T> {...{ ...fieldProps, fieldMapping }} />
                     </FormControl>
                 );
             })}

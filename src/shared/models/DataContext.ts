@@ -33,6 +33,7 @@ export default createContext<IDataContext>({
         createCalendarEvent: noopPromise,
         updateCalendarEvent: noopPromise,
         removeCalendarEvents: noopPromise,
+        fetchYear: noopPromise,
     },
     monkehAPI: {
         fetchMonkehs: noopPromise,

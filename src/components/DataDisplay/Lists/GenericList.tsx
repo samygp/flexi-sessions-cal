@@ -5,13 +5,13 @@ import {
     ListItemButton,
     ListItemIcon,
     ListItemText,
-    styled,
     List
 } from "@mui/material";
-import { useState } from "react";
+import { ReactNode, useState } from "react";
 
 export interface IListItemProps {
-    text?: string;
+    text?: ReactNode;
+    align?: "left" | "right" | "center";
     icon?: JSX.Element;
     onClick?: () => void;
     divider?: boolean;
@@ -21,21 +21,11 @@ interface IGenericListItemProps extends IListItemProps {
     selected?: boolean;
 }
 
-const CenteredItemsDiv = styled('div')(({ theme }) => ({
-    display: "flex",
-    alignItems: "center",
-    flexWrap: "nowrap",
-    flexDirection: "row",
-    gap: theme.spacing(0.7),
-}));
-
-function ListDivider({ icon, text }: IListItemProps) {
+function ListDivider({ icon, text, align }: IListItemProps) {
     return (
-        <Divider>
-            <CenteredItemsDiv>
-                {icon}
-                <Typography variant="body1" display={!!text ? "inline-flex" : "none"}>{text}</Typography>
-            </CenteredItemsDiv>
+        <Divider textAlign={align} >
+            {icon}
+            <Typography variant="body1" display={!!text ? "inline-flex" : "none"}>{text}</Typography>
         </Divider>
     );
 };

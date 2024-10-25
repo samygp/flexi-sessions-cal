@@ -122,8 +122,10 @@ export default function LoginForm() {
             } else {
                 await loginActions.handleSignIn();
             }
-        } catch (error) {
-            console.error(error);
+        } catch (ex) {
+            const { message } = ex as Error;
+            setEventMessage({ message: '', severity: 'error' });
+            setEventMessage({ message, severity: 'error' });
             clearSession();
         } finally {
             setIsSubmitting(false);

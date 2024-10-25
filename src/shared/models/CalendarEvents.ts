@@ -36,7 +36,8 @@ export interface ICalendarEventQuery extends Partial<Omit<CalendarEvent, 'date'>
     to?: number;
 };
 
-export interface IPostEventRequest extends Partial<Omit<CalendarEvent, 'id'>> {
+export interface IPostEventRequest extends Partial<Omit<CalendarEvent, 'id' | 'date'>> {
+    date: number;
     id?: string;
 }
 

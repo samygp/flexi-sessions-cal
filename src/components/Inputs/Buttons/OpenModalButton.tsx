@@ -1,9 +1,9 @@
 import { Button, ButtonOwnProps } from "@mui/material";
-import { useCallback, useMemo, useState } from "react";
+import { ReactNode, useCallback, useMemo, useState } from "react";
 import { IBaseModalProps } from "../../Layout/Modals/BaseModal";
 
 interface IOpenModalButtonProps<T extends IBaseModalProps> extends ButtonOwnProps {
-    label: string;
+    label: ReactNode;
     Modal: (props: T) => JSX.Element;
     modalProps: Omit<T, "open" | "onClose">;
 }

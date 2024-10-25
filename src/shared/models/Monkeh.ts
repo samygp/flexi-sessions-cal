@@ -1,11 +1,18 @@
 import { colors } from "@mui/material";
 import moment,  { Moment } from "moment";
 
+export enum ErreLevel {
+    Invisible = 1,
+    Medio,
+    Abarbaro,
+    Unicornio,
+}
+
 export interface IMonkeh {
     id: string; // P-key
     name: string;
     email: string;
-    level: number;
+    level: ErreLevel;
     birthday: Moment;
 };
 
@@ -21,5 +28,5 @@ export const defaultDummyMonkeh: IMonkeh = Object.freeze({
     name: "",
     email: "",
     level: 1,
-    birthday: moment(),
+    birthday: moment('1972-01-01'),
 })

@@ -1,5 +1,6 @@
 import GenericForm, { IFieldMapping } from "./GenericForm";
 import { IMonkeh } from "../../../shared/models/Monkeh";
+import ErreDropdown from "../Dropdowns/ErreDropdown";
 
 interface IMonkehFormProps {
     monkeh: IMonkeh;
@@ -7,12 +8,12 @@ interface IMonkehFormProps {
     readOnly?: boolean;
 }
 
-export default function CalendarEventForm({ setMonkeh, readOnly, monkeh }: IMonkehFormProps) {
+export default function MonkehForm({ setMonkeh, readOnly, monkeh }: IMonkehFormProps) {
     const fieldMappings: IFieldMapping<IMonkeh>[] = [
         { label: "Name", fieldType: "text", fieldName: "name" },
         { label: "Email", fieldType: "text", fieldName: "email" },
-        { label: "Level", fieldType: "number", fieldName: "level" },
-        { label: "Birthday", fieldType: "date", fieldName: "birthday", customProps: {views:['month', 'year']} },
+        { label: "Level", fieldType: "custom", fieldName: "level", CustomFieldComponent: ErreDropdown },
+        { label: "Birthday", fieldType: "monthday", fieldName: "birthday" },
     ];
 
     return <GenericForm<IMonkeh>

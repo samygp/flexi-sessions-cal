@@ -88,11 +88,18 @@ function HeaderDrawer({ onClick, open }: IDrawerProps) {
     const theme = useTheme();
     const navigate = useNavigate();
 
+    const navigateAndCloseDrawerCallback = useCallback((path: string) => {
+        return () => {
+            navigate(path);
+            onClick();
+        };
+    }, [navigate, onClick]);
+
     const getListEntries = useCallback((itemMap: Record<string, IHeaderListItem>) => {
         return Object.entries(itemMap).map(([text, { icon, path }]) => {
-            return {text, icon, onClick: () => navigate(path)};
+            return {text, icon, onClick: navigateAndCloseDrawerCallback(path)};
         });
-    }, [navigate]);
+    }, [navigateAndCloseDrawerCallback]);
 
     const sessionsList = useMemo<IListItemProps[]>(() => {
         const sessionsDivider = { text: "Sesiones", icon: <MenuBook />, divider: true };
@@ -106,8 +113,8 @@ function HeaderDrawer({ onClick, open }: IDrawerProps) {
 
     
     return (
-        <StyledDrawer variant="persistent" anchor="left" open={open}>
-            <DrawerHeader>
+        <StyledDrawer variant="persistent" anchor="left" open={open} onClose={onClick}>
+            <DrawerHeader >
                 <IconButton onClick={onClick}>
                     {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
                 </IconButton>
@@ -133,13 +140,13 @@ export default function Header() {
         <Box sx={{ display: isAuthenticated ? 'flex' : 'none' }}>
             <AppBar position="static" color="transparent" >
                 <RefreshDialog />
-                <Toolbar>
-                    {<DrawerButton onClick={onDrawerButtonClick} open={drawerOpen} />}
+                {isAuthenticated && <Toolbar>
+                    <DrawerButton onClick={onDrawerButtonClick} open={drawerOpen} />
                     <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
                         Calendarios medicosos
                     </Typography>
-                    {isAuthenticated && <Button variant="contained" onClick={onLogoutClick}>Logout</Button>}
-                </Toolbar>
+                    <Button variant="contained" onClick={onLogoutClick}>Logout</Button>
+                </Toolbar>}
             </AppBar >
             <HeaderDrawer open={drawerOpen} onClick={onDrawerButtonClick} />
         </Box>

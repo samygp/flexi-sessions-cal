@@ -1,6 +1,4 @@
-import OpenModalButton from "../components/Inputs/Buttons/OpenModalButton";
 import MonkehList from "../components/DataDisplay/Lists/MonkehList";
-import MonkehModal, { IMonkehFormModalProps } from "../components/Layout/Modals/MonkehModal";
 import { IMonkeh } from "../shared/models/Monkeh";
 import Face5Icon from '@mui/icons-material/Face5';
 import { useCallback, useState } from "react";
@@ -16,18 +14,6 @@ interface IMonkehViewContentProps {
     setSelectedMonkeh: React.Dispatch<React.SetStateAction<IMonkeh | undefined>>
 }
 
-function MonkehViewLeftContent({ selectedMonkeh, setSelectedMonkeh }: IMonkehViewContentProps) {
-    return (
-        <>
-            <OpenModalButton<IMonkehFormModalProps>
-                Modal={MonkehModal}
-                label="New Monkeh"
-                modalProps={{ operation: "create", title: "Add Monkeh" }}
-            />
-            <MonkehList onMonkehSelect={setSelectedMonkeh} />
-        </>
-    );
-}
 
 function MonkehViewMainContent({ selectedMonkeh, setSelectedMonkeh }: IMonkehViewContentProps) {
     const [editMode, setEditMode] = useState<boolean>(false);
@@ -47,7 +33,6 @@ function MonkehViewMainContent({ selectedMonkeh, setSelectedMonkeh }: IMonkehVie
             setEventMessage({ message: `Failed to update monkeh: ${error}`, severity: 'error' });
         }
     }, [selectedMonkeh, updateMonkeh, onClose]);
-
 
     return (
         <Grid container>
@@ -72,7 +57,7 @@ export default function MonkehView() {
     const [selectedMonkeh, setSelectedMonkeh] = useState<IMonkeh>();
 
     return (
-        <BaseViewLayout title="Monkehs" leftContent={<MonkehViewLeftContent {...{ selectedMonkeh, setSelectedMonkeh }} />}>
+        <BaseViewLayout title="Monkehs" leftContent={<MonkehList onMonkehSelect={setSelectedMonkeh} />}>
             {selectedMonkeh
                 ? <MonkehViewMainContent {...{ selectedMonkeh, setSelectedMonkeh }} />
                 : <><Face5Icon />Where Monkeh? (select monkeh)</>}
