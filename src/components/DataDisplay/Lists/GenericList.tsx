@@ -5,7 +5,8 @@ import {
     ListItemButton,
     ListItemIcon,
     ListItemText,
-    List
+    List,
+    CircularProgress
 } from "@mui/material";
 import { ReactNode, useState } from "react";
 
@@ -43,12 +44,14 @@ function GenericListItem(props: IGenericListItemProps) {
     );
 }
 
-export default function GenericList({ items }: { items: IListItemProps[] }) {
+export default function GenericList({ items, loading }: { items: IListItemProps[], loading?: boolean }) {
     const [selectedItem, setSelectedItem] = useState<number>();
 
     return (
         <List>
-            {items.map((item, index) => (
+            {loading 
+                ? <CircularProgress />
+                : items.map((item, index) => (
                 <GenericListItem key={index} {...item} selected={selectedItem === index}
                     onClick={() => {
                         if (item.onClick) {

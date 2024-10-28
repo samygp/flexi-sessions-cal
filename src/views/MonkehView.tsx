@@ -1,64 +1,70 @@
 import MonkehList from "../components/DataDisplay/Lists/MonkehList";
-import { IMonkeh } from "../shared/models/Monkeh";
+import { defaultDummyMonkeh, IMonkeh } from "../shared/models/Monkeh";
 import Face5Icon from '@mui/icons-material/Face5';
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import BaseViewLayout from "./BaseViewLayout";
-import MonkehForm from "../components/Inputs/Forms/MonkehForm";
-import { Button, Grid } from "@mui/material";
-import SubmitButtonGroup from "../components/Inputs/Buttons/SubmitButtonGroup";
-import { useMonkehContext } from "../hooks/useCustomContext";
+import { EditMonkehForm } from "../components/Inputs/Forms/MonkehForm";
+import { Grid, IconButton, Tooltip } from "@mui/material";
 import EventSnackbar, { IEventSnackProps } from "../components/DataDisplay/EventSnackbar";
+import MonkehDetails from "../components/DataDisplay/Details/MonkehDetails";
+import EditIcon from '@mui/icons-material/Edit';
+import { useHeaderContext } from "../hooks/useCustomContext";
 
 interface IMonkehViewContentProps {
-    selectedMonkeh: IMonkeh | undefined;
-    setSelectedMonkeh: React.Dispatch<React.SetStateAction<IMonkeh | undefined>>
+    selectedMonkeh: IMonkeh;
+    setSelectedMonkeh: React.Dispatch<React.SetStateAction<IMonkeh>>;
 }
 
+interface IEditMonkehButtonProps {
+    toggleEditMonkeh: () => void;
+    disabled?: boolean;
+}
+function EditMonkehButton({ toggleEditMonkeh, disabled }: IEditMonkehButtonProps) {
+    return (
+        <Tooltip title="Edit monkeh">
+            <IconButton color="primary" disabled={disabled} onClick={toggleEditMonkeh}>
+                <EditIcon />
+            </IconButton>
+        </Tooltip>
+    );
+}
 
-function MonkehViewMainContent({ selectedMonkeh, setSelectedMonkeh }: IMonkehViewContentProps) {
+function MonkehViewMainContent({ selectedMonkeh: monkeh, setSelectedMonkeh: setMonkeh }: IMonkehViewContentProps) {
     const [editMode, setEditMode] = useState<boolean>(false);
-    const { monkehAPI: { updateMonkeh }, loading } = useMonkehContext();
+    const toggleEditMonkeh = useCallback(() => setEditMode(prev => !prev), [setEditMode]);
 
     const [eventMessage, setEventMessage] = useState<IEventSnackProps>({ message: '', severity: "success" });
-    const onClose = useCallback(() => setEditMode(false), [setEditMode]);
+    const editMonkehProps = useMemo(() => {
+        return {
+            monkeh,
+            setMonkeh,
+            onClose: () => setEditMode(false),
+            onSuccess: () => setEventMessage({ message: 'Monkeh Updated!', severity: 'success' }),
+            onError: (err: any) => setEventMessage({ message: `Failed to update monkeh: ${err}`, severity: 'error' }),
+        };
+    }, [monkeh, setMonkeh, setEventMessage]);
 
-    const onUpdate = useCallback(async () => {
-        try {
-            const monkehResult = await updateMonkeh(selectedMonkeh!);
-            if (monkehResult) {
-                setEventMessage({ message: 'Monkeh Updated!', severity: 'success' });
-                onClose();
-            }
-        } catch (error) {
-            setEventMessage({ message: `Failed to update monkeh: ${error}`, severity: 'error' });
-        }
-    }, [selectedMonkeh, updateMonkeh, onClose]);
+    const monkehDetailsProps = useMemo(() => {
+        return { monkeh, setMonkeh, readOnly: !editMode, headerAction: <EditMonkehButton {...{ toggleEditMonkeh }} /> };
+    }, [toggleEditMonkeh, monkeh, setMonkeh, editMode]);
 
     return (
         <Grid container>
             <EventSnackbar {...eventMessage} />
-            <Grid item xs={9} />
-            <Grid item xs={3} >
-                <Button variant="contained" color="primary" disabled={editMode || loading} onClick={() => setEditMode(prev => !prev)}>
-                    Edit Monkeh
-                </Button>
-            </Grid>
             <Grid item xs={12} >
-                <MonkehForm monkeh={selectedMonkeh!} readOnly={!editMode} setMonkeh={setSelectedMonkeh as any} />
-            </Grid>
-            <Grid item xs={12} >
-                {editMode && (<SubmitButtonGroup operation="update" submitButtonText="Save" {...{ onUpdate, loading, onClose }} />)}
+                {editMode ? <EditMonkehForm {...editMonkehProps} /> : <MonkehDetails {...monkehDetailsProps} />}
             </Grid>
         </Grid>
     );
 }
 
 export default function MonkehView() {
-    const [selectedMonkeh, setSelectedMonkeh] = useState<IMonkeh>();
+    const [selectedMonkeh, setSelectedMonkeh] = useState<IMonkeh>(defaultDummyMonkeh);
+    useHeaderContext().setTitle('Monkehs');
 
     return (
-        <BaseViewLayout title="Monkehs" leftContent={<MonkehList onMonkehSelect={setSelectedMonkeh} />}>
-            {selectedMonkeh
+        <BaseViewLayout leftContent={<MonkehList onMonkehSelect={setSelectedMonkeh} />}>
+            {!!selectedMonkeh.id
                 ? <MonkehViewMainContent {...{ selectedMonkeh, setSelectedMonkeh }} />
                 : <><Face5Icon />Where Monkeh? (select monkeh)</>}
         </BaseViewLayout>

@@ -1,12 +1,12 @@
-import { useCallback, useContext, useRef } from "react";
+import { useCallback, useRef } from "react";
 import { apiFetch } from "../services/restService";
 import { IFetchOptions, IFetchResponse } from "../shared/models/Rest";
-import SessionContext from "../shared/models/SessionContext";
 import { useAsyncFn } from "react-use";
+import { useSessionContext } from "./useCustomContext";
 
 export default function useCRUDApiFetch<BodyType, ParamsType>(url: string) {
     const requestAbortController = useRef<AbortController | null>(null);
-    const { authState, accessToken: authToken } = useContext(SessionContext);
+    const { authState, accessToken: authToken } = useSessionContext();
 
     const handleFetch = useCallback(async <T>(endpoint: String, opts: IFetchOptions<BodyType, ParamsType>) => {
         if (authState !== 'authenticated' || !authToken) return;

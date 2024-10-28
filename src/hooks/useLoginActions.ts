@@ -1,7 +1,7 @@
-import { useContext, useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo } from "react";
 import AuthService from "../services/auth/AuthService";
 import { IAuthResponse } from "../shared/models/Auth";
-import SessionContext from "../shared/models/SessionContext";
+import { useSessionContext } from "./useCustomContext";
 
 interface ILoginActionParams {
     email: string;
@@ -12,7 +12,7 @@ interface ILoginActionParams {
 }
 
 export default function useLoginActions(params: ILoginActionParams) {
-    const { session, setSession, setTokens, authState } = useContext(SessionContext);
+    const { session, setSession, setTokens, authState } = useSessionContext();
     const { email, password, setPassword, verificationCode, setVerificationCode } = params;
     const [challengeRequired, setChallengeRequired] = useState<string>();
     const [resettingPassword, setResettingPassword] = useState<boolean>(false);

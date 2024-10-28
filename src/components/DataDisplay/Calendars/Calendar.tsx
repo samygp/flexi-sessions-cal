@@ -107,8 +107,8 @@ export default function Calendar<T>(props: ICalendarProps<T>) {
     return (
         <>
             <DayDetailsModal<T> {...modalProps} />
-            <FormControl required size="medium" fullWidth margin="normal" >
-                <DateCalendar
+            <FormControl required size="medium" fullWidth margin="none" sx={{height: '23.5vh'}}>
+                <DateCalendar 
                     {...{ defaultValue, loading, onYearChange, onMonthChange }}
                     slots={{
                         day: props => {

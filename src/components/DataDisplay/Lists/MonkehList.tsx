@@ -14,7 +14,7 @@ interface IMonkehListProps {
     onMonkehSelect: (monkeh: IMonkeh) => void;
 }
 
-function RefreshMonkehs() {
+function MonkehButtons() {
     const { monkehAPI: { fetchMonkehs } } = useMonkehContext();
 
     return (
@@ -42,7 +42,7 @@ function MonkehText({ monkeh }: { monkeh: IMonkeh }) {
 }
 
 export default function MonkehList({ onMonkehSelect }: IMonkehListProps) {
-    const { monkehMap } = useMonkehContext();
+    const { monkehMap, loading } = useMonkehContext();
 
     const items = useMemo<IListItemProps[]>(() => {
         const grouped = groupBy(monkehMap, 'level');
@@ -57,8 +57,8 @@ export default function MonkehList({ onMonkehSelect }: IMonkehListProps) {
 
     return (
         <>
-            <RefreshMonkehs />
-            <GenericList items={items} />
+            <MonkehButtons />
+            <GenericList loading={loading} items={items} />
         </>
     );
 }

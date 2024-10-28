@@ -1,46 +1,78 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import moment, { Moment } from "moment";
 import OpenModalButton from "../components/Inputs/Buttons/OpenModalButton";
 import EventCalendar from "../components/DataDisplay/Calendars/EventCalendar";
 import EventTable from "../components/DataDisplay/Tables/EventTable";
 import CalendarEventModal, { ICalendarEventFormModalProps } from "../components/Layout/Modals/CalendarEventModal";
-import { useEventsContext } from "../hooks/useCustomContext";
+import { useEventsContext, useHeaderContext } from "../hooks/useCustomContext";
 import BaseViewLayout from "./BaseViewLayout";
 import { CalendarIcon } from "@mui/x-date-pickers";
+import { ButtonGroup, Divider, IconButton, Typography } from "@mui/material";
+import { Refresh, AddCircleOutline } from "@mui/icons-material";
 
-export default function EventCalendarView() {
-    const { loading, error, dateGroupedEventMap, eventsAPI: {fetchYear} } = useEventsContext();
-    const [currYear, setCurrYear] = useState<number>(moment().year());
-    const [currMonth, setCurrMonth] = useState<Moment>(moment());
-    
+interface IEventCalendarViewLeftContentProps {
+    currMonth: Moment;
+    setCurrMonth: React.Dispatch<React.SetStateAction<Moment>>;
+}
+
+function EventCalendarViewLeftContent(props: IEventCalendarViewLeftContentProps) {
+    const { currMonth, setCurrMonth } = props;
+    const { eventsAPI: { fetchYear }, loading } = useEventsContext();
+
     const onYearChange = useCallback(async (m: Moment) => {
-        const year = m.year();
-        setCurrYear(year);
-        await fetchYear(year);
+        await fetchYear(m.year());
     }, [fetchYear]);
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    useEffect(() => { onYearChange(moment()); }, []);
-
-    const tableRows = useMemo(() => {
-        const start = moment(currMonth).startOf("month");
-        const end = moment(currMonth).endOf("month");
-        return dateGroupedEventMap.getEntriesForDateRange(start, end);
-    }, [currMonth, dateGroupedEventMap]);
-    
-
-    const title = useMemo(() => `Eventotes ${currYear}`, [currYear]);
     const calendarProps = useMemo(() => {
         return { onMonthChange: setCurrMonth, onYearChange, loading };
     }, [onYearChange, setCurrMonth, loading]);
 
     return (
-        <BaseViewLayout {...{ title, error }} leftContent={<EventCalendar {...calendarProps} />} >
-            <OpenModalButton<ICalendarEventFormModalProps>
-                Modal={CalendarEventModal}
-                label="New Event"
-                modalProps={{title:  "Create Event", TitleIcon: CalendarIcon, operation: "create"}}
-            />
+        <>
+            <ButtonGroup fullWidth sx={{ justifyContent: "space-evenly", marginBottom: '1ex' }}>
+                <OpenModalButton<ICalendarEventFormModalProps>
+                    startIcon={<AddCircleOutline />}
+                    Modal={CalendarEventModal}
+                    label="New Event"
+                    sx={{ width: "fit-content" }}
+                    variant="text"
+                    modalProps={{ title: "Create Event", TitleIcon: CalendarIcon, operation: "create" }}
+                />
+                <IconButton onClick={() => onYearChange(currMonth)} size="small">
+                    <Refresh color="primary" />
+                    <Typography variant="body2" color={"primary"} >Refresh Events</Typography>
+                </IconButton>
+            </ButtonGroup>
+            <Divider />
+            <EventCalendar {...calendarProps} />
+        </>
+    );
+}
+
+export default function EventCalendarView() {
+    const [currMonth, setCurrMonth] = useState<Moment>(moment());
+    const { setTitle } = useHeaderContext();
+
+    const currYear = useMemo(() => currMonth.year(), [currMonth]);
+
+    useEffect(() => setTitle(`Eventotes ${currYear}`), [currYear, setTitle]);
+
+    const { error, dateGroupedEventMap } = useEventsContext();
+    const tableRows = useMemo(() => {
+        const start = moment(currMonth).startOf("month");
+        const end = moment(currMonth).endOf("month");
+        return dateGroupedEventMap.getEntriesForDateRange(start, end);
+    }, [currMonth, dateGroupedEventMap]);
+
+    const leftContentProps = useMemo<IEventCalendarViewLeftContentProps>(() => {
+        return {
+            currMonth,
+            setCurrMonth,
+        };
+    }, [currMonth]);
+
+    return (
+        <BaseViewLayout error={error} leftContent={<EventCalendarViewLeftContent {...leftContentProps} />} >
             <EventTable rows={tableRows} />
         </BaseViewLayout>
     );

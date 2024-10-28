@@ -1,7 +1,7 @@
 import { AlertColor, Snackbar, Alert } from "@mui/material";
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, ReactNode } from "react";
 
-export interface IEventSnackProps { message: string, severity: AlertColor };
+export interface IEventSnackProps { message: ReactNode, severity: AlertColor };
 
 export default function EventSnackbar({ message, severity }: IEventSnackProps) {
     const [open, setOpen] = useState<boolean>(true);

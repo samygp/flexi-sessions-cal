@@ -1,9 +1,9 @@
 import { createContext } from "react";
-import { ICalendarEventAPI } from "../../hooks/useCalendarEventAPI";
-import { IMonkehAPI } from "../../hooks/useMonkehAPI";
-import { CalendarEvent } from "./CalendarEvents";
-import { DateGroupedEntryMap } from "./DateGroupedEntryMap";
-import { IMonkeh } from "./Monkeh";
+import { ICalendarEventAPI } from "../../../hooks/useCalendarEventAPI";
+import { IMonkehAPI } from "../../../hooks/useMonkehAPI";
+import { CalendarEvent } from "../CalendarEvents";
+import { DateGroupedEntryMap } from "../DateGroupedEntryMap";
+import { IMonkeh } from "../Monkeh";
 
 interface IBaseContext {
     loading: boolean;
@@ -34,12 +34,14 @@ export default createContext<IDataContext>({
         updateCalendarEvent: noopPromise,
         removeCalendarEvents: noopPromise,
         fetchYear: noopPromise,
+        loading: false
     },
     monkehAPI: {
         fetchMonkehs: noopPromise,
         createMonkeh: noopPromise,
         updateMonkeh: noopPromise,
         deleteMonkehs: noopPromise,
+        loading: false
     },
     loading: false,
 });

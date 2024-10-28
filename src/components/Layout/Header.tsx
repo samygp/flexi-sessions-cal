@@ -1,11 +1,11 @@
 import { useCallback, useMemo, useState } from "react";
 import RefreshDialog from './Modals/RefreshDialog';
-import { AppBar, Box, Button, Drawer, IconButton, SxProps, Toolbar, Typography } from "@mui/material";
+import { AppBar, Box, Button, Drawer, IconButton, Paper, SxProps, Toolbar, Typography } from "@mui/material";
 import { styled, useTheme } from '@mui/material/styles';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import { useSessionContext } from "../../hooks/useCustomContext";
+import { useHeaderContext, useSessionContext } from "../../hooks/useCustomContext";
 import { CalendarIcon } from "@mui/x-date-pickers";
 import Face5Icon from '@mui/icons-material/Face5';
 import { Biotech, Cake, Class, MenuBook, SportsKabaddi } from "@mui/icons-material";
@@ -97,7 +97,7 @@ function HeaderDrawer({ onClick, open }: IDrawerProps) {
 
     const getListEntries = useCallback((itemMap: Record<string, IHeaderListItem>) => {
         return Object.entries(itemMap).map(([text, { icon, path }]) => {
-            return {text, icon, onClick: navigateAndCloseDrawerCallback(path)};
+            return { text, icon, onClick: navigateAndCloseDrawerCallback(path) };
         });
     }, [navigateAndCloseDrawerCallback]);
 
@@ -111,7 +111,7 @@ function HeaderDrawer({ onClick, open }: IDrawerProps) {
         return [monkehsDivider, ...getListEntries(monkehsListItemMap)];
     }, [getListEntries]);
 
-    
+
     return (
         <StyledDrawer variant="persistent" anchor="left" open={open} onClose={onClick}>
             <DrawerHeader >
@@ -135,15 +135,16 @@ export default function Header() {
 
     const [drawerOpen, setDrawerOpen] = useState(false);
     const onDrawerButtonClick = useCallback(() => setDrawerOpen(prev => !prev), [setDrawerOpen]);
+    const { title } = useHeaderContext();
 
     return (
-        <Box sx={{ display: isAuthenticated ? 'flex' : 'none' }}>
+        <Box sx={{ display: isAuthenticated ? 'flex' : 'none' }} marginX={2} component={Paper}>
             <AppBar position="static" color="transparent" >
                 <RefreshDialog />
-                {isAuthenticated && <Toolbar>
+                {isAuthenticated && <Toolbar sx={{ paddingY: 2.5 }}>
                     <DrawerButton onClick={onDrawerButtonClick} open={drawerOpen} />
-                    <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                        Calendarios medicosos
+                    <Typography variant="h4" component="div" sx={{ flexGrow: 1 }}>
+                        {title}
                     </Typography>
                     <Button variant="contained" onClick={onLogoutClick}>Logout</Button>
                 </Toolbar>}

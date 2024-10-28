@@ -1,4 +1,7 @@
-
+export interface ISerializerConfig<T> {
+    serializer?: (value: T) => string;
+    deserializer?: (value: string) => T;
+}
 
 export interface IRecord {
     id: string;

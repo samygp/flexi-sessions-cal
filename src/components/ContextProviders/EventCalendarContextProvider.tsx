@@ -4,30 +4,35 @@ import useCalendarEventAPI from "../../hooks/useCalendarEventAPI";
 import { DateGroupedEntryMap } from "../../shared/models/DateGroupedEntryMap";
 import { keyBy } from "lodash";
 import useMonkehAPI from "../../hooks/useMonkehAPI";
-import EventCalendarContext from "../../shared/models/DataContext";
-import { useEffectOnce } from "react-use";
+import EventCalendarContext from "../../shared/models/context/DataContext";
+import { useMount } from "react-use";
+import useItemCache from "../../hooks/useItemCache";
+import { deserializeMonkehs, IMonkeh } from "../../shared/models/Monkeh";
 
 const createGroupedEventMap = (eventMap: Record<string, CalendarEvent>) => {
     return new DateGroupedEntryMap<CalendarEvent>(eventMap, e => e.date);
 }
 
 export default function EventCalendarContextProvider({ children }: PropsWithChildren) {
-    const { loading: eventLoading, error: eventError, calendarEvents, ...eventsAPI } = useCalendarEventAPI();
+    const monkehCache = useItemCache<IMonkeh[]>("monkehs", 3600, { deserializer: deserializeMonkehs });
+    const monkehAPI = useMonkehAPI(monkehCache);
+    const monkehMap = useMemo(() => keyBy(monkehCache.value, 'id'), [monkehCache]);
+
+    const eventsCache = useItemCache<CalendarEvent[]>("events");
+    const eventsAPI = useCalendarEventAPI(eventsCache);
     const { calendarEventMap, dateGroupedEventMap } = useMemo(() => {
-        const calendarEventMap = keyBy(calendarEvents, 'id');
+        const calendarEventMap = keyBy(eventsCache.value, 'id');
         const dateGroupedEventMap = createGroupedEventMap(calendarEventMap);
 
         return { calendarEventMap, dateGroupedEventMap };
-    }, [calendarEvents]);
+    }, [eventsCache]);
 
-    const { loading: monkehLoading, error: monkehError, monkehs, ...monkehAPI } = useMonkehAPI();
-    const monkehMap = useMemo(() => keyBy(monkehs, 'id'), [monkehs]);
+    const loading = useMemo(() => eventsAPI.loading || monkehAPI.loading, [eventsAPI.loading, monkehAPI.loading]);
+    const error = useMemo(() => eventsAPI.error || monkehAPI.error, [eventsAPI.error, monkehAPI.error]);
 
-    const loading = useMemo(() => eventLoading || monkehLoading, [eventLoading, monkehLoading]);
-    const error = useMemo(() => eventError || monkehError, [eventError, monkehError]);
-
-    useEffectOnce(() => {
-        monkehAPI.fetchMonkehs({}).then(async () => eventsAPI.fetchYear(new Date().getUTCFullYear()));
+    useMount(() => {
+        if (monkehCache.isOutdated) monkehAPI.fetchMonkehs({});
+        if (eventsCache.isOutdated) eventsAPI.fetchYear(new Date().getUTCFullYear());
     });
 
     return (

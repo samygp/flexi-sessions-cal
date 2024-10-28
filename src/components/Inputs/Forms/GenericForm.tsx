@@ -68,7 +68,7 @@ export default function GenericForm<T>(props: IGenericFormProps<T>) {
     return (
         <Box component="form" sx={{ display: 'flex', flexDirection: 'column' }} minWidth={window.innerWidth / 3}>
             {Object.entries(fieldMappings).map(([, fieldMapping]) => {
-                const {fieldName, margin} = fieldMapping;
+                const { fieldName, margin } = fieldMapping;
                 return (
                     <FormControl key={String(fieldName)} required size="medium" fullWidth margin={margin ?? "normal"} >
                         <GenericFieldInput<T> {...{ ...fieldProps, fieldMapping }} />

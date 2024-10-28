@@ -11,6 +11,7 @@ import MainView from './views/MainView';
 import { useSessionContext } from './hooks/useCustomContext';
 import ElementOrLogin from './components/Other/ElementOrLogin';
 import { useMemo } from 'react';
+import { HeadercontextProvider } from './components/ContextProviders/HeaderContextProvider';
 
 const defaultTheme = createTheme({
   palette: {
@@ -25,7 +26,7 @@ function AppRoutes() {
 
   if (authState === "loading") return <CircularProgress />;
   return (
-    <>
+    <div style={{ overflowX: 'hidden' }}>
       <HashRouter>
         <Header />
         <Routes>
@@ -35,7 +36,7 @@ function AppRoutes() {
           <Route path={`${appPath}/*`} element={<ElementOrLogin element={<MainView />} />} />
         </Routes>
       </HashRouter>
-    </>
+    </div>
   );
 }
 
@@ -45,7 +46,9 @@ function App() {
       <CssBaseline />
       <LocalizationProvider dateAdapter={AdapterMoment}>
         <SessionContextProvider>
-          <AppRoutes />
+          <HeadercontextProvider>
+            <AppRoutes />
+          </HeadercontextProvider>
         </SessionContextProvider>
       </LocalizationProvider>
     </ThemeProvider>
