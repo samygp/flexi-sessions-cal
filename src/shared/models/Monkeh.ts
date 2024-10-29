@@ -1,4 +1,5 @@
 import { colors } from "@mui/material";
+import { startCase } from "lodash";
 import moment, { Moment, unix } from "moment";
 
 export enum ErreLevel {
@@ -50,10 +51,13 @@ export const toMonkehRequest = (monkeh: Partial<IMonkeh>): IMonkehRequest => {
 }
 
 export const parseMonkehResult = (monkeh: IMonkehResponse): IMonkeh => {
-    return { ...monkeh, birthday: unix(monkeh.birthday!) };
+    const name = startCase(monkeh.name);
+    return { ...monkeh, name, birthday: unix(monkeh.birthday!) };
 }
 
 export const deserializeMonkehs = (monkehString: string): IMonkeh[] => {
     const monkeh = JSON.parse(monkehString) as ISerializedMonkeh[];
     return monkeh.map(m => ({ ...m, birthday: moment(m.birthday) }));
 }
+
+export const getMonkehSortId = ({level, name}: IMonkeh) => `R${level}-${name}`;

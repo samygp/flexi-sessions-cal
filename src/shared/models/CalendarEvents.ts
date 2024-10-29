@@ -7,6 +7,10 @@ export enum EventType {
     OnCall = "oncall",
 };
 
+export enum EventCategory {
+    // TODO
+};
+
 export const EventColorMap: Record<EventType, string> = Object.freeze({
     [EventType.Session]: colors.green[300],
     [EventType.TimeOff]: colors.deepPurple[200],
@@ -26,6 +30,10 @@ export type CalendarEvent = {
     eventType: EventType;
     monkehId: string;
 };
+
+export interface ICachedEvent extends Omit<CalendarEvent, 'date'> {
+    date: string;
+}
 
 export interface ICalendarEventBody extends Omit<CalendarEvent, 'date'> {
     date: number;
@@ -52,3 +60,8 @@ export const defaultDummyCalendarEvent: CalendarEvent = Object.freeze({
 })
 
 export const calendarEventKeys: readonly (keyof CalendarEvent)[] = Object.keys(defaultDummyCalendarEvent) as (keyof CalendarEvent)[];
+
+export const deserializeCalendarEvent = (cacheString: string): CalendarEvent[] => {
+    const events: ICachedEvent[] = JSON.parse(cacheString);
+    return events.map(evt => ({ ...evt, date: moment(evt.date) }));
+}

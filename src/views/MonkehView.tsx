@@ -8,7 +8,9 @@ import { Grid, IconButton, Tooltip } from "@mui/material";
 import EventSnackbar, { IEventSnackProps } from "../components/DataDisplay/EventSnackbar";
 import MonkehDetails from "../components/DataDisplay/Details/MonkehDetails";
 import EditIcon from '@mui/icons-material/Edit';
-import { useHeaderContext } from "../hooks/useCustomContext";
+import { useEventsContext, useHeaderContext } from "../hooks/useCustomContext";
+import { CalendarEvent } from "../shared/models/CalendarEvents";
+import EventTable from "../components/DataDisplay/Tables/EventTable";
 
 interface IMonkehViewContentProps {
     selectedMonkeh: IMonkeh;
@@ -33,6 +35,11 @@ function MonkehViewMainContent({ selectedMonkeh: monkeh, setSelectedMonkeh: setM
     const [editMode, setEditMode] = useState<boolean>(false);
     const toggleEditMonkeh = useCallback(() => setEditMode(prev => !prev), [setEditMode]);
 
+    const { calendarEventMap } = useEventsContext();
+    const monkehEvents = useMemo<CalendarEvent[]>((() => {
+        return Object.values(calendarEventMap).filter(e => e.monkehId === monkeh.id);
+    }), [calendarEventMap, monkeh]);
+
     const [eventMessage, setEventMessage] = useState<IEventSnackProps>({ message: '', severity: "success" });
     const editMonkehProps = useMemo(() => {
         return {
@@ -49,11 +56,14 @@ function MonkehViewMainContent({ selectedMonkeh: monkeh, setSelectedMonkeh: setM
     }, [toggleEditMonkeh, monkeh, setMonkeh, editMode]);
 
     return (
-        <Grid container>
+        <Grid container gap={2}>
             <EventSnackbar {...eventMessage} />
             <Grid item xs={12} >
                 {editMode ? <EditMonkehForm {...editMonkehProps} /> : <MonkehDetails {...monkehDetailsProps} />}
             </Grid>
+            {!editMode && <Grid item xs={12}>
+                <EventTable rows={monkehEvents} />
+            </Grid>}
         </Grid>
     );
 }

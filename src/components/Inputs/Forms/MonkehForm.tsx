@@ -4,6 +4,7 @@ import ErreDropdown from "../Dropdowns/ErreDropdown";
 import SubmitButtonGroup from "../Buttons/SubmitButtonGroup";
 import { useMonkehContext } from "../../../hooks/useCustomContext";
 import { useCallback } from "react";
+import { Divider, Grid } from "@mui/material";
 
 interface IMonkehFormProps {
     monkeh: IMonkeh;
@@ -29,14 +30,21 @@ export function EditMonkehForm({ monkeh, onClose, onError, onSuccess, ...props }
             }
         } catch (error) {
             onError?.(error);
-            
+
         }
-    }, [monkeh, updateMonkeh, onClose]);
+    }, [monkeh, updateMonkeh, onClose, onError, onSuccess]);
     return (
-        <>
-            <MonkehForm {...{ monkeh, ...props}} />
-            <SubmitButtonGroup operation="update" submitButtonText="Save" {...{onClose, onUpdate, loading}}/>
-        </>
+        <Grid container gap={1}>
+            <Grid item xs={12} >
+                <MonkehForm {...{ monkeh, ...props }} />
+            </Grid>
+            <Grid item xs={12} mb={1}>
+                <Divider />
+            </Grid>
+            <Grid item xs={12} >
+                <SubmitButtonGroup operation="update" submitButtonText="Save" {...{ onClose, onUpdate, loading }} />
+            </Grid>
+        </Grid>
     );
 }
 

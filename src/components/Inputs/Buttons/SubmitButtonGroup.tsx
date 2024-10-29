@@ -1,6 +1,7 @@
-import { Button, ButtonGroup, ButtonOwnProps } from "@mui/material";
-import { useCallback, useMemo } from "react";
+import { ButtonGroup, ButtonOwnProps } from "@mui/material";
+import { useMemo } from "react";
 import { firstToUpper } from "../../../shared/utils/stringHelpers";
+import LoadingButton from "./LoadingButton";
 
 type SubmitOperation = "create" | "update" | "delete" | "submit";
 export interface ISubmitButtonGroupProps {
@@ -18,13 +19,13 @@ export interface ISubmitButtonGroupProps {
 
 const operationStyleMap: Record<SubmitOperation, ButtonOwnProps["color"]> = {
     create: "primary",
-    update: "warning",
+    update: "primary",
     delete: "error",
     submit: "primary"
 };
 
 export default function SubmitButtonGroup(props: ISubmitButtonGroupProps) {
-    const { operation = "submit", submitDisabled, loading } = props;
+    const { operation = "submit", submitDisabled, loading, onClose } = props;
     const { submitButtonStyle: submitButtonStyleOverride, submitButtonText: submitButtonTextOverride } = props;
 
     const onSubmit = useMemo(() => {
@@ -42,9 +43,6 @@ export default function SubmitButtonGroup(props: ISubmitButtonGroupProps) {
         }
     }, [props, operation]);
 
-    const onClose = useCallback(() => {
-        if (!loading) props.onClose();
-    }, [loading, props]);
     const closeText = useMemo(() => onSubmit ? "Cancel" : "Close", [onSubmit]);
 
     const submitButtonText = useMemo<string>(() => {
@@ -59,8 +57,8 @@ export default function SubmitButtonGroup(props: ISubmitButtonGroupProps) {
 
     return (
         <ButtonGroup variant="contained" size="large" fullWidth>
-            {onSubmit && <Button onClick={onSubmit} disabled={submitDisabled} color={submitButtonStyle} >{submitButtonText}</Button>}
-            <Button onClick={onClose} disabled={loading} variant="outlined">{closeText}</Button>
+            {onSubmit && <LoadingButton onClick={onSubmit} loading={loading} disabled={submitDisabled} color={submitButtonStyle} >{submitButtonText}</LoadingButton>}
+            <LoadingButton onClick={onClose} loading={loading} variant="outlined">{closeText}</LoadingButton>
         </ButtonGroup>
     );
 }

@@ -8,19 +8,14 @@ interface IMonkehLookupProps {
     onChange: (monkehId: string) => void;
 }
 
-export default function MonkehLookup({value, onChange: setMonkehId}: IMonkehLookupProps) {
+export default function MonkehLookup({value, onChange}: IMonkehLookupProps) {
     const { monkehMap } = useMonkehContext();
-    const monkehs = useMemo(() => Object.values(monkehMap), [monkehMap]);
+    const entries = useMemo(() => Object.values(monkehMap).sort((a, b) => a.level - b.level), [monkehMap]);
+    const getCategory = useCallback((m: IMonkeh) => `R${m.level}`, []);
+    const getOptionValue = useCallback((m: IMonkeh) => m.id, []);
+    const getOptionLabel = useCallback((m: IMonkeh) => m.name, []);
 
-    const onChange = useCallback((e: any) => setMonkehId(e.target.value as string), [setMonkehId]);
     return (
-        <Lookup<IMonkeh>
-            label="Monkeh"
-            value={value}
-            onChange={onChange}
-            entries={monkehs}
-            getOptionLabel={m => m.name}
-            getOptionValue={m => m.id}
-        />
+        <Lookup<IMonkeh> label="Monkeh" {...{value, onChange, getCategory, getOptionValue, getOptionLabel, entries}}/>
     );
 }

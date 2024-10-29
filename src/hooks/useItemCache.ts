@@ -28,12 +28,8 @@ const getSerializerOptions = <T>(opts?: ISerializerConfig<T>) => {
  *   - `lastUpdated` is the timestamp (in seconds) of when the value was last updated
  */
 export default function useItemCache<T>(key: string, ttl: number = 3600, opts?: ISerializerConfig<T>): IItemCache<T> {
-    console.log('getting cache', key);
     const [value, setValue] = useLocalStorage<T>(key, undefined, getSerializerOptions<T>(opts));
-    // TODO, cover for cases when moment is represented as string
     const [lastUpdatedSeconds, setLastUpdated] = useLocalStorage<number>(`${key}_lastUpdated`);
-
-    console.log('got cache', { value, lastUpdatedSeconds });
 
     const lastUpdated = useMemo(() => {
         if (lastUpdatedSeconds) return unix(lastUpdatedSeconds);
@@ -44,7 +40,6 @@ export default function useItemCache<T>(key: string, ttl: number = 3600, opts?: 
     }, [lastUpdated, ttl]);
 
     useUpdateEffect(() => {
-        console.log('updating last updated seconds', { lastUpdated, lastUpdatedSeconds, key });
         if (value) setLastUpdated(nowSeconds);
     }, [value]);
 

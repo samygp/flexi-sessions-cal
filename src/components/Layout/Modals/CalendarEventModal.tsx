@@ -11,7 +11,7 @@ export interface ICalendarEventFormModalProps extends IBaseModalProps {
 
 export default function CalendarEventModal({ originalEvent = defaultDummyCalendarEvent, readOnly, ...props }: ICalendarEventFormModalProps) {
     const [event, setCalendarEvent] = useState<CalendarEvent>(originalEvent);
-    const { eventsAPI: { createCalendarEvent, updateCalendarEvent, removeCalendarEvents } } = useEventsContext();
+    const { eventsAPI: { createCalendarEvent, updateCalendarEvent, removeCalendarEvents }, loading } = useEventsContext();
 
     const actions = useMemo(() => {
         return {
@@ -27,7 +27,7 @@ export default function CalendarEventModal({ originalEvent = defaultDummyCalenda
     }, [setCalendarEvent, originalEvent, props]);
 
     return (
-        <BaseModal {...{ ...props, ...actions, onClose }}>
+        <BaseModal {...{ ...props, ...actions, onClose, loading }}>
             <CalendarEventForm {...{ event, setCalendarEvent, readOnly }} />
         </BaseModal>
     )

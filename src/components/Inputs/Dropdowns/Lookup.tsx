@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 
 interface ILookupProps<T> {
     value: string;
-    onChange: (v: string | null) => void;
+    onChange: (v: string) => void;
     label: string;
     entries: T[] | Record<string, T>;
     getCategory?: (e: T) => string;
