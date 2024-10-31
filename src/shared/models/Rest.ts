@@ -1,8 +1,10 @@
-export interface IFetchOptions {
-    method: 'get' | 'post' | 'put' | 'delete';
+export type RestMethod = 'get' | 'post' | 'put' | 'delete';
+
+export interface IFetchOptions<BodyType, QueryType> {
+    method: RestMethod;
     authToken?: string;
-    body?: any;
-    params?: Record<string, any>;
+    body?: BodyType;
+    params?: QueryType;
 }
 
 export interface IFetchResponse<T> {

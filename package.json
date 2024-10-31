@@ -64,10 +64,10 @@
     ]
   },
   "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@mui/x-data-grid": "^7.19.0",
     "@types/lodash": "^4.17.6",
     "eslint-plugin-react": "^7.37.1",
-    "gh-pages": "^6.1.1",
-    "@babel/plugin-proposal-private-property-in-object": "^7.21.11"
+    "gh-pages": "^6.1.1"
   }
 }

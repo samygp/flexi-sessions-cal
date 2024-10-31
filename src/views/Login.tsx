@@ -4,10 +4,12 @@ import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
-import LoginForm from '../components/login/LoginForm';
 import Doge from "../assets/doge_splash.png";
+import LoginForm from '../components/Inputs/Forms/LoginForm';
+import { useHeaderContext } from '../hooks/useCustomContext';
 
 export default function Login() {
+  useHeaderContext().setTitle('Login');
   return (
       <Grid container component="main" sx={{ height: '100vh' }}>
         <Grid
@@ -18,8 +20,6 @@ export default function Login() {
           sx={{
             backgroundImage: `url(${Doge})`,
             backgroundRepeat: 'repeat',
-            backgroundColor: (t) =>
-              t.palette.mode === 'light' ? t.palette.grey[50] : t.palette.grey[900],
             backgroundSize: 'contain',
             backgroundPosition: 'center',
           }}
