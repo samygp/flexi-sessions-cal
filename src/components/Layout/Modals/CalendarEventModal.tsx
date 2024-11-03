@@ -1,8 +1,8 @@
 import { useCallback, useMemo, useState } from "react";
-import BaseModal, { IBaseModalProps } from "./BaseModal";
-import { useEventsContext } from "../../../hooks/useCustomContext";
-import { CalendarEvent, defaultDummyCalendarEvent } from "../../../shared/models/CalendarEvents";
-import CalendarEventForm from "../../Inputs/Forms/CalendarEventForm";
+import BaseModal, { IBaseModalProps } from "@components/Layout/Modals/BaseModal";
+import { useEventsContext } from "@hooks/useCustomContext";
+import { CalendarEvent, defaultDummyCalendarEvent } from "@shared/models/CalendarEvents";
+import CalendarEventForm from "@components/Inputs/Forms/CalendarEventForm";
 
 
 export interface ICalendarEventFormModalProps extends IBaseModalProps {

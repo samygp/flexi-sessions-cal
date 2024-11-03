@@ -1,7 +1,7 @@
-import { CalendarEvent } from "../../../shared/models/CalendarEvents";
-import EventTypeDropdown from "../Dropdowns/EventTypeDropdown";
-import GenericForm, { IFieldMapping } from "./GenericForm";
-import MonkehLookup from "../Dropdowns/MonkehLookup";
+import { CalendarEvent } from "@shared/models/CalendarEvents";
+import EventTypeDropdown from "@components/Inputs/Dropdowns/EventTypeDropdown";
+import GenericForm, { IFieldMapping } from "@components/Inputs/Forms/GenericForm";
+import MonkehLookup from "@components/Inputs/Dropdowns/MonkehLookup";
 
 interface ICalendarEventFormProps {
     event: CalendarEvent;

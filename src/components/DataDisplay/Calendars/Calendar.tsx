@@ -16,8 +16,8 @@ import {
     ModalProps,
     Tooltip,
 } from '@mui/material';
-import { getDayID } from '../../../shared/utils/dateHelpers';
-import { DateGroupedEntryMap } from '../../../shared/models/DateGroupedEntryMap';
+import { getDayID } from '@shared/utils/dateHelpers';
+import { DateGroupedEntryMap } from '@shared/models/DateGroupedEntryMap';
 import { get } from 'lodash';
 
 // types
@@ -73,7 +73,7 @@ function DayDetailsModal<T>(props: IDayEntriesModalProps<T>) {
 }
 
 export default function Calendar<T>(props: ICalendarProps<T>) {
-    const { entryMap, onYearChange, onMonthChange, loading } = props;
+    const { entryMap, onYearChange, onMonthChange: onMonthChangeCallback, loading } = props;
     const onDaySelectProps = useMemo(() => {
         return { onDaySelect: props.onDaySelect, onDaySelectOverride: props.onDaySelectOverride };
     }, [props.onDaySelect, props.onDaySelectOverride]);
@@ -83,6 +83,12 @@ export default function Calendar<T>(props: ICalendarProps<T>) {
     const [title, setTitle] = useState<string>('');
     const onModalClose = useCallback(() => setOpen(false), []);
     const [selectedDay, setSelectedDay] = useState<Moment>(defaultValue);
+    const [currentMonth, setCurrentMonth] = useState<number>(defaultValue.month());
+
+    const onMonthChange = useCallback((m: Moment) => {
+        setCurrentMonth(m.month());
+        if (onMonthChangeCallback) onMonthChangeCallback(m);
+    }, [onMonthChangeCallback]);
 
     const modalProps = useMemo<IDayEntriesModalProps<T>>(() => {
         const entries = entryMap.getEntriesForDate(selectedDay);
@@ -117,8 +123,9 @@ export default function Calendar<T>(props: ICalendarProps<T>) {
                             const isLastVisibleCell = day.day() === day.daysInMonth();
                             const pickerDayProps = { ...props, isFirstVisibleCell, isLastVisibleCell, onDaySelect };
                             const count = entryMap.getEntriesForDate(day).length;
+                            const outsideCurrMonth = day.month() !== currentMonth;
 
-                            if (!count) return <PickersDay {...pickerDayProps} />;
+                            if (!count || outsideCurrMonth) return <PickersDay {...pickerDayProps} />;
 
                             return (
                                 <Badge key={getDayID(day)} overlap="circular" variant='dot' color="primary">

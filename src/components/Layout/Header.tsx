@@ -1,17 +1,17 @@
 import { useCallback, useMemo, useState } from "react";
-import RefreshDialog from './Modals/RefreshDialog';
+import RefreshDialog from '@components/Layout/Modals/RefreshDialog';
 import { AppBar, Box, Button, Drawer, IconButton, Paper, SxProps, Toolbar, Typography } from "@mui/material";
 import { styled, useTheme } from '@mui/material/styles';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import { useHeaderContext, useSessionContext } from "../../hooks/useCustomContext";
+import { useHeaderContext, useSessionContext } from "@hooks/useCustomContext";
 import { CalendarIcon } from "@mui/x-date-pickers";
 import Face5Icon from '@mui/icons-material/Face5';
 import { Biotech, Cake, Class, MenuBook, SportsKabaddi } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
-import { getPath, PathName } from "../../shared/models/Routes";
-import GenericList, { IListItemProps } from "../DataDisplay/Lists/GenericList";
+import { getPath, PathName } from "@shared/models/Routes";
+import GenericList, { IListItemProps } from "@components/DataDisplay/Lists/GenericList";
 
 // ******** INTERFACES ********
 

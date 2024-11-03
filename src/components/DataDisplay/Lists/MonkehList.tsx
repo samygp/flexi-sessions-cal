@@ -1,14 +1,14 @@
 import { useMemo } from "react";
-import GenericList, { IListItemProps } from "./GenericList";
-import MonkehTag from "../Tags/MonkehTag";
-import { useMonkehContext } from "../../../hooks/useCustomContext";
-import { IMonkeh } from "../../../shared/models/Monkeh";
+import MonkehTag from "@components/DataDisplay/Tags/MonkehTag";
+import { useMonkehContext } from "@hooks/useCustomContext";
+import { IMonkeh } from "@shared/models/Monkeh";
 import { groupBy, startCase } from "lodash";
 import { ButtonGroup, IconButton, Typography } from "@mui/material";
 import { AddCircleOutline, Refresh } from "@mui/icons-material";
-import OpenModalButton from "../../Inputs/Buttons/OpenModalButton";
-import MonkehModal, { IMonkehFormModalProps } from "../../Layout/Modals/MonkehModal";
+import OpenModalButton from "@components/Inputs/Buttons/OpenModalButton";
+import MonkehModal, { IMonkehFormModalProps } from "@components/Layout/Modals/MonkehModal";
 import Face5Icon from '@mui/icons-material/Face5';
+import GenericList, { IListItemProps } from "./GenericList";
 
 interface IMonkehListProps {
     onMonkehSelect: (monkeh: IMonkeh) => void;

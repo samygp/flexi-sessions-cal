@@ -1,9 +1,9 @@
 import { useCallback, useMemo } from 'react';
-import { CalendarEvent, ICalendarEventQuery, IPostEventRequest } from '../shared/models/CalendarEvents';
+import { CalendarEvent, ICalendarEventQuery, IPostEventRequest } from '@shared/models/CalendarEvents';
 import useCRUDApiFetch from './useApiFetch';
 import config from '../config.json';
 import { unix } from 'moment';
-import { beginningOf, endOf } from '../shared/utils/dateHelpers';
+import { beginningOf, endOf } from '@shared/utils/dateHelpers';
 import { IItemCache } from './useItemCache';
 
 interface IAPICalendarEvent extends Omit<CalendarEvent, 'date'> {

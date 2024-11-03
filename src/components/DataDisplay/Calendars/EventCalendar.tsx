@@ -1,9 +1,9 @@
-import { CalendarEvent } from '../../../shared/models/CalendarEvents';
+import { CalendarEvent } from '@shared/models/CalendarEvents';
 import { Moment } from 'moment';
-import { readableDateTime } from '../../../shared/utils/dateHelpers';
-import { useEventsContext } from '../../../hooks/useCustomContext';
-import Calendar from './Calendar';
-import EventTypeTag from '../Tags/EventTypeTag';
+import { readableDateTime } from '@shared/utils/dateHelpers';
+import { useEventsContext } from '@hooks/useCustomContext';
+import Calendar from '@components/DataDisplay/Calendars/Calendar';
+import EventTypeTag from '@components/DataDisplay/Tags/EventTypeTag';
 
 // types
 interface IEventCalendarProps {

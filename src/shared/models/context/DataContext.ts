@@ -1,9 +1,9 @@
 import { createContext } from "react";
-import { ICalendarEventAPI } from "../../../hooks/useCalendarEventAPI";
-import { IMonkehAPI } from "../../../hooks/useMonkehAPI";
-import { CalendarEvent } from "../CalendarEvents";
-import { DateGroupedEntryMap } from "../DateGroupedEntryMap";
-import { IMonkeh } from "../Monkeh";
+import { ICalendarEventAPI } from "@hooks/useCalendarEventAPI";
+import { IMonkehAPI } from "@hooks/useMonkehAPI";
+import { CalendarEvent } from "@shared/models/CalendarEvents";
+import { DateGroupedEntryMap } from "@shared/models/DateGroupedEntryMap";
+import { IMonkeh } from "@shared/models/Monkeh";
 
 interface IBaseContext {
     loading: boolean;

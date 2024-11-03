@@ -1,8 +1,8 @@
-import GenericForm, { IFieldMapping } from "./GenericForm";
-import { IMonkeh } from "../../../shared/models/Monkeh";
-import ErreDropdown from "../Dropdowns/ErreDropdown";
-import SubmitButtonGroup from "../Buttons/SubmitButtonGroup";
-import { useMonkehContext } from "../../../hooks/useCustomContext";
+import GenericForm, { IFieldMapping } from "@components/Inputs/Forms/GenericForm";
+import { IMonkeh } from "@shared/models/Monkeh";
+import ErreDropdown from "@components/Inputs/Dropdowns/ErreDropdown";
+import SubmitButtonGroup from "@components/Inputs/Buttons/SubmitButtonGroup";
+import { useMonkehContext } from "@hooks/useCustomContext";
 import { useCallback } from "react";
 import { Divider, Grid } from "@mui/material";
 

@@ -1,8 +1,8 @@
 import { Box, FormControl, FormControlOwnProps, TextField } from "@mui/material";
 import { useCallback, useMemo } from "react";
 import { DateField, DatePicker } from "@mui/x-date-pickers";
-import { firstToUpper } from "../../../shared/utils/stringHelpers";
-import MonthDayPicker from "../Dropdowns/MonthDayPicker";
+import { firstToUpper } from "@shared/utils/stringHelpers";
+import MonthDayPicker from "@components/Inputs/Dropdowns/MonthDayPicker";
 
 type SupportedFieldTypes = "date" | "text" | "hidden" | "number" | "custom" | "monthday";
 

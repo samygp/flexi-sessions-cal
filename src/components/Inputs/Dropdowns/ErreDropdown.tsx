@@ -1,7 +1,7 @@
-import { ErreLevel } from "../../../shared/models/Monkeh";
-import { ISelectOption } from "../../../shared/models/Data";
+import { ErreLevel } from "@shared/models/Monkeh";
+import { ISelectOption } from "@shared/models/Data";
 import { isNumber } from "lodash";
-import GenericDropdown from "./GenericDropdown";
+import GenericDropdown from "@components/Inputs/Dropdowns/GenericDropdown";
 
 interface IErreDropdownProps {
     value: ErreLevel;

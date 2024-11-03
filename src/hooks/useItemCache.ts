@@ -1,8 +1,8 @@
 import { useMemo } from "react";
 import { useLocalStorage, useUpdateEffect } from "react-use";
-import { nowSeconds, secondsSince } from "../shared/utils/dateHelpers";
+import { nowSeconds, secondsSince } from "@shared/utils/dateHelpers";
 import { Moment, unix } from "moment";
-import { ISerializerConfig } from "../shared/models/Data";
+import { ISerializerConfig } from "@shared/models/Data";
 
 export interface IItemCache<T> {
     value: T;

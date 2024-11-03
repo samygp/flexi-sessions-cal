@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from "react";
-import { IMonkeh } from "../../../shared/models/Monkeh";
-import Lookup from "./Lookup";
-import { useMonkehContext } from "../../../hooks/useCustomContext";
+import { IMonkeh } from "@shared/models/Monkeh";
+import Lookup from "@components/Inputs/Dropdowns/Lookup";
+import { useMonkehContext } from "@hooks/useCustomContext";
 
 interface IMonkehLookupProps {
     value: string;

@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import moment, { Moment } from "moment";
-import OpenModalButton from "../components/Inputs/Buttons/OpenModalButton";
-import EventCalendar from "../components/DataDisplay/Calendars/EventCalendar";
-import EventTable from "../components/DataDisplay/Tables/EventTable";
-import CalendarEventModal, { ICalendarEventFormModalProps } from "../components/Layout/Modals/CalendarEventModal";
-import { useEventsContext, useHeaderContext } from "../hooks/useCustomContext";
-import BaseViewLayout from "./BaseViewLayout";
+import OpenModalButton from "@components/Inputs/Buttons/OpenModalButton";
+import EventCalendar from "@components/DataDisplay/Calendars/EventCalendar";
+import EventTable from "@components/DataDisplay/Tables/EventTable";
+import CalendarEventModal, { ICalendarEventFormModalProps } from "@components/Layout/Modals/CalendarEventModal";
+import { useEventsContext, useHeaderContext } from "@hooks/useCustomContext";
+import BaseViewLayout from "@views/BaseViewLayout";
 import { CalendarIcon } from "@mui/x-date-pickers";
 import { ButtonGroup, Divider, IconButton, Typography } from "@mui/material";
 import { Refresh, AddCircleOutline } from "@mui/icons-material";

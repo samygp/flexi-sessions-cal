@@ -1,8 +1,8 @@
 import { PropsWithChildren, useCallback, useMemo } from "react";
 import { useAsync, useSessionStorage } from "react-use";
-import AuthService from "../../services/auth/AuthService";
-import { IOAuthTokens, AuthState } from "../../shared/models/Auth";
-import SessionContext from "../../shared/models/context/SessionContext";
+import AuthService from "@services/auth/AuthService";
+import { IOAuthTokens, AuthState } from "@shared/models/Auth";
+import SessionContext from "@shared/models/context/SessionContext";
 
 export default function SessionContextProvider({ children }: PropsWithChildren) {
     const [accessToken, setAccessToken] = useSessionStorage<string>('accessToken', '');

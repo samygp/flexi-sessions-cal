@@ -1,6 +1,6 @@
 import { useCallback, useRef } from "react";
 import { apiFetch } from "../services/restService";
-import { IFetchOptions, IFetchResponse } from "../shared/models/Rest";
+import { IFetchOptions, IFetchResponse } from "@shared/models/Rest";
 import { useAsyncFn } from "react-use";
 import { useSessionContext } from "./useCustomContext";
 

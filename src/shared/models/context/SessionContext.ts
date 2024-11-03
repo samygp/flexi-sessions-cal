@@ -1,5 +1,5 @@
 import { createContext } from "react";
-import { IOAuthTokens, AuthState } from "../Auth";
+import { IOAuthTokens, AuthState } from "@shared/models/Auth";
 
 interface ISessionContext {
     accessToken?: string,

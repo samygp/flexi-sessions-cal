@@ -2,11 +2,12 @@ import Box from '@mui/material/Box';
 import { DataGrid, GridActionsCellItem, GridColDef, GridComparatorFn, GridRenderCellParams } from '@mui/x-data-grid';
 import { Delete, Edit } from '@mui/icons-material';
 import { useCallback, useMemo } from 'react';
-import { CalendarEvent, EventTypeLabels } from '../../../shared/models/CalendarEvents';
-import { readableDateTime } from '../../../shared/utils/dateHelpers';
-import { useMonkehContext } from '../../../hooks/useCustomContext';
-import MonkehTag from '../Tags/MonkehTag';
-import { getMonkehSortId } from '../../../shared/models/Monkeh';
+import { CalendarEvent } from '@shared/models/CalendarEvents';
+import { readableDateTime } from '@shared/utils/dateHelpers';
+import { useMonkehContext } from '@hooks/useCustomContext';
+import MonkehTag from '@components/DataDisplay/Tags/MonkehTag';
+import { getMonkehSortId } from '@shared/models/Monkeh';
+import { EventTypeLabels } from '@shared/locale/events';
 
 interface IEventTableProps {
     rows: CalendarEvent[];

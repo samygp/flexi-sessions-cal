@@ -1,7 +1,7 @@
 import { ButtonGroup, ButtonOwnProps } from "@mui/material";
 import { useMemo } from "react";
-import { firstToUpper } from "../../../shared/utils/stringHelpers";
-import LoadingButton from "./LoadingButton";
+import { firstToUpper } from "@shared/utils/stringHelpers";
+import LoadingButton from "@components/Inputs/Buttons/LoadingButton";
 
 type SubmitOperation = "create" | "update" | "delete" | "submit";
 export interface ISubmitButtonGroupProps {

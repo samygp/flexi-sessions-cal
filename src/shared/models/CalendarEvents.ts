@@ -2,25 +2,35 @@ import { colors } from '@mui/material';
 import moment from 'moment';
 
 export enum EventType {
-    Session = "session",
-    TimeOff = "timeoff",
-    OnCall = "oncall",
+    Biblio = "biblio",
+    Clinic = "clinic",
+    Rotation = "rotation",
+    Vacation = "vacation",
+    Holiday = "holiday",
+    Consultation = "consultation",
+    Override = "override",
 };
 
 export enum EventCategory {
-    // TODO
+    Personal = "personal",
+    Session = "session",
+    Blocked = "blocked",
 };
 
-export const EventColorMap: Record<EventType, string> = Object.freeze({
-    [EventType.Session]: colors.green[300],
-    [EventType.TimeOff]: colors.deepPurple[200],
-    [EventType.OnCall]: colors.deepOrange[300],
-});
+export const EventTypeCategoryMap: Record<EventType, EventCategory> = {
+    [EventType.Biblio]: EventCategory.Session,
+    [EventType.Clinic]: EventCategory.Session,
+    [EventType.Consultation]: EventCategory.Personal,
+    [EventType.Rotation]: EventCategory.Personal,
+    [EventType.Vacation]: EventCategory.Personal,
+    [EventType.Holiday]: EventCategory.Blocked,
+    [EventType.Override]: EventCategory.Blocked,
+}
 
-export const EventTypeLabels: Record<EventType, string> = Object.freeze({
-    [EventType.Session]: "Sesión",
-    [EventType.TimeOff]: "Vacaciones",
-    [EventType.OnCall]: "Guardia",
+export const EventCategoryColorMap: Record<EventCategory, string> = Object.freeze({
+    [EventCategory.Session]: colors.green[300],
+    [EventCategory.Blocked]:  colors.deepOrange[300],
+    [EventCategory.Personal]: colors.deepPurple[200],
 });
 
 export type CalendarEvent = {
@@ -55,7 +65,7 @@ export const defaultDummyCalendarEvent: CalendarEvent = Object.freeze({
     id: "",
     date: moment(),
     title: "",
-    eventType: EventType.Session,
+    eventType: EventType.Biblio,
     monkehId: "",
 })
 

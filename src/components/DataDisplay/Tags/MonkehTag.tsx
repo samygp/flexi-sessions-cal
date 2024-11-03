@@ -1,5 +1,5 @@
 import { Avatar, Typography } from "@mui/material";
-import { ErreLevel, MonkehLevelColor } from "../../../shared/models/Monkeh";
+import { ErreLevel, MonkehLevelColor } from "@shared/models/Monkeh";
 import { useMemo } from "react";
 
 export default function MonkehTag({ level, compact }: { level: ErreLevel, compact?: boolean }) {

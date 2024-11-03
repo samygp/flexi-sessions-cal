@@ -1,16 +1,16 @@
-import MonkehList from "../components/DataDisplay/Lists/MonkehList";
-import { defaultDummyMonkeh, IMonkeh } from "../shared/models/Monkeh";
+import MonkehList from "@components/DataDisplay/Lists/MonkehList";
+import { defaultDummyMonkeh, IMonkeh } from "@shared/models/Monkeh";
 import Face5Icon from '@mui/icons-material/Face5';
 import { useCallback, useMemo, useState } from "react";
-import BaseViewLayout from "./BaseViewLayout";
-import { EditMonkehForm } from "../components/Inputs/Forms/MonkehForm";
+import BaseViewLayout from "@views/BaseViewLayout";
+import { EditMonkehForm } from "@components/Inputs/Forms/MonkehForm";
 import { Grid, IconButton, Tooltip } from "@mui/material";
-import EventSnackbar, { IEventSnackProps } from "../components/DataDisplay/EventSnackbar";
-import MonkehDetails from "../components/DataDisplay/Details/MonkehDetails";
+import EventSnackbar, { IEventSnackProps } from "@components/DataDisplay/EventSnackbar";
+import MonkehDetails from "@components/DataDisplay/Details/MonkehDetails";
 import EditIcon from '@mui/icons-material/Edit';
-import { useEventsContext, useHeaderContext } from "../hooks/useCustomContext";
-import { CalendarEvent } from "../shared/models/CalendarEvents";
-import EventTable from "../components/DataDisplay/Tables/EventTable";
+import { useEventsContext, useHeaderContext } from "@hooks/useCustomContext";
+import { CalendarEvent } from "@shared/models/CalendarEvents";
+import EventTable from "@components/DataDisplay/Tables/EventTable";
 
 interface IMonkehViewContentProps {
     selectedMonkeh: IMonkeh;

@@ -1,8 +1,8 @@
 import { Box, Typography } from "@mui/material";
-import { IMonkeh } from "../../../shared/models/Monkeh";
-import { getMonthDate } from "../../../shared/utils/dateHelpers";
+import { IMonkeh } from "@shared/models/Monkeh";
+import { getMonthDate } from "@shared/utils/dateHelpers";
 import { startCase } from "lodash";
-import MonkehTag from "../Tags/MonkehTag";
+import MonkehTag from "@components/DataDisplay/Tags/MonkehTag";
 import { Cake } from "@mui/icons-material";
 import { ReactNode } from "react";
 

@@ -39,10 +39,10 @@
   "scripts": {
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build",
-    "start": "npm run lint && react-scripts start",
-    "build": "npm run lint && react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
+    "start": "react-app-rewired start",
+    "build": "react-app-rewired build",
+    "test": "react-app-rewired test",
+    "eject": "react-app-rewired eject",
     "lint": "eslint ./src --ignore-pattern assets/* --ext .js,.jsx,.ts,.tsx"
   },
   "eslintConfig": {
@@ -68,6 +68,9 @@
     "@mui/x-data-grid": "^7.19.0",
     "@types/lodash": "^4.17.6",
     "eslint-plugin-react": "^7.37.1",
-    "gh-pages": "^6.1.1"
+    "gh-pages": "^6.1.1",
+    "react-app-rewired": "^2.2.1",
+    "ts-loader": "^9.5.1",
+    "tsconfig-paths-webpack-plugin": "^4.1.0"
   }
 }

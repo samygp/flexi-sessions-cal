@@ -6,6 +6,16 @@
       "dom.iterable",
       "esnext"
     ],
+    "sourceMap": true,
+    "baseUrl": "./",
+    "paths": {      
+      "@shared/*": ["src/shared/*"],
+      "@components/*": ["src/components/*"],
+      "@views/*": ["src/views/*"],
+      "@hooks/*": ["src/hooks/*"],
+      "@services/*": ["src/services/*"],
+      "@config": ["src/config.json"]
+    },
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,

@@ -1,8 +1,8 @@
 import { useContext } from "react";
 
-import DataContext, { IEventsContext, IMonkehsContext } from "../shared/models/context/DataContext";
-import SessionContext from "../shared/models/context/SessionContext";
-import HeaderContext from "../shared/models/context/HeaderContext";
+import DataContext, { IEventsContext, IMonkehsContext } from "@shared/models/context/DataContext";
+import SessionContext from "@shared/models/context/SessionContext";
+import HeaderContext from "@shared/models/context/HeaderContext";
 
 export const useSessionContext = () => useContext(SessionContext);
 

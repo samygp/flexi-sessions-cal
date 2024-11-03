@@ -1,9 +1,9 @@
-import EventCalendarContextProvider from "../components/ContextProviders/EventCalendarContextProvider";
+import EventCalendarContextProvider from "@components/ContextProviders/EventCalendarContextProvider";
 import { Navigate, Route, Routes } from "react-router-dom";
-import CalendarView from "./EventCalendarView";
-import MonkehView from "./MonkehView";
-import ElementOrLogin from "../components/Other/ElementOrLogin";
-import { PathName } from "../shared/models/Routes";
+import CalendarView from "@views/EventCalendarView";
+import MonkehView from "@views/MonkehView";
+import ElementOrLogin from "@components/Other/ElementOrLogin";
+import { PathName } from "@shared/models/Routes";
 
 export default function MainView() {
     return (
