@@ -32,7 +32,7 @@ export interface ICalendarEventAPI {
   createCalendarEvent: (evt: Omit<CalendarEvent, 'id'>) => Promise<CalendarEvent | CalendarEvent[] | undefined>;
   updateCalendarEvent: (evt: CalendarEvent) => Promise<CalendarEvent | CalendarEvent[] | undefined>;
   removeCalendarEvents: (evt: ICalendarEventQuery) => Promise<CalendarEvent | CalendarEvent[] | undefined>;
-  fetchYear: (year: number) => Promise<void>;
+  fetchYear: (year: number, force?: boolean) => Promise<void>;
   loading: boolean;
   error?: Error;
 }
@@ -80,8 +80,9 @@ export default function useCalendarEventAPI(cache?: IItemCache<CalendarEvent[]>)
   }, [remove, handleAPIResult]);
 
 
-  const fetchYear = useCallback(async (year: number) => {
-    if (loading || fetchedYears.has(year)) return;
+  const fetchYear = useCallback(async (year: number, force?: boolean) => {
+    const skip = !force && fetchedYears.has(year);
+    if (loading || skip) return;
     const query = { from: beginningOf.year(year), to: endOf.year(year) };
     await fetchCalendarEvents(query);
   }, [fetchCalendarEvents, fetchedYears, loading]);

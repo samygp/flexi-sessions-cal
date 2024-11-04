@@ -9,6 +9,9 @@ import BaseViewLayout from "@views/BaseViewLayout";
 import { CalendarIcon } from "@mui/x-date-pickers";
 import { ButtonGroup, Divider, IconButton, Typography } from "@mui/material";
 import { Refresh, AddCircleOutline } from "@mui/icons-material";
+import { useLocale } from "@hooks/useLocale";
+import { HeaderLabels } from "@shared/locale/appUI";
+import { EventViewLabels } from "@shared/locale/events";
 
 interface IEventCalendarViewLeftContentProps {
     currMonth: Moment;
@@ -18,9 +21,10 @@ interface IEventCalendarViewLeftContentProps {
 function EventCalendarViewLeftContent(props: IEventCalendarViewLeftContentProps) {
     const { currMonth, setCurrMonth } = props;
     const { eventsAPI: { fetchYear }, loading } = useEventsContext();
+    const labels = useLocale<string>(EventViewLabels);
 
-    const onYearChange = useCallback(async (m: Moment) => {
-        await fetchYear(m.year());
+    const onYearChange = useCallback(async (m: Moment, force?: boolean) => {
+        await fetchYear(m.year(), force);
     }, [fetchYear]);
 
     const calendarProps = useMemo(() => {
@@ -33,14 +37,15 @@ function EventCalendarViewLeftContent(props: IEventCalendarViewLeftContentProps)
                 <OpenModalButton<ICalendarEventFormModalProps>
                     startIcon={<AddCircleOutline />}
                     Modal={CalendarEventModal}
-                    label="New Event"
+                    label={labels.AddEvent}
                     sx={{ width: "fit-content" }}
                     variant="text"
-                    modalProps={{ title: "Create Event", TitleIcon: CalendarIcon, operation: "create" }}
+                    size="small"
+                    modalProps={{ title: labels.AddEvent, TitleIcon: CalendarIcon, operation: "create" }}
                 />
-                <IconButton onClick={() => onYearChange(currMonth)} size="small">
+                <IconButton onClick={() => onYearChange(currMonth, true)} size="small">
                     <Refresh color="primary" />
-                    <Typography variant="body2" color={"primary"} >Refresh Events</Typography>
+                    <Typography variant="body2" color={"primary"} >{labels.RefreshEvents}</Typography>
                 </IconButton>
             </ButtonGroup>
             <Divider />
@@ -53,9 +58,11 @@ export default function EventCalendarView() {
     const [currMonth, setCurrMonth] = useState<Moment>(moment());
     const { setTitle } = useHeaderContext();
 
+    const { Calendar: calendarHeaderLabel } = useLocale<string>(HeaderLabels);
+
     const currYear = useMemo(() => currMonth.year(), [currMonth]);
 
-    useEffect(() => setTitle(`Eventotes ${currYear}`), [currYear, setTitle]);
+    useEffect(() => setTitle(`${calendarHeaderLabel} ${currYear}`), [currYear, setTitle, calendarHeaderLabel]);
 
     const { error, dateGroupedEventMap } = useEventsContext();
     const tableRows = useMemo(() => {

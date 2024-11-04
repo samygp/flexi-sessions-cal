@@ -11,6 +11,10 @@ import EditIcon from '@mui/icons-material/Edit';
 import { useEventsContext, useHeaderContext } from "@hooks/useCustomContext";
 import { CalendarEvent } from "@shared/models/CalendarEvents";
 import EventTable from "@components/DataDisplay/Tables/EventTable";
+import { useMount } from "react-use";
+import { useLocale } from "@hooks/useLocale";
+import { HeaderLabels } from "@shared/locale/appUI";
+import { MonkehViewLabels } from "@shared/locale/monkeh";
 
 interface IMonkehViewContentProps {
     selectedMonkeh: IMonkeh;
@@ -46,7 +50,7 @@ function MonkehViewMainContent({ selectedMonkeh: monkeh, setSelectedMonkeh: setM
             monkeh,
             setMonkeh,
             onClose: () => setEditMode(false),
-            onSuccess: () => setEventMessage({ message: 'Monkeh Updated!', severity: 'success' }),
+            onSuccess: () => setEventMessage({ message: 'Monkeh ok!', severity: 'success' }),
             onError: (err: any) => setEventMessage({ message: `Failed to update monkeh: ${err}`, severity: 'error' }),
         };
     }, [monkeh, setMonkeh, setEventMessage]);
@@ -70,13 +74,18 @@ function MonkehViewMainContent({ selectedMonkeh: monkeh, setSelectedMonkeh: setM
 
 export default function MonkehView() {
     const [selectedMonkeh, setSelectedMonkeh] = useState<IMonkeh>(defaultDummyMonkeh);
-    useHeaderContext().setTitle('Monkehs');
+    const {setTitle} = useHeaderContext();
+    const { Monkeh: monkehHeaderLabel } = useLocale<string>(HeaderLabels);
+    const { SelectMonkehPlaceholder } = useLocale<string>(MonkehViewLabels);
+    useMount(() => {
+        setTitle(monkehHeaderLabel);
+    });
 
     return (
         <BaseViewLayout leftContent={<MonkehList onMonkehSelect={setSelectedMonkeh} />}>
             {!!selectedMonkeh.id
                 ? <MonkehViewMainContent {...{ selectedMonkeh, setSelectedMonkeh }} />
-                : <><Face5Icon />Where Monkeh? (select monkeh)</>}
+                : <><Face5Icon sx={{marginBottom: '-6px', marginRight: 1}}/>{SelectMonkehPlaceholder}</>}
         </BaseViewLayout>
     );
 }

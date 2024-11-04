@@ -5,6 +5,8 @@ import SubmitButtonGroup from "@components/Inputs/Buttons/SubmitButtonGroup";
 import { useMonkehContext } from "@hooks/useCustomContext";
 import { useCallback } from "react";
 import { Divider, Grid } from "@mui/material";
+import { useLocale } from "@hooks/useLocale";
+import { MonkehFieldLabels } from "@shared/locale/monkeh";
 
 interface IMonkehFormProps {
     monkeh: IMonkeh;
@@ -49,11 +51,12 @@ export function EditMonkehForm({ monkeh, onClose, onError, onSuccess, ...props }
 }
 
 export default function MonkehForm({ setMonkeh, readOnly, monkeh }: IMonkehFormProps) {
+    const labels = useLocale<keyof IMonkeh>(MonkehFieldLabels);
     const fieldMappings: IFieldMapping<IMonkeh>[] = [
-        { label: "Name", fieldType: "text", fieldName: "name" },
-        { label: "Email", fieldType: "text", fieldName: "email" },
-        { label: "Level", fieldType: "custom", fieldName: "level", CustomFieldComponent: ErreDropdown },
-        { label: "Birthday", fieldType: "monthday", fieldName: "birthday" },
+        { label: labels.name, fieldType: "text", fieldName: "name" },
+        { label: labels.email, fieldType: "text", fieldName: "email" },
+        { label: labels.level, fieldType: "custom", fieldName: "level", CustomFieldComponent: ErreDropdown },
+        { label: labels.birthday, fieldType: "monthday", fieldName: "birthday" },
     ];
 
     return <GenericForm<IMonkeh>

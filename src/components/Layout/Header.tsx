@@ -6,23 +6,18 @@ import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { useHeaderContext, useSessionContext } from "@hooks/useCustomContext";
-import { CalendarIcon } from "@mui/x-date-pickers";
-import Face5Icon from '@mui/icons-material/Face5';
-import { Biotech, Cake, Class, MenuBook, SportsKabaddi } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
-import { getPath, PathName } from "@shared/models/Routes";
-import GenericList, { IListItemProps } from "@components/DataDisplay/Lists/GenericList";
+import GenericList from "@components/DataDisplay/Lists/GenericList";
+import { useLocale } from "@hooks/useLocale";
+import { DrawerLabels, HeaderLabels } from "@shared/locale/appUI";
+import { DrawerItem, DrawerItemsConfigMap, DrawerSection } from "@shared/models/AppUI";
+import LanguageDropdown from "@components/Inputs/Dropdowns/LanguageDropdown";
 
 // ******** INTERFACES ********
 
 interface IDrawerProps {
     open?: boolean;
     onClick: () => void;
-}
-
-interface IHeaderListItem {
-    icon?: JSX.Element;
-    path: string;
 }
 
 // ******** STYLES ********
@@ -45,33 +40,6 @@ const StyledDrawer = styled(Drawer)(({ theme }) => ({
     },
 }));
 
-// ******** DATA ********
-
-const sessionsListItemMap: Record<string, IHeaderListItem> = Object.freeze({
-    "Calendario": {
-        icon: <CalendarIcon />,
-        path: getPath(PathName.calendar),
-    },
-    "Bibliograficas": {
-        icon: <Class />,
-        path: getPath(PathName.calendar),
-    },
-    "Clínicas": {
-        icon: <Biotech />,
-        path: getPath(PathName.calendar),
-    },
-});
-
-const monkehsListItemMap: Record<string, IHeaderListItem> = Object.freeze({
-    "Todos los Monkehs": {
-        icon: <SportsKabaddi />,
-        path: getPath(PathName.monkeh),
-    },
-    "Cumpleaños": {
-        icon: <Cake />,
-        path: getPath(PathName.monkeh),
-    },
-});
 
 // ******** COMPONENTS ********
 
@@ -84,33 +52,47 @@ function DrawerButton({ onClick, open }: IDrawerProps) {
     );
 }
 
-function HeaderDrawer({ onClick, open }: IDrawerProps) {
-    const theme = useTheme();
+function useDrawerItems(onClick: () => void) {
     const navigate = useNavigate();
+    const sessionLabels = useLocale<DrawerItem>(DrawerLabels[DrawerSection.Sessions]);
+    const monkehsLabels = useLocale<DrawerItem>(DrawerLabels[DrawerSection.Monkeh]);
+    const labels = useMemo<Record<DrawerSection, Record<DrawerItem, string>>>(() => {
+        return {
+            [DrawerSection.Sessions]: sessionLabels,
+            [DrawerSection.Monkeh]: monkehsLabels
+        };
+    }, [sessionLabels, monkehsLabels]);
 
-    const navigateAndCloseDrawerCallback = useCallback((path: string) => {
+    const navigateCallback = useCallback((path: string) => {
         return () => {
             navigate(path);
             onClick();
         };
     }, [navigate, onClick]);
 
-    const getListEntries = useCallback((itemMap: Record<string, IHeaderListItem>) => {
-        return Object.entries(itemMap).map(([text, { icon, path }]) => {
-            return { text, icon, onClick: navigateAndCloseDrawerCallback(path) };
+    const getSectionItems = useCallback((section: DrawerSection) => {
+        const sectionLabels = labels[section];
+        return DrawerItemsConfigMap[section].map(({ item, IconComponent, path }) => {
+            const divider = item === DrawerItem.Divider;
+            const onClick = divider ? undefined : navigateCallback(path);
+            return {
+                divider,
+                text: sectionLabels[item],
+                icon: <IconComponent />,
+                onClick,
+                path,
+            }
         });
-    }, [navigateAndCloseDrawerCallback]);
+    }, [navigateCallback, labels]);
 
-    const sessionsList = useMemo<IListItemProps[]>(() => {
-        const sessionsDivider = { text: "Sesiones", icon: <MenuBook />, divider: true };
-        return [sessionsDivider, ...getListEntries(sessionsListItemMap)];
-    }, [getListEntries]);
+    const items = useMemo(() => Object.values(DrawerSection).flatMap(getSectionItems), [getSectionItems]);
 
-    const monkehsList = useMemo<IListItemProps[]>(() => {
-        const monkehsDivider = { text: "Monkehs", icon: <Face5Icon />, divider: true };
-        return [monkehsDivider, ...getListEntries(monkehsListItemMap)];
-    }, [getListEntries]);
+    return items;
+}
 
+function HeaderDrawer({ onClick, open }: IDrawerProps) {
+    const theme = useTheme();
+    const drawerItems = useDrawerItems(onClick);
 
     return (
         <StyledDrawer variant="persistent" anchor="left" open={open} onClose={onClick}>
@@ -119,8 +101,7 @@ function HeaderDrawer({ onClick, open }: IDrawerProps) {
                     {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
                 </IconButton>
             </DrawerHeader>
-            <GenericList items={sessionsList} />
-            <GenericList items={monkehsList} />
+            <GenericList items={drawerItems} />
         </StyledDrawer>
     );
 }
@@ -128,10 +109,11 @@ function HeaderDrawer({ onClick, open }: IDrawerProps) {
 
 export default function Header() {
     const { isAuthenticated, logout } = useSessionContext();
+    const {Logout: logoutLabel} = useLocale<string>(HeaderLabels);
     const onLogoutClick = useCallback((e: any) => {
         e.preventDefault();
-        if (window.confirm("logout?")) logout();
-    }, [logout]);
+        if (window.confirm(`${logoutLabel}?`)) logout();
+    }, [logout, logoutLabel]);
 
     const [drawerOpen, setDrawerOpen] = useState(false);
     const onDrawerButtonClick = useCallback(() => setDrawerOpen(prev => !prev), [setDrawerOpen]);
@@ -141,13 +123,15 @@ export default function Header() {
         <Box sx={{ display: isAuthenticated ? 'flex' : 'none' }} marginX={2} component={Paper}>
             <AppBar position="static" color="transparent" >
                 <RefreshDialog />
-                {isAuthenticated && <Toolbar sx={{ paddingY: 2.5 }}>
+                {isAuthenticated && <Toolbar sx={{ paddingY: 2.5, gap: 2 }}>
                     <DrawerButton onClick={onDrawerButtonClick} open={drawerOpen} />
                     <Typography variant="h4" component="div" sx={{ flexGrow: 1 }}>
                         {title}
                     </Typography>
-                    <Button variant="contained" onClick={onLogoutClick}>Logout</Button>
+                    <LanguageDropdown />
+                    <Button variant="outlined" color="secondary" onClick={onLogoutClick}>{logoutLabel}</Button>
                 </Toolbar>}
+                
             </AppBar >
             <HeaderDrawer open={drawerOpen} onClick={onDrawerButtonClick} />
         </Box>

@@ -1,6 +1,23 @@
 import { LocalizedText } from ".";
 import { IMonkeh } from "../models/Monkeh";
 
+export const MonkehViewLabels: Record<string, LocalizedText> = Object.freeze({
+    AddMonkeh: {
+        en: "Add Monkeh",
+        fr: "Ajouter Monkeh",
+        es: "Agregar Monkeh",
+    },
+    RefreshMonkehs: {
+        en: "Refresh Monkehs",
+        fr: "Refraichir Monkehs",
+        es: "Refrescar Monkehs",
+    },
+    SelectMonkehPlaceholder: {
+        en: "Where Monkeh? (Select Monkeh)",
+        fr: "Ou Monkeh? (Choisir Monkeh)",
+        es: "Dónde Monkeh? (Seleccionar Monkeh)",
+    }
+})
 
 export const MonkehFieldLabels: Record<keyof IMonkeh, LocalizedText> = Object.freeze({
     id: {
@@ -19,9 +36,9 @@ export const MonkehFieldLabels: Record<keyof IMonkeh, LocalizedText> = Object.fr
         es: "Email"
     },
     level: {
-        en: "Level",
-        fr: "Niveau",
-        es: "Nivel"
+        en: "Level (R)",
+        fr: "Niveau (R)",
+        es: "Erre"
     },
     birthday: {
         en: "Birthday",

@@ -9,6 +9,8 @@ import OpenModalButton from "@components/Inputs/Buttons/OpenModalButton";
 import MonkehModal, { IMonkehFormModalProps } from "@components/Layout/Modals/MonkehModal";
 import Face5Icon from '@mui/icons-material/Face5';
 import GenericList, { IListItemProps } from "./GenericList";
+import { useLocale } from "@hooks/useLocale";
+import { MonkehViewLabels } from "@shared/locale/monkeh";
 
 interface IMonkehListProps {
     onMonkehSelect: (monkeh: IMonkeh) => void;
@@ -16,20 +18,22 @@ interface IMonkehListProps {
 
 function MonkehButtons() {
     const { monkehAPI: { fetchMonkehs } } = useMonkehContext();
+    const labels = useLocale<string>(MonkehViewLabels);
 
     return (
         <ButtonGroup fullWidth sx={{justifyContent: "space-around"}}>
             <OpenModalButton<IMonkehFormModalProps>
                 startIcon={<AddCircleOutline />}
                 Modal={MonkehModal}
-                label="Add Monkeh"
+                label={labels.AddMonkeh}
                 sx={{ width: "fit-content" }}
-                modalProps={{ operation: "create", title: "Add Monkeh", TitleIcon: Face5Icon }}
+                size="small"
+                modalProps={{ operation: "create", title: labels.AddMonkeh, TitleIcon: Face5Icon }}
                 variant="text"
             />
             <IconButton onClick={() => fetchMonkehs({})} size="small">
                 <Refresh color="primary" />
-                <Typography variant="body2" color={"primary"} >Refresh Monkeh List</Typography>
+                <Typography variant="body2" color={"primary"} >{labels.RefreshMonkehs}</Typography>
             </IconButton>
         </ButtonGroup>
     );
