@@ -2,7 +2,7 @@ import Box from '@mui/material/Box';
 import { DataGrid, GridActionsCellItem, GridColDef, GridComparatorFn, GridRenderCellParams } from '@mui/x-data-grid';
 import { Delete, Edit } from '@mui/icons-material';
 import { useCallback, useMemo } from 'react';
-import { CalendarEvent } from '@shared/models/CalendarEvents';
+import { CalendarEvent, EventType } from '@shared/models/CalendarEvents';
 import { readableDateTime } from '@shared/utils/dateHelpers';
 import { useMonkehContext } from '@hooks/useCustomContext';
 import MonkehTag from '@components/DataDisplay/Tags/MonkehTag';
@@ -16,7 +16,8 @@ interface IEventTableProps {
 
 export default function EventTable({ rows }: IEventTableProps) {
     const { monkehMap } = useMonkehContext();
-    const labels = useLocale<keyof CalendarEvent>(CalendarEventFieldLabels);
+    const fieldLabels = useLocale<keyof CalendarEvent>(CalendarEventFieldLabels);
+    const eventTypeLabels = useLocale<EventType>(EventTypeLabels);
     const getMonkehName = useCallback(({value: monkehId}: GridRenderCellParams<CalendarEvent, string>) => {
         const {level, name} = monkehMap[monkehId!];
         return (
@@ -34,10 +35,10 @@ export default function EventTable({ rows }: IEventTableProps) {
 
     const columns: GridColDef<CalendarEvent>[] = useMemo(() => [
         // { field: 'id', headerName: 'ID', hideable: true },
-        { field: 'eventType', headerName: labels.eventType, width: 100, valueFormatter: value => EventTypeLabels[value]},
-        { field: 'title', headerName: labels.title, flex: 1 },
-        { field: 'monkehId', headerName: labels.monkehId, flex: 1, renderCell: getMonkehName, sortComparator: sortByMonkeh },
-        { field: 'date', headerName: labels.date, valueGetter: readableDateTime, width: 170 },
+        { field: 'eventType', headerName: fieldLabels.eventType, flex: 1, valueFormatter: value => eventTypeLabels[value]},
+        { field: 'title', headerName: fieldLabels.title, flex: 2 },
+        { field: 'monkehId', headerName: fieldLabels.monkehId, flex: 1, renderCell: getMonkehName, sortComparator: sortByMonkeh },
+        { field: 'date', headerName: fieldLabels.date, valueGetter: readableDateTime, width: 170 },
         {
             field: 'actions', type: 'actions', width: 80, getActions: ({ row: { id } }) => [
                 <GridActionsCellItem
@@ -52,7 +53,7 @@ export default function EventTable({ rows }: IEventTableProps) {
                 />,
             ]
         },
-    ], [getMonkehName, sortByMonkeh, labels]);
+    ], [getMonkehName, sortByMonkeh, eventTypeLabels, fieldLabels]);
     return (
         <Box sx={{ height: 400, width: '100%' }}>
             <DataGrid

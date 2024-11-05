@@ -88,7 +88,7 @@ export default function Calendar<T>(props: ICalendarProps<T>) {
     const onMonthChange = useCallback((m: Moment) => {
         setCurrentMonth(m.month());
         if (onMonthChangeCallback) onMonthChangeCallback(m);
-    }, [onMonthChangeCallback]);
+    }, [onMonthChangeCallback, setCurrentMonth]);
 
     const modalProps = useMemo<IDayEntriesModalProps<T>>(() => {
         const entries = entryMap.getEntriesForDate(selectedDay);

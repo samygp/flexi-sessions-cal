@@ -17,11 +17,11 @@ const getDescription = (event: CalendarEvent): string => {
   return `${readableDateTime(event.date)} | [${event.monkehId}] - ${event.title}`;
 }
 
-export default function EventCalendar({ onYearChange, onDaySelect }: IEventCalendarProps) {
+export default function EventCalendar(props: IEventCalendarProps) {
   const { loading, dateGroupedEventMap } = useEventsContext();
 
   return <Calendar<CalendarEvent>
-    {...{ onDaySelect, onYearChange, loading, getDescription }}
+    {...{ ...props, loading, getDescription }}
     entryMap={dateGroupedEventMap}
     getAvatar={EventTypeTag}
   />
