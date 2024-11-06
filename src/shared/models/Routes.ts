@@ -3,6 +3,7 @@ export enum PathName {
     calendar = 'calendar',
     app = 'app',
     monkeh = 'monkeh',
+    eventRules = 'event-rules',
     login = 'login'
 };
 
@@ -12,6 +13,7 @@ export const PathTrace: Record<PathName, PathName | ''> = {
     [PathName.app]: '',
     [PathName.monkeh]: PathName.app,
     [PathName.login]: '',
+    [PathName.eventRules]: PathName.app
 } as const;
 
 const getPathParent = (path: PathName) => {

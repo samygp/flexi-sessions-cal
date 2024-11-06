@@ -22,11 +22,17 @@ interface IGenericListItemProps extends IListItemProps {
     selected?: boolean;
 }
 
+interface IGenericListProps {
+    items: IListItemProps[];
+    defaultSelectedIndex?: number;
+    loading?: boolean;
+}
+
 function ListDivider({ icon, text, align }: IListItemProps) {
     return (
-        <Divider textAlign={align} >
-            {icon}
-            <Typography variant="body1" display={!!text ? "inline-flex" : "none"}>{text}</Typography>
+        <Divider textAlign={align} flexItem sx={{ margin: 1 }}>
+                {icon}
+                <Typography variant="body1" display={!!text ? "inherit" : "none"}>{text}</Typography>
         </Divider>
     );
 };
@@ -44,24 +50,24 @@ function GenericListItem(props: IGenericListItemProps) {
     );
 }
 
-export default function GenericList({ items, loading }: { items: IListItemProps[], loading?: boolean }) {
-    const [selectedItem, setSelectedItem] = useState<number>();
+export default function GenericList({ items, loading, defaultSelectedIndex }: IGenericListProps) {
+    const [selectedItem, setSelectedItem] = useState<number>(0);
 
     return (
         <List>
-            {loading 
+            {loading
                 ? <CircularProgress />
                 : items.map((item, index) => (
-                <GenericListItem key={index} {...item} selected={selectedItem === index}
-                    onClick={() => {
-                        if (item.onClick) {
-                            setSelectedItem(index);
-                            item.onClick();
-                        }
-                    }}
-                />
-            )
-            )}
+                    <GenericListItem key={index} {...item} selected={selectedItem === index}
+                        onClick={() => {
+                            if (item.onClick) {
+                                setSelectedItem(index);
+                                item.onClick();
+                            }
+                        }}
+                    />
+                )
+                )}
         </List>
     );
 }

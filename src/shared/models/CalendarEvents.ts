@@ -1,4 +1,5 @@
-import { colors } from '@mui/material';
+import { EventBusy, PersonSearch, Biotech, Class, SvgIconComponent, RotateRight, BeachAccess, AcUnit } from '@mui/icons-material';
+import { ChipOwnProps } from '@mui/material';
 import moment from 'moment';
 
 export enum EventType {
@@ -27,10 +28,20 @@ export const EventTypeCategoryMap: Record<EventType, EventCategory> = {
     [EventType.Override]: EventCategory.Blocked,
 }
 
-export const EventCategoryColorMap: Record<EventCategory, string> = Object.freeze({
-    [EventCategory.Session]: colors.green[300],
-    [EventCategory.Blocked]:  colors.deepOrange[300],
-    [EventCategory.Personal]: colors.deepPurple[200],
+export const EventTypeIconMap: Record<EventType, SvgIconComponent> = {
+    [EventType.Biblio]: Class,
+    [EventType.Clinic]: Biotech,
+    [EventType.Rotation]: RotateRight,
+    [EventType.Vacation]: BeachAccess,
+    [EventType.Holiday]: AcUnit,
+    [EventType.Consultation]: PersonSearch,
+    [EventType.Override]: EventBusy,
+}
+
+export const EventCategoryColorMap: Record<EventCategory, ChipOwnProps['color']> = Object.freeze({
+    [EventCategory.Session]: "success",
+    [EventCategory.Blocked]:  "warning",
+    [EventCategory.Personal]: "secondary",
 });
 
 export type CalendarEvent = {
@@ -74,4 +85,8 @@ export const calendarEventKeys: readonly (keyof CalendarEvent)[] = Object.keys(d
 export const deserializeCalendarEvent = (cacheString: string): CalendarEvent[] => {
     const events: ICachedEvent[] = JSON.parse(cacheString);
     return events.map(evt => ({ ...evt, date: moment(evt.date) }));
+}
+
+export const getCategoryEventTypes = (category: EventCategory): EventType[] => {
+    return Object.values(EventType).filter(evt => EventTypeCategoryMap[evt] === category);
 }

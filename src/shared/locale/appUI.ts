@@ -16,6 +16,11 @@ export const HeaderLabels: Record<string, LocalizedText> = Object.freeze({
         en: "Logout",
         fr: "Deconnexion",
         es: "Cerrar Sesión"
+    },
+    EventRules: {
+        en: "Event Rules",
+        fr: "Régles D'événements",
+        es: "Reglas De Eventos",
     }
 });
 
@@ -59,6 +64,18 @@ export const DrawerLabels: Record<DrawerSection, DrawerSectionLabels> = Object.f
             en: "Birthdays",
             fr: "Anniversaires",
             es: "Cumpleaños",
+        },
+    },
+    [DrawerSection.EventConfig]: {
+        [DrawerItem.Divider]: {
+            en: "Event Config",
+            fr: "Gérer Événements",
+            es: "Configuración De Eventos",
+        },
+        [DrawerItem.EventRules]: {
+            en: "Event Rules",
+            fr: "Règles D'événement",
+            es: "Reglas De Evento",
         },
     }
 });

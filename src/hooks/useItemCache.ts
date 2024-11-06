@@ -1,15 +1,9 @@
 import { useMemo } from "react";
 import { useLocalStorage, useUpdateEffect } from "react-use";
 import { nowSeconds, secondsSince } from "@shared/utils/dateHelpers";
-import { Moment, unix } from "moment";
+import { unix } from "moment";
 import { ISerializerConfig } from "@shared/models/Data";
-
-export interface IItemCache<T> {
-    value: T;
-    setValue: React.Dispatch<React.SetStateAction<T | undefined>>;
-    lastUpdated?: Moment;
-    isOutdated: boolean;
-}
+import { IItemCache } from "@shared/models/Data";
 
 const getSerializerOptions = <T>(opts?: ISerializerConfig<T>) => {
     return {

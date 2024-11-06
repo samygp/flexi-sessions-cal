@@ -1,11 +1,12 @@
 import { CalendarIcon } from "@mui/x-date-pickers";
 import SvgIcon from '@mui/material/SvgIcon';
-import { Biotech, Cake, Class, MenuBook, SportsKabaddi, Face5 } from "@mui/icons-material";
+import { Biotech, Cake, Class, MenuBook, SportsKabaddi, Face5, SettingsApplications, ManageHistory } from "@mui/icons-material";
 import { getPath, PathName } from "./Routes";
 
 export enum DrawerSection {
     Sessions = "sessions",
     Monkeh = "monkeh",
+    EventConfig = "event-config"
 }
 
 export enum DrawerItem {
@@ -15,6 +16,7 @@ export enum DrawerItem {
     Clinic = 'clinic',
     AllMonkehs = 'all-monkehs',
     Birthdays = 'birthdays',
+    EventRules = 'event-rules',
 }
 
 export interface IDrawerItemConfig {
@@ -62,5 +64,17 @@ export const DrawerItemsConfigMap: Record<DrawerSection, IDrawerItemConfig[]> = 
             IconComponent: Cake,
             path: getPath(PathName.monkeh),
         },
-    ]
+    ],
+    [DrawerSection.EventConfig]: [
+        {
+            item: DrawerItem.Divider,
+            IconComponent: SettingsApplications,
+            path: getPath(PathName.eventRules),
+        },
+        {
+            item: DrawerItem.EventRules,
+            IconComponent: ManageHistory,
+            path: getPath(PathName.eventRules),
+        }
+    ],
 })

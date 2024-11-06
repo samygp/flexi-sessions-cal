@@ -32,10 +32,10 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 }));
 
 const StyledDrawer = styled(Drawer)(({ theme }) => ({
-    width: 240,
     flexShrink: 0,
     '& .MuiDrawer-paper': {
-        width: 240,
+        minWidth: 'max-content',
+        width: '32ex',
         boxSizing: 'border-box',
     },
 }));
@@ -43,8 +43,8 @@ const StyledDrawer = styled(Drawer)(({ theme }) => ({
 
 // ******** COMPONENTS ********
 
-function DrawerButton({ onClick, open }: IDrawerProps) {
-    const sx = useMemo<SxProps>(() => [{ mr: 2 }, open ? { display: 'none' } : {}], [open]);
+function DrawerButton({ onClick }: IDrawerProps) {
+    const sx = useMemo<SxProps>(() => [{ mr: 2 }], []);
     return (
         <IconButton aria-label="open drawer" edge="start"{...{ onClick, sx }}>
             <MenuIcon />
@@ -56,12 +56,14 @@ function useDrawerItems(onClick: () => void) {
     const navigate = useNavigate();
     const sessionLabels = useLocale<DrawerItem>(DrawerLabels[DrawerSection.Sessions]);
     const monkehsLabels = useLocale<DrawerItem>(DrawerLabels[DrawerSection.Monkeh]);
+    const eventCfgLabels = useLocale<DrawerItem>(DrawerLabels[DrawerSection.EventConfig]);
     const labels = useMemo<Record<DrawerSection, Record<DrawerItem, string>>>(() => {
         return {
             [DrawerSection.Sessions]: sessionLabels,
-            [DrawerSection.Monkeh]: monkehsLabels
+            [DrawerSection.Monkeh]: monkehsLabels,
+            [DrawerSection.EventConfig]: eventCfgLabels,
         };
-    }, [sessionLabels, monkehsLabels]);
+    }, [sessionLabels, monkehsLabels, eventCfgLabels]);
 
     const navigateCallback = useCallback((path: string) => {
         return () => {
