@@ -1,5 +1,5 @@
-import { useSessionContext } from "@hooks/useCustomContext";
-import { LocalizedText } from "@shared/locale";
+import { useSessionContext } from "@/hooks/useCustomContext";
+import { LocalizedText } from "@/shared/locale";
 import { useMemo } from "react";
 
 

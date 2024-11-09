@@ -1,8 +1,8 @@
 import { useCallback, useMemo } from 'react';
-import useCRUDApiFetch, { ICrudAPIFetchOptions } from '@hooks/useApiFetch';
+import useCRUDApiFetch, { ICrudAPIFetchOptions } from '@/hooks/useApiFetch';
 import config from '../config.json';
-import { IMonkeh, IMonkehRequest, IMonkehResponse, parseMonkehResult, toMonkehRequest } from '@shared/models/Monkeh';
-import { IItemCache } from '@shared/models/Data';
+import { IMonkeh, IMonkehRequest, IMonkehResponse, parseMonkehResult, toMonkehRequest } from '@/shared/models/Monkeh';
+import { IItemCache } from '@/shared/models/Data';
 
 const MONKEH_ENDPOINT = 'api/monkeh';
 

@@ -1,4 +1,4 @@
-import { IFetchOptions, IFetchResponse } from "@shared/models/Rest";
+import { IFetchOptions, IFetchResponse } from "@/shared/models/Rest";
 import axios, { AxiosHeaders, AxiosRequestConfig } from "axios";
 
 const defaultHeaders = {

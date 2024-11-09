@@ -1,5 +1,5 @@
-import { LocalizedText } from "@shared/locale";
-import { DrawerItem, DrawerSection } from "@shared/models/AppUI";
+import { LocalizedText } from "@/shared/locale";
+import { DrawerItem, DrawerSection } from "@/shared/models/AppUI";
 
 export const HeaderLabels: Record<string, LocalizedText> = Object.freeze({
     Calendar: {
@@ -19,7 +19,7 @@ export const HeaderLabels: Record<string, LocalizedText> = Object.freeze({
     },
     EventRules: {
         en: "Event Rules",
-        fr: "Régles D'événements",
+        fr: "Conditions d'Événement",
         es: "Reglas De Eventos",
     }
 });
@@ -74,7 +74,7 @@ export const DrawerLabels: Record<DrawerSection, DrawerSectionLabels> = Object.f
         },
         [DrawerItem.EventRules]: {
             en: "Event Rules",
-            fr: "Règles D'événement",
+            fr: "Conditions d'Événement",
             es: "Reglas De Evento",
         },
     }

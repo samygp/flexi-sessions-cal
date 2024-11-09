@@ -1,6 +1,6 @@
 import { Grid, Alert } from "@mui/material";
 import { PropsWithChildren, useEffect, useState, ReactNode } from "react";
-import RoundedCard from "@components/DataDisplay/RoundedCard";
+import RoundedCard from "@/components/DataDisplay/RoundedCard";
 
 interface IBaseVewLayoutProps extends PropsWithChildren {
     error?: Error;

@@ -1,6 +1,6 @@
 import { FormControl, InputLabel, ListSubheader, MenuItem, Select, SelectChangeEvent, SelectProps } from "@mui/material";
 import { useCallback, useMemo } from "react";
-import { ISelectOption } from "@shared/models/Data";
+import { ISelectOption } from "@/shared/models/Data";
 import { groupBy } from "lodash";
 
 interface IGenericDropdownProps<T extends string | number> extends Omit<SelectProps, "onChange" | "defaultValue"> {

@@ -3,10 +3,10 @@ import { startCase } from "lodash";
 import { Box, TextField, Button, TextFieldProps, Alert } from "@mui/material";
 import { useInterval } from "react-use";
 import { Email } from "@mui/icons-material";
-import useLoginActions from "@hooks/useLoginActions";
-import { useSessionContext } from "@hooks/useCustomContext";
-import { isValidEmail } from "@shared/utils/stringHelpers";
-import EventSnackbar, { IEventSnackProps } from "@components/DataDisplay/EventSnackbar";
+import useLoginActions from "@/hooks/useLoginActions";
+import { useSessionContext } from "@/hooks/useCustomContext";
+import { isValidEmail } from "@/shared/utils/stringHelpers";
+import EventSnackbar, { IEventSnackProps } from "@/components/DataDisplay/EventSnackbar";
 
 type TextInputEvent = React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>;
 

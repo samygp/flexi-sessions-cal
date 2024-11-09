@@ -2,7 +2,7 @@ import { Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, B
 import { TransitionProps } from "@mui/material/transitions";
 import React, { useMemo, useState } from "react";
 import { useInterval } from "react-use";
-import { useSessionContext } from "@hooks/useCustomContext";
+import { useSessionContext } from "@/hooks/useCustomContext";
 
 const BASE_INTERVAL = 5000;
 

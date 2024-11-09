@@ -1,9 +1,9 @@
 import { useMemo } from "react";
 import { useLocalStorage, useUpdateEffect } from "react-use";
-import { nowSeconds, secondsSince } from "@shared/utils/dateHelpers";
+import { nowSeconds, secondsSince } from "@/shared/utils/dateHelpers";
 import { unix } from "moment";
-import { ISerializerConfig } from "@shared/models/Data";
-import { IItemCache } from "@shared/models/Data";
+import { ISerializerConfig } from "@/shared/models/Data";
+import { IItemCache } from "@/shared/models/Data";
 
 const getSerializerOptions = <T>(opts?: ISerializerConfig<T>) => {
     return {

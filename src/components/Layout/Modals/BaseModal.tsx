@@ -1,6 +1,6 @@
 import { Dialog, DialogActions, DialogContent, DialogTitle, SvgIcon } from "@mui/material";
 import { PropsWithChildren, useMemo } from "react";
-import SubmitButtonGroup, { ISubmitButtonGroupProps } from "@components/Inputs/Buttons/SubmitButtonGroup";
+import SubmitButtonGroup, { ISubmitButtonGroupProps } from "@/components/Inputs/Buttons/SubmitButtonGroup";
 
 export interface IBaseModalProps extends PropsWithChildren, ISubmitButtonGroupProps {
     open: boolean;

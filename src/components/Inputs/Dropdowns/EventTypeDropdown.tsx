@@ -1,9 +1,9 @@
-import { EventCategoryLabels, EventTypeLabels } from "@shared/locale/events";
-import { EventCategory, EventType, EventTypeCategoryMap } from "@shared/models/CalendarEvents";
-import { ISelectOption } from "@shared/models/Data";
-import GenericDropdown from "@components/Inputs/Dropdowns/GenericDropdown";
+import { EventCategoryLabels, EventTypeLabels } from "@/shared/locale/events";
+import { EventCategory, EventType, EventTypeCategoryMap } from "@/shared/models/CalendarEvents";
+import { ISelectOption } from "@/shared/models/Data";
+import GenericDropdown from "@/components/Inputs/Dropdowns/GenericDropdown";
 import { useMemo } from "react";
-import { useLocale } from "@hooks/useLocale";
+import { useLocale } from "@/hooks/useLocale";
 
 interface IEventTypeDropdownProps {
     value: EventType;

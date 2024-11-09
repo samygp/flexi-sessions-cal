@@ -1,6 +1,6 @@
 import { createContext } from "react";
-import { IOAuthTokens, AuthState } from "@shared/models/Auth";
-import { SupportedLocale } from "@shared/locale";
+import { IOAuthTokens, AuthState } from "@/shared/models/Auth";
+import { SupportedLocale } from "@/shared/locale";
 
 interface ISessionContext {
     accessToken?: string,

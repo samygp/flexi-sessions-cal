@@ -1,5 +1,5 @@
 import { Moment } from "moment";
-import { destructureDate } from "@shared/utils/dateHelpers";
+import { destructureDate } from "@/shared/utils/dateHelpers";
 
 type GroupedEntryMap = Map<number, Map<number, Map<number, Set<string>>>>;
 

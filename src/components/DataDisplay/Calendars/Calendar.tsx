@@ -16,8 +16,8 @@ import {
     ModalProps,
     Tooltip,
 } from '@mui/material';
-import { getDayID } from '@shared/utils/dateHelpers';
-import { DateGroupedEntryMap } from '@shared/models/DateGroupedEntryMap';
+import { getDayID } from '@/shared/utils/dateHelpers';
+import { DateGroupedEntryMap } from '@/shared/models/DateGroupedEntryMap';
 import { get } from 'lodash';
 
 // types

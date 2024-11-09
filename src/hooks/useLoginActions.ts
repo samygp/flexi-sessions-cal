@@ -1,6 +1,6 @@
 import { useState, useCallback, useMemo } from "react";
 import AuthService from "../services/auth/AuthService";
-import { IAuthResponse } from "@shared/models/Auth";
+import { IAuthResponse } from "@/shared/models/Auth";
 import { useSessionContext } from "./useCustomContext";
 
 interface ILoginActionParams {

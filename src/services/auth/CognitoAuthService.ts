@@ -13,8 +13,8 @@ import {
   RespondToAuthChallengeCommand,
   RespondToAuthChallengeCommandInput
 } from "@aws-sdk/client-cognito-identity-provider";
-import config from "@config";
-import { IOAuthTokens, Scopes, DEFAULT_SCOPES, IAuthResponse, IRespondToChallengeRequest } from "@shared/models/Auth";
+import config from "@/config.json";
+import { IOAuthTokens, Scopes, DEFAULT_SCOPES, IAuthResponse, IRespondToChallengeRequest } from "@/shared/models/Auth";
 
 import { CognitoJwtVerifier } from "aws-jwt-verify";
 

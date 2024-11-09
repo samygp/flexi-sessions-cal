@@ -1,8 +1,8 @@
-import { EventCategoryLabels, EventTypeLabels } from "@shared/locale/events";
-import { EventCategory, EventCategoryColorMap, EventType, EventTypeIconMap, getCategoryEventTypes } from "@shared/models/CalendarEvents";
+import { EventCategoryLabels, EventTypeLabels } from "@/shared/locale/events";
+import { EventCategory, EventCategoryColorMap, EventType, EventTypeIconMap, getCategoryEventTypes } from "@/shared/models/CalendarEvents";
 import { useCallback, useMemo } from "react";
-import { useLocale } from "@hooks/useLocale";
-import GenericList, { IListItemProps } from "@components/DataDisplay/Lists/GenericList";
+import { useLocale } from "@/hooks/useLocale";
+import GenericList, { IListItemProps } from "@/components/DataDisplay/Lists/GenericList";
 import { Chip, ChipOwnProps, Typography } from "@mui/material";
 
 interface IEventTypeListProps {

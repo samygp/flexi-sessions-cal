@@ -1,9 +1,9 @@
 import { Chip, styled, Tooltip, Typography } from "@mui/material";
 import { useMemo } from "react";
-import { CalendarEvent, EventType, EventTypeCategoryMap} from "@shared/models/CalendarEvents";
-import { EventTypeLabels } from "@shared/locale/events";
-import { EventCategoryColorMap } from "@shared/models/CalendarEvents";
-import { useLocale } from "@hooks/useLocale";
+import { CalendarEvent, EventType, EventTypeCategoryMap} from "@/shared/models/CalendarEvents";
+import { EventTypeLabels } from "@/shared/locale/events";
+import { EventCategoryColorMap } from "@/shared/models/CalendarEvents";
+import { useLocale } from "@/hooks/useLocale";
 
 const ChipText = styled(Typography)(({ theme }) => ({
     cursor: "default",

@@ -37,8 +37,7 @@ export const defaultDummyMonkeh: IMonkeh = Object.freeze({
     birthday: moment('1972-01-01'),
 })
 
-export interface IMonkehRequest extends Partial<Omit<IMonkeh, 'id' | 'birthday'>> {
-    id?: string;
+export interface IMonkehRequest extends Partial<Omit<IMonkeh, 'birthday'>> {
     birthday?: number;
 }
 

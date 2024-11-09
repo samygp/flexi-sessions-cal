@@ -1,8 +1,8 @@
 import { useCallback, useMemo, useState } from "react";
-import BaseModal, { IBaseModalProps } from "@components/Layout/Modals/BaseModal";
-import { useMonkehContext } from "@hooks/useCustomContext";
-import { defaultDummyMonkeh, IMonkeh } from "@shared/models/Monkeh";
-import MonkehForm from "@components/Inputs/Forms/MonkehForm";
+import BaseModal, { IBaseModalProps } from "@/components/Layout/Modals/BaseModal";
+import { useMonkehContext } from "@/hooks/useCustomContext";
+import { defaultDummyMonkeh, IMonkeh } from "@/shared/models/Monkeh";
+import MonkehForm from "@/components/Inputs/Forms/MonkehForm";
 
 export interface IMonkehFormModalProps extends IBaseModalProps {
     originalMonkeh?: IMonkeh

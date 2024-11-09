@@ -1,17 +1,17 @@
 import { useCallback, useMemo, useState } from "react";
-import RefreshDialog from '@components/Layout/Modals/RefreshDialog';
+import RefreshDialog from '@/components/Layout/Modals/RefreshDialog';
 import { AppBar, Box, Button, Drawer, IconButton, Paper, SxProps, Toolbar, Typography } from "@mui/material";
 import { styled, useTheme } from '@mui/material/styles';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import { useHeaderContext, useSessionContext } from "@hooks/useCustomContext";
+import { useHeaderContext, useSessionContext } from "@/hooks/useCustomContext";
 import { useNavigate } from "react-router-dom";
-import GenericList from "@components/DataDisplay/Lists/GenericList";
-import { useLocale } from "@hooks/useLocale";
-import { DrawerLabels, HeaderLabels } from "@shared/locale/appUI";
-import { DrawerItem, DrawerItemsConfigMap, DrawerSection } from "@shared/models/AppUI";
-import LanguageDropdown from "@components/Inputs/Dropdowns/LanguageDropdown";
+import GenericList from "@/components/DataDisplay/Lists/GenericList";
+import { useLocale } from "@/hooks/useLocale";
+import { DrawerLabels, HeaderLabels } from "@/shared/locale/appUI";
+import { DrawerItem, DrawerItemsConfigMap, DrawerSection } from "@/shared/models/AppUI";
+import LanguageDropdown from "@/components/Inputs/Dropdowns/LanguageDropdown";
 
 // ******** INTERFACES ********
 
