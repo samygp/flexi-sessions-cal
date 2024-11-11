@@ -1,5 +1,6 @@
 import { LocalizedText } from ".";
 import { CalendarEvent, EventCategory, EventType } from "../models/CalendarEvents";
+import { IEventRule } from "../models/EventRules";
 
 export const EventViewLabels: Record<string, LocalizedText> = Object.freeze({
     RefreshEvents: {
@@ -96,4 +97,35 @@ export const CalendarEventFieldLabels: Record<keyof CalendarEvent, LocalizedText
         fr: "Monkeh",
         es: "Monkeh"
     },
+});
+
+export const EventRuleViewLabels: Record<string, LocalizedText> = Object.freeze({
+    RefreshEventRules: {
+        en: "Refresh Event Rules",
+        fr: "Refraichir Conditions d'Événement",
+        es: "Refrescar Reglas De Eventos"
+    }
 })
+
+export const EventRuleFieldLabels: Record<keyof IEventRule, LocalizedText> = Object.freeze({
+    id: {
+        en: "ID",
+        fr: "ID",
+        es: "ID"
+    },
+    eventType: {
+        en: "Type",
+        fr: "Type",
+        es: "Tipo"
+    },
+    maxDailyEvents: {
+        en: "Max Daily Events",
+        fr: "Maximal Événements Par Jour",
+        es: "Maxima Cantidad De Eventos Por Dia"
+    },
+    daysOfWeek: {
+        en: "Days of Week",
+        fr: "Jours de la Semaine",
+        es: "Días De La Semana"
+    },
+});

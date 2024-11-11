@@ -1,36 +1,36 @@
-import { EventCategoryLabels, EventTypeLabels } from "@/shared/locale/events";
+import { EventCategoryLabels, EventRuleViewLabels, EventTypeLabels } from "@/shared/locale/events";
 import { EventCategory, EventCategoryColorMap, EventType, EventTypeIconMap, getCategoryEventTypes } from "@/shared/models/CalendarEvents";
 import { useCallback, useMemo } from "react";
 import { useLocale } from "@/hooks/useLocale";
 import GenericList, { IListItemProps } from "@/components/DataDisplay/Lists/GenericList";
-import { Chip, ChipOwnProps, Typography } from "@mui/material";
+import { IconButton, Typography } from "@mui/material";
+import { Refresh } from "@mui/icons-material";
+import { useEventRulesContext } from "@/hooks/useCustomContext";
+import CategoryChip from "@/components/DataDisplay/Tags/CategoryChip";
 
 interface IEventTypeListProps {
     value: EventType;
     onChange: (e: EventType) => void;
 }
 
-interface ICategoryDividerChipProps extends ChipOwnProps {
-    text: string;
-}
 
-const EventTypeText = ({text}: {text: string}) => {
+
+const EventTypeText = ({ text }: { text: string }) => {
     return <Typography variant="h6" margin={"1ex"}>{text}</Typography>
-}
-const CategoryChip = ({ text, ...props }: ICategoryDividerChipProps) => {
-    return <Chip {...props} label={<EventTypeText text={text} />} />;
-}
+};
 
-export default function EventTypeList({ value, onChange }: IEventTypeListProps) {
+export default function EventTypeList({ onChange }: IEventTypeListProps) {
     const typeLabels = useLocale<EventType>(EventTypeLabels);
     const categoryLabels = useLocale<EventCategory>(EventCategoryLabels);
+    const viewLabels = useLocale<string>(EventRuleViewLabels);
+    const { eventRulesAPI: { fetchRules } } = useEventRulesContext();
 
-    const getEventTypeEntry = useCallback((evtType: EventType): IListItemProps=> {
+    const getEventTypeEntry = useCallback((evtType: EventType): IListItemProps => {
         const EventIcon = EventTypeIconMap[evtType];
         return {
             text: <EventTypeText text={typeLabels[evtType]} />,
             onClick: () => onChange(evtType),
-            icon: <EventIcon/>,
+            icon: <EventIcon />,
         };
     }, [typeLabels, onChange]);
 
@@ -38,7 +38,7 @@ export default function EventTypeList({ value, onChange }: IEventTypeListProps) 
         const text = categoryLabels[cat];
         const color = EventCategoryColorMap[cat];
         return [
-            { divider: true, icon: <CategoryChip {...{text, color}} /> },
+            { divider: true, icon: <CategoryChip {...{ text, color }} /> },
             ...getCategoryEventTypes(cat).map(getEventTypeEntry),
         ];
     }, [categoryLabels, getEventTypeEntry]);
@@ -47,5 +47,11 @@ export default function EventTypeList({ value, onChange }: IEventTypeListProps) 
         return Object.values(EventCategory).flatMap(getCategoryEntries);
     }, [getCategoryEntries]);
 
-    return <GenericList loading={false} items={items} />;
+    return <>
+        <IconButton onClick={() => fetchRules({})} size="small">
+            <Refresh color="primary" />
+            <Typography variant="body2" color={"primary"} >{viewLabels.RefreshEventrules}</Typography>
+        </IconButton>
+        <GenericList loading={false} items={items} />
+    </>;
 }

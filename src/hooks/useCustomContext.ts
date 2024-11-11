@@ -1,6 +1,6 @@
 import { useContext } from "react";
 
-import DataContext, { IEventsContext, IMonkehsContext } from "@/shared/models/context/DataContext";
+import DataContext, { IEventRulesContext, IEventsContext, IMonkehsContext } from "@/shared/models/context/DataContext";
 import SessionContext from "@/shared/models/context/SessionContext";
 import HeaderContext from "@/shared/models/context/HeaderContext";
 
@@ -19,4 +19,9 @@ export const useEventsContext = (): IEventsContext => {
 export const useMonkehContext = (): IMonkehsContext => {
     const {monkehAPI, monkehMap} = useDataContext();
     return {monkehAPI, monkehMap, loading: monkehAPI.loading, error: monkehAPI.error};
+}
+
+export const useEventRulesContext = (): IEventRulesContext => {
+    const {eventRulesAPI, eventRulesMap} = useDataContext();
+    return {eventRulesAPI, eventRulesMap, loading: eventRulesAPI.loading, error: eventRulesAPI.error};
 }

@@ -5,6 +5,11 @@ export interface ISerializerConfig<T> {
     deserializer?: (value: string) => T;
 }
 
+export interface IBaseAPIHook {
+    loading: boolean;
+    error?: Error;
+}
+
 export interface IRecord {
     id: string;
 }

@@ -32,3 +32,7 @@ export const getMonthDate = (date: Moment) => date.local(true).format('MMM-DD (d
 export const nowSeconds = () => Math.floor(Date.now() / 1000);
 
 export const secondsSince = (date: Moment) => nowSeconds() - date.unix();
+
+export const getDayOfWeekName = (dayOfWeekNumber: number, locale?: string) => {
+    return moment().weekday(dayOfWeekNumber).locale(locale ?? true).format('ddd');
+}

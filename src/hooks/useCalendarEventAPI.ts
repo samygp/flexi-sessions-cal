@@ -4,7 +4,7 @@ import useCRUDApiFetch, { ICrudAPIFetchOptions } from '@/hooks/useApiFetch';
 import config from '@/config.json';
 import { unix } from 'moment';
 import { beginningOf, endOf } from '@/shared/utils/dateHelpers';
-import { IItemCache } from '@/shared/models/Data';
+import { IBaseAPIHook, IItemCache } from '@/shared/models/Data';
 
 interface IAPICalendarEvent extends Omit<CalendarEvent, 'date'> {
   date: number;
@@ -21,14 +21,12 @@ const toPostEventRequest = (event: CalendarEvent): IPostEventRequest => {
   return { ...event, date: event.date.unix() };
 }
 
-export interface ICalendarEventAPI {
+export interface ICalendarEventAPI extends IBaseAPIHook {
   fetchCalendarEvents: (filter: ICalendarEventQuery) => Promise<CalendarEvent | CalendarEvent[] | undefined>;
   createCalendarEvent: (evt: Omit<CalendarEvent, 'id'>) => Promise<CalendarEvent | CalendarEvent[] | undefined>;
   updateCalendarEvent: (evt: CalendarEvent) => Promise<CalendarEvent | CalendarEvent[] | undefined>;
   removeCalendarEvents: (evt: ICalendarEventQuery) => Promise<CalendarEvent | CalendarEvent[] | undefined>;
   fetchYear: (year: number, force?: boolean) => Promise<void>;
-  loading: boolean;
-  error?: Error;
 }
 
 const getDistinctYearSet = (calendarEvents: CalendarEvent[]) => {

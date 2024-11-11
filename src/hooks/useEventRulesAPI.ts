@@ -2,17 +2,15 @@ import { useCallback, useMemo } from 'react';
 import useCRUDApiFetch, { ICrudAPIFetchOptions } from './useApiFetch';
 import config from '../config.json';
 import { IEventRule } from '@/shared/models/EventRules';
-import { IItemCache } from '@/shared/models/Data';
+import { IBaseAPIHook, IItemCache } from '@/shared/models/Data';
 
 const RULES_ENDPOINT = 'api/eventRules';
 
 export type EventRuleAPIResult = IEventRule | IEventRule[] | void | undefined;
 
-export interface IEventRulesAPI {
+export interface IEventRulesAPI extends IBaseAPIHook {
   fetchRules: (filter: Partial<IEventRule>) => Promise<IEventRule | IEventRule[] | undefined>;
   updateRule: (rule: IEventRule) => Promise<IEventRule | IEventRule[] | undefined>;
-  loading: boolean;
-  error?: Error;
 }
 
 export default function useEventRulesAPI(cache?: IItemCache<IEventRule[]>): IEventRulesAPI {

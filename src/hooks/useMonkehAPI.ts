@@ -2,19 +2,17 @@ import { useCallback, useMemo } from 'react';
 import useCRUDApiFetch, { ICrudAPIFetchOptions } from '@/hooks/useApiFetch';
 import config from '../config.json';
 import { IMonkeh, IMonkehRequest, IMonkehResponse, parseMonkehResult, toMonkehRequest } from '@/shared/models/Monkeh';
-import { IItemCache } from '@/shared/models/Data';
+import { IBaseAPIHook, IItemCache } from '@/shared/models/Data';
 
 const MONKEH_ENDPOINT = 'api/monkeh';
 
 export type MonkehAPIResult = IMonkehResponse | IMonkehResponse[] | void | undefined;
 
-export interface IMonkehAPI {
+export interface IMonkehAPI extends IBaseAPIHook {
   fetchMonkehs: (filter: Partial<IMonkeh>) => Promise<IMonkeh | IMonkeh[] | undefined>;
   createMonkeh: (monkeh: Omit<IMonkeh, 'id'>) => Promise<IMonkeh | IMonkeh[] | undefined>;
   updateMonkeh: (monkeh: IMonkeh) => Promise<IMonkeh | IMonkeh[] | undefined>;
   deleteMonkehs: (filter: IMonkeh) => Promise<IMonkeh | IMonkeh[] | undefined>;
-  loading: boolean;
-  error?: Error;
 }
 
 export default function useMonkehAPI(cache?: IItemCache<IMonkeh[]>): IMonkehAPI {
