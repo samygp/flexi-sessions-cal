@@ -14,35 +14,29 @@ interface IMonkehDetailsProps {
 
 const CakeIcon = () => <Cake sx={{ marginBottom: '-0.2ex', paddingTop: '0.4ex' }} />
 
-function FullMonkehDetails({ monkeh, headerAction }: IMonkehDetailsProps) {
-    return (
-        <>
-            <Typography variant="h4" gutterBottom justifyItems={"center"} display={"inline-flex"} gap={2}>
-                <MonkehTag {...monkeh} />{monkeh.name} {headerAction}
-            </Typography>
-            <Typography>({monkeh.email})</Typography>
-            <Typography >
-                <CakeIcon /> {getMonthDate(monkeh.birthday)}
-            </Typography>
-        </>
-    );
-}
+const FullMonkehDetails = ({ monkeh, headerAction }: IMonkehDetailsProps) => (
+    <>
+        <Typography variant="h4" gutterBottom justifyItems={"center"} display={"inline-flex"} gap={2}>
+            <MonkehTag {...monkeh} />{monkeh.name} {headerAction}
+        </Typography>
+        <Typography>({monkeh.email})</Typography>
+        <Typography >
+            <CakeIcon /> {getMonthDate(monkeh.birthday)}
+        </Typography>
+    </>
+);
 
-function CompactMonkehDetails({ monkeh: {name, level} }: IMonkehDetailsProps) {
-    return (
-        <>
-            <Typography justifyItems={"center"} display={"inline-flex"} gap={2}>
-                <MonkehTag level={level} compact />{startCase(name)}
-            </Typography>
-        </>
-    );
-}
+const CompactMonkehDetails = ({ monkeh: { name, level } }: IMonkehDetailsProps) => (
+    <Typography justifyItems={"center"} display={"inline-flex"} gap={2}>
+        <MonkehTag level={level} compact />{startCase(name)}
+    </Typography>
+);
 
-export default function MonkehDetails({ compact, ...props }: IMonkehDetailsProps) {
-    return (
-        <Box textAlign={"center"} width={"100%"} >
-            {compact ? <CompactMonkehDetails {...props} /> : <FullMonkehDetails {...props} />}
+const MonkehDetails = ({ compact, ...props }: IMonkehDetailsProps) => (
+    <Box textAlign={"center"} width={"100%"} >
+        {compact ? <CompactMonkehDetails {...props} /> : <FullMonkehDetails {...props} />}
 
-        </Box>
-    );
-}
+    </Box>
+);
+
+export default MonkehDetails;

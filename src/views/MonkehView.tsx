@@ -4,34 +4,21 @@ import Face5Icon from '@mui/icons-material/Face5';
 import { useCallback, useEffect, useMemo, useState } from "react";
 import BaseViewLayout from "@/views/BaseViewLayout";
 import { EditMonkehForm } from "@/components/Inputs/Forms/MonkehForm";
-import { Grid, IconButton, Tooltip } from "@mui/material";
+import { Grid } from "@mui/material";
 import EventSnackbar, { IEventSnackProps } from "@/components/DataDisplay/EventSnackbar";
 import MonkehDetails from "@/components/DataDisplay/Details/MonkehDetails";
-import EditIcon from '@mui/icons-material/Edit';
+
 import { useEventsContext, useHeaderContext } from "@/hooks/useCustomContext";
 import { CalendarEvent } from "@/shared/models/CalendarEvents";
 import EventTable from "@/components/DataDisplay/Tables/EventTable";
 import { useLocale } from "@/hooks/useLocale";
 import { HeaderLabels } from "@/shared/locale/appUI";
 import { MonkehViewLabels } from "@/shared/locale/monkeh";
+import EditButton from "@/components/Inputs/Buttons/EditButton";
 
 interface IMonkehViewContentProps {
     selectedMonkeh: IMonkeh;
     setSelectedMonkeh: React.Dispatch<React.SetStateAction<IMonkeh>>;
-}
-
-interface IEditMonkehButtonProps {
-    toggleEditMonkeh: () => void;
-    disabled?: boolean;
-}
-function EditMonkehButton({ toggleEditMonkeh, disabled }: IEditMonkehButtonProps) {
-    return (
-        <Tooltip title="Edit monkeh">
-            <IconButton color="primary" disabled={disabled} onClick={toggleEditMonkeh}>
-                <EditIcon />
-            </IconButton>
-        </Tooltip>
-    );
 }
 
 function MonkehViewMainContent({ selectedMonkeh: monkeh, setSelectedMonkeh: setMonkeh }: IMonkehViewContentProps) {
@@ -44,25 +31,28 @@ function MonkehViewMainContent({ selectedMonkeh: monkeh, setSelectedMonkeh: setM
     }), [calendarEventMap, monkeh]);
 
     const [eventMessage, setEventMessage] = useState<IEventSnackProps>({ message: '', severity: "success" });
-    const editMonkehProps = useMemo(() => {
-        return {
-            monkeh,
-            setMonkeh,
-            onClose: () => setEditMode(false),
-            onSuccess: () => setEventMessage({ message: 'Monkeh ok!', severity: 'success' }),
-            onError: (err: any) => setEventMessage({ message: `Failed to update monkeh: ${err}`, severity: 'error' }),
-        };
-    }, [monkeh, setMonkeh, setEventMessage]);
 
-    const monkehDetailsProps = useMemo(() => {
-        return { monkeh, setMonkeh, readOnly: !editMode, headerAction: <EditMonkehButton {...{ toggleEditMonkeh }} /> };
-    }, [toggleEditMonkeh, monkeh, setMonkeh, editMode]);
+    const sharedContentProps = useMemo(() => ({ monkeh, setMonkeh }), [monkeh, setMonkeh]);
+
+    const editMonkehProps = useMemo(() => ({
+        onError: (err: any) => setEventMessage({ message: `Failed to update monkeh: ${err}`, severity: 'error' }),
+        onClose: () => setEditMode(false),
+        onSuccess: () => setEventMessage({ message: 'Monkeh ok!', severity: 'success' }),
+    }), [setEditMode, setEventMessage]);
+
+    const headerActionProps =  useMemo(() => ({
+        disabled: editMode,
+        setEditValue: toggleEditMonkeh,
+    }), [editMode, toggleEditMonkeh]);
 
     return (
         <Grid container gap={2}>
             <EventSnackbar {...eventMessage} />
             <Grid item xs={12} >
-                {editMode ? <EditMonkehForm {...editMonkehProps} /> : <MonkehDetails {...monkehDetailsProps} />}
+                {editMode 
+                    ? <EditMonkehForm {...sharedContentProps} {...editMonkehProps} />
+                    : <MonkehDetails {...sharedContentProps} headerAction={<EditButton {...headerActionProps} />} />
+                    }
             </Grid>
             {!editMode && <Grid item xs={12}>
                 <EventTable rows={monkehEvents} />
@@ -73,7 +63,7 @@ function MonkehViewMainContent({ selectedMonkeh: monkeh, setSelectedMonkeh: setM
 
 export default function MonkehView() {
     const [selectedMonkeh, setSelectedMonkeh] = useState<IMonkeh>(defaultDummyMonkeh);
-    const {setTitle} = useHeaderContext();
+    const { setTitle } = useHeaderContext();
     const { Monkeh: monkehHeaderLabel } = useLocale<string>(HeaderLabels);
     const { SelectMonkehPlaceholder } = useLocale<string>(MonkehViewLabels);
     useEffect(() => {
@@ -84,7 +74,7 @@ export default function MonkehView() {
         <BaseViewLayout leftContent={<MonkehList onMonkehSelect={setSelectedMonkeh} />}>
             {!!selectedMonkeh.id
                 ? <MonkehViewMainContent {...{ selectedMonkeh, setSelectedMonkeh }} />
-                : <><Face5Icon sx={{marginBottom: '-6px', marginRight: 1}}/>{SelectMonkehPlaceholder}</>}
+                : <><Face5Icon sx={{ marginBottom: '-6px', marginRight: 1 }} />{SelectMonkehPlaceholder}</>}
         </BaseViewLayout>
     );
 }

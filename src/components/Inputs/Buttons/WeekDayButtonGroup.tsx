@@ -22,7 +22,7 @@ export default function WeekDayButtonGroup({ value, onChange, disabled}: IWeekDa
 
     return (
         <Box>
-            <ToggleButtonGroup disabled={false}>
+            <ToggleButtonGroup disabled={false} color="primary">
                 {dayLabels.map((label, day) => {
                     return <ToggleButton
                         key={day}
