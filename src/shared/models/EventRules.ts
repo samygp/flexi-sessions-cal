@@ -6,3 +6,12 @@ export interface IEventRule {
     eventType: EventType;
     daysOfWeek: number[];
 }
+
+export enum EventConflict {
+    PastDate,
+    MaxDailyEvents,
+    BlockingEvent,
+    PushesEntireDay,
+    PushesNextEvent,
+    PersonalEvent,
+}
