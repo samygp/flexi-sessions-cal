@@ -26,9 +26,9 @@ export default function GenericDropdown<T extends string | number>(props: IGener
 
             <Select<T> {...{ ...rest, value, onChange }} label={label} required>
                 {
-                    Object.entries(groupedOptions).flatMap(([category, options]) => {
+                    Object.entries(groupedOptions).flatMap(([category, options], i) => {
                         return [
-                            <ListSubheader sx={{cursor: 'default'}}>{category === 'undefined' ? '' : category}</ListSubheader>,
+                            <ListSubheader key={i} sx={{cursor: 'default'}}>{category === 'undefined' ? '' : category}</ListSubheader>,
                             ...options.map(({ label: l, value }) => {
                                 return <MenuItem key={value} value={value}>{l ?? value}</MenuItem>
                             })

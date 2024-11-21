@@ -4,6 +4,8 @@ import GenericForm, { IFieldMapping } from "@/components/Inputs/Forms/GenericFor
 import MonkehLookup from "@/components/Inputs/Dropdowns/MonkehLookup";
 import { CalendarEventFieldLabels } from "@/shared/locale/events";
 import { useLocale } from "@/hooks/useLocale";
+import SessionDatePicker from "@/components/Inputs/SessionDatePicker";
+import { useMemo } from "react";
 
 interface ICalendarEventFormProps {
     event: CalendarEvent;
@@ -13,12 +15,12 @@ interface ICalendarEventFormProps {
 
 export default function CalendarEventForm({ setCalendarEvent, readOnly, event }: ICalendarEventFormProps) {
     const labels = useLocale<keyof CalendarEvent>(CalendarEventFieldLabels);
-    const fieldMappings: IFieldMapping<CalendarEvent>[] = [
-        { label: labels.date, fieldType: "date", fieldName: "date" },
+    const fieldMappings: IFieldMapping<CalendarEvent>[] = useMemo(() => [
         { label: labels.title, fieldType: "text", fieldName: "title" },
         { label: labels.eventType, fieldType: "custom", fieldName: "eventType", CustomFieldComponent: EventTypeDropdown },
         { label: labels.monkehId, fieldType: "custom", fieldName: "monkehId", CustomFieldComponent: MonkehLookup },
-    ];
+        { label: labels.date, fieldType: "custom", fieldName: "date", CustomFieldComponent: SessionDatePicker, customProps: { eventType: event.eventType } },
+    ], [labels, event]);
 
     return <GenericForm<CalendarEvent>
         readOnly={readOnly}

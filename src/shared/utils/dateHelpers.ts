@@ -36,3 +36,5 @@ export const secondsSince = (date: Moment) => nowSeconds() - date.unix();
 export const getDayOfWeekName = (dayOfWeekNumber: number, locale?: string) => {
     return moment().weekday(dayOfWeekNumber).locale(locale ?? true).format('ddd');
 }
+
+export const isPastDate = (date: Moment) => date.isBefore(moment().startOf('day'));

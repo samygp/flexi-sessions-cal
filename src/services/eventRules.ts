@@ -3,9 +3,8 @@ import { DateGroupedEntryMap } from "@/shared/models/DateGroupedEntryMap";
 import { EventConflict, IEventRule } from "@/shared/models/EventRules";
 import moment, { Moment } from "moment";
 import { gt, lt } from 'lodash';
+import { isPastDate } from "@/shared/utils/dateHelpers";
 
-
-const isPastDate = (date: Moment) => date.isBefore(moment().startOf('day'));
 const containsEventCategory = (events: CalendarEvent[], eventCategory: EventCategory) => {
     return events.some(e => EventTypeCategoryMap[e.eventType] === eventCategory);
 }
@@ -19,7 +18,9 @@ export class EventRuleService {
     public checkEventTypeConflicts(eventType: EventType, targetDate: Moment, monkehId?: string) {
         if (isPastDate(targetDate)) return EventConflict.PastDate;
 
-        const { maxDailyEvents }: IEventRule = this.ruleMap[eventType];
+        const { maxDailyEvents, daysOfWeek }: IEventRule = this.ruleMap[eventType];
+        if (!daysOfWeek.includes(targetDate.weekday())) return EventConflict.WeekDayNotAllowed;
+        
         const eventCategory: EventCategory = EventTypeCategoryMap[eventType];
         const targetDateEvents: CalendarEvent[] = this.groupedEvents.getEntriesForDate(targetDate);
 
@@ -38,8 +39,7 @@ export class EventRuleService {
 
             // If the target date has a personal event for the same monkeh
             const hasPersonalEvent = !!targetDateEvents.find(e => {
-                if (e.monkehId !== monkehId) return;
-                return EventTypeCategoryMap[e.eventType] === EventCategory.Personal;
+                return (e.monkehId !== monkehId) && (EventTypeCategoryMap[e.eventType] === EventCategory.Personal);
             });
             if (hasPersonalEvent) return EventConflict.PersonalEvent;
         }

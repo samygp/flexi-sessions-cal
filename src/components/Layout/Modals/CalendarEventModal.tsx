@@ -9,17 +9,22 @@ export interface ICalendarEventFormModalProps extends IBaseModalProps {
     originalEvent?: CalendarEvent;
 }
 
+const mandatoryFields: (keyof CalendarEvent)[] = ["title", "date", "eventType", "monkehId"];
+const hasMissingValues = (event: Partial<CalendarEvent>) => mandatoryFields.some(field => !event[field]);
+
 export default function CalendarEventModal({ originalEvent = defaultDummyCalendarEvent, readOnly, ...props }: ICalendarEventFormModalProps) {
     const [event, setCalendarEvent] = useState<CalendarEvent>(originalEvent);
     const { eventsAPI: { createCalendarEvent, updateCalendarEvent, removeCalendarEvents }, loading } = useEventsContext();
 
     const actions = useMemo(() => {
+        const submitDisabled = readOnly || hasMissingValues(event);
         return {
+            submitDisabled,
             onCreate: async () => await createCalendarEvent(event),
             onUpdate: async () => await updateCalendarEvent(event),
             onDelete: async () => await removeCalendarEvents(event),
         }
-    }, [event, createCalendarEvent, updateCalendarEvent, removeCalendarEvents]);
+    }, [event, createCalendarEvent, updateCalendarEvent, removeCalendarEvents, readOnly]);
 
     const onClose = useCallback(() => {
         setCalendarEvent(originalEvent);

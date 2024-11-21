@@ -14,4 +14,5 @@ export enum EventConflict {
     PushesEntireDay,
     PushesNextEvent,
     PersonalEvent,
+    WeekDayNotAllowed,
 }

@@ -47,12 +47,8 @@ export default function Lookup<T>(props: ILookupProps<T>) {
     const groupBy = useCallback((o: IOption) => o.category ?? '', []);
 
     return (
-        <>
-            {/* <InputLabel id="event-type-label" variant="outlined">Event Type</InputLabel> */}
-            <Autocomplete<IOption> disablePortal value={optionValue}
-                {...{ options, renderInput, filterOptions, groupBy, onChange }}
-            />
-
-        </>
+        <Autocomplete<IOption> value={optionValue}
+            {...{ options, renderInput, filterOptions, groupBy, onChange }}
+        />
     );
 }
