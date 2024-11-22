@@ -1,5 +1,7 @@
 import { EventType } from "@/shared/models/CalendarEvents";
 
+export type EventRuleOrder = 'next' | 'prev';
+
 export interface IEventRule {
     id: string;
     maxDailyEvents: number;

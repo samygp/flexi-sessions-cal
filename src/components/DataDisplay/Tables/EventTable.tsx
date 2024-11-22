@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box';
 import { DataGrid, GridActionsCellItem, GridColDef, GridComparatorFn, GridRenderCellParams } from '@mui/x-data-grid';
-import { Delete, Edit } from '@mui/icons-material';
+import { ArrowUpward, ArrowDownward } from '@mui/icons-material';
 import { useCallback, useMemo } from 'react';
 import { CalendarEvent, EventType } from '@/shared/models/CalendarEvents';
 import { readableDateTime } from '@/shared/utils/dateHelpers';
@@ -9,13 +9,27 @@ import MonkehTag from '@/components/DataDisplay/Tags/MonkehTag';
 import { getMonkehSortId } from '@/shared/models/Monkeh';
 import { CalendarEventFieldLabels, EventTypeLabels } from '@/shared/locale/events';
 import { useLocale } from '@/hooks/useLocale';
+import useEventRules from '@/hooks/useEventRules';
+import { EventRuleOrder } from '@/shared/models/EventRules';
+import { SvgIcon } from '@mui/material';
 
 interface IEventTableProps {
     rows: CalendarEvent[];
 }
 
+interface IEventRuleActionCellProps {
+    ButtonIcon: typeof SvgIcon;
+    order: EventRuleOrder;
+    onClick: (id: string) => void;
+    id: string;
+}
+function EventRuleActionCell({ButtonIcon, order, onClick, id}: IEventRuleActionCellProps) {
+    return <GridActionsCellItem icon={<ButtonIcon color='success'/>} label={order} onClick={() => onClick(id)}/>;
+}
+
 export default function EventTable({ rows }: IEventTableProps) {
     const { monkehMap } = useMonkehContext();
+    const rules = useEventRules();
     const fieldLabels = useLocale<keyof CalendarEvent>(CalendarEventFieldLabels);
     const eventTypeLabels = useLocale<EventType>(EventTypeLabels);
     const getMonkehName = useCallback(({value: monkehId}: GridRenderCellParams<CalendarEvent, string>) => {
@@ -32,6 +46,7 @@ export default function EventTable({ rows }: IEventTableProps) {
         const bMonkeh = getMonkehSortId(monkehMap[id2]);
         return aMonkeh.localeCompare(bMonkeh);
     }, [monkehMap]);
+    
 
     const columns: GridColDef<CalendarEvent>[] = useMemo(() => [
         // { field: 'id', headerName: 'ID', hideable: true },
@@ -40,20 +55,12 @@ export default function EventTable({ rows }: IEventTableProps) {
         { field: 'monkehId', headerName: fieldLabels.monkehId, flex: 1, renderCell: getMonkehName, sortComparator: sortByMonkeh },
         { field: 'date', headerName: fieldLabels.date, valueGetter: readableDateTime, width: 170 },
         {
-            field: 'actions', type: 'actions', width: 80, getActions: ({ row: { id } }) => [
-                <GridActionsCellItem
-                    icon={<Edit />}
-                    label="Edit"
-                    onClick={() => console.log(id)}
-                />,
-                <GridActionsCellItem
-                    icon={<Delete />}
-                    label="Delete"
-                    onClick={() => console.log(id)}
-                />,
+            field: 'actions', type: 'actions', width: 100, getActions: ({ row: { id } }) => [
+                <EventRuleActionCell ButtonIcon={ArrowUpward} order="prev" id={id} onClick={rules.pullEventEarlierCheck}/>,
+                <EventRuleActionCell ButtonIcon={ArrowDownward} order="next" id={id} onClick={rules.pushEventLaterCheck}/>,
             ]
         },
-    ], [getMonkehName, sortByMonkeh, eventTypeLabels, fieldLabels]);
+    ], [getMonkehName, sortByMonkeh, eventTypeLabels, fieldLabels, rules]);
     return (
         <Box sx={{ height: 400, width: '100%' }}>
             <DataGrid
@@ -66,7 +73,7 @@ export default function EventTable({ rows }: IEventTableProps) {
                         },
                     },
                 }}
-                pageSizeOptions={[5]}
+                pageSizeOptions={[10]}
                 checkboxSelection
                 disableRowSelectionOnClick
             />

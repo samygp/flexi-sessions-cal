@@ -1,6 +1,6 @@
 import { CalendarEvent, EventCategory, EventType, EventTypeCategoryMap } from "@/shared/models/CalendarEvents";
 import { DateGroupedEntryMap } from "@/shared/models/DateGroupedEntryMap";
-import { EventConflict, IEventRule } from "@/shared/models/EventRules";
+import { EventConflict, EventRuleOrder, IEventRule } from "@/shared/models/EventRules";
 import moment, { Moment } from "moment";
 import { gt, lt } from 'lodash';
 import { isPastDate } from "@/shared/utils/dateHelpers";
@@ -14,6 +14,10 @@ export class EventRuleService {
         private ruleMap: Record<EventType, IEventRule>,
         private groupedEvents: DateGroupedEntryMap<CalendarEvent>
     ) { }
+
+    public getDaysOfWeekForEventType(eventType: EventType) {
+        return this.ruleMap[eventType].daysOfWeek;
+    }
 
     public checkEventTypeConflicts(eventType: EventType, targetDate: Moment, monkehId?: string) {
         if (isPastDate(targetDate)) return EventConflict.PastDate;
@@ -50,7 +54,7 @@ export class EventRuleService {
         }
     }
 
-    private getDaysToAdd = (currDate: Moment, { daysOfWeek }: IEventRule, order: 'next' | 'prev'): number => {
+    private getDaysToAdd = (currDate: Moment, { daysOfWeek }: IEventRule, order: EventRuleOrder): number => {
         // order asc if looking for next day, desc otherwise
         const days = daysOfWeek.sort((a, b) => order === 'next' ? a - b : b - a);
         const currentDayOfWeek = currDate.weekday();
@@ -65,13 +69,13 @@ export class EventRuleService {
             : targetDay - 7 - currentDayOfWeek;
     }
 
-    private nextDateForEventType = (currentDate: Moment, eventType: EventType, order: 'next' | 'prev') => {
+    private nextDateForEventType = (currentDate: Moment, eventType: EventType, order: EventRuleOrder) => {
         const rule = this.ruleMap[eventType];
         const daysToAdd = this.getDaysToAdd(currentDate, rule, order);
         return currentDate.add(daysToAdd, "days");
     }
 
-    private nextTargetDateConflictCheck = ({eventType, date, monkehId}: Partial<CalendarEvent>, order: 'next' | 'prev') => {     
+    private nextTargetDateConflictCheck = ({eventType, date, monkehId}: Partial<CalendarEvent>, order: EventRuleOrder) => {     
         const nextDate = this.nextDateForEventType(date!, eventType!, order);
 
         const dateConflict = this.checkEventTypeConflicts(eventType!, nextDate, monkehId);

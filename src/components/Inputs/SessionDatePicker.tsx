@@ -1,12 +1,11 @@
 import { EventType } from "@/shared/models/CalendarEvents";
 import { DatePicker, PickersDay } from "@mui/x-date-pickers";
-import { useEventRulesContext, useEventsContext } from "@/hooks/useCustomContext";
-import { EventRuleService } from "@/services/eventRules";
 import { useCallback, useEffect, useMemo } from "react";
 import { Moment } from "moment";
 import { Badge, TextField, Tooltip } from "@mui/material";
 import { isPastDate, readableDateTime } from "@/shared/utils/dateHelpers";
 import moment from "moment";
+import useEventRules from "@/hooks/useEventRules";
 
 interface ISessionDatePickerProps {
     eventType: EventType;
@@ -15,24 +14,22 @@ interface ISessionDatePickerProps {
 }
 
 export default function SessionDatePicker({ eventType, value, onChange: setValue }: ISessionDatePickerProps) {
-    const { eventRulesMap } = useEventRulesContext();
-    const { dateGroupedEventMap } = useEventsContext();
-    const rulesService = useMemo<EventRuleService>(() => new EventRuleService(eventRulesMap, dateGroupedEventMap), [eventRulesMap, dateGroupedEventMap]);
-    const eventTypeDaysOfWeek = useMemo<number[]>(() => eventRulesMap[eventType].daysOfWeek, [eventRulesMap, eventType]);
+    const rules = useEventRules();
+    const eventTypeDaysOfWeek = useMemo<number[]>(() => rules.getDaysOfWeekForEventType(eventType), [rules, eventType]);
 
     const handleDateChange = useCallback((date: Moment | null) => {
         if (!date) return
-        const conflict = rulesService.checkEventTypeConflicts(eventType, date);
+        const conflict = rules.checkEventTypeConflicts(eventType, date);
         if (!conflict) return setValue(date);
         alert(conflict);
-    }, [setValue, rulesService, eventType]);
+    }, [setValue, rules, eventType]);
 
     useEffect(() => {
-        const conflict = rulesService.checkEventTypeConflicts(eventType, value);
+        const conflict = rules.checkEventTypeConflicts(eventType, value);
         if (!conflict) return;
-        const nextDate = rulesService.getNextAvailableDateForEventType(eventType, value);
+        const nextDate = rules.getNextAvailableDateForEventType(eventType, value);
         setValue(nextDate);
-    }, [eventType, setValue, rulesService, value]);
+    }, [eventType, setValue, rules, value]);
 
 
     return <DatePicker
@@ -46,7 +43,7 @@ export default function SessionDatePicker({ eventType, value, onChange: setValue
                 if (isPastDate(day)) return <PickersDay {...props} disabled />
                 const isFirstVisibleCell = day.day() === 1;
                 const isLastVisibleCell = day.day() === day.daysInMonth();
-                const conflict = rulesService.checkEventTypeConflicts(eventType, day);
+                const conflict = rules.checkEventTypeConflicts(eventType, day);
                 const disabled = !eventTypeDaysOfWeek.includes(day.weekday()) || !!conflict;
                 const pickersDay = <PickersDay {...{ ...props, isFirstVisibleCell, isLastVisibleCell, disabled }} />;
                 if (!conflict) return pickersDay;
