@@ -23,6 +23,14 @@ export default function useCRUDApiFetch<BodyType, ParamsType, APIResponseType, S
   const requestAbortController = useRef<AbortController | null>(null);
   const { authState, accessToken: authToken } = useSessionContext();
 
+  const {cache, getId: getItemId} = cacheOpts ?? {};
+  const updateCache = useCallback((items: SourceModel[], remove?: boolean) => {
+    if (!cache || !getItemId) return;
+    const updatedIds = new Set<string>(items.map(getItemId));
+    const newValue = (cache.value ?? []).filter(r => !updatedIds.has(getItemId(r))).concat(remove ? [] : items);
+    cache.setValue(newValue);
+  }, [cache, getItemId]);
+
   const handleFetch = useCallback(async (endpoint: String, opts: IFetchOptions<BodyType, ParamsType>): Promise<APIResult<APIResponseType>> => {
     if (authState !== 'authenticated' || !authToken) return;
     if (requestAbortController.current) requestAbortController.current.abort();
@@ -53,18 +61,14 @@ export default function useCRUDApiFetch<BodyType, ParamsType, APIResponseType, S
     const apiResults: APIResponseType[] = (isArrayResult ? result : [result]);
     const parsedResults: SourceModel[] = apiResults.map(v => parseResult?.(v) ?? v) as unknown as SourceModel[];
 
-    if (cacheOpts) {
-      const { cache, getId } = cacheOpts;
-      const updatedTypes = new Set<string>(parsedResults.map(getId));
-      cache.setValue(prev => (prev ?? []).filter(r => !updatedTypes.has(getId(r))).concat(remove ? [] : parsedResults));
-    }
-
+    updateCache(parsedResults, remove);
+    
     return isArrayResult ? parsedResults : parsedResults[0];
-  }, [parseResult, cacheOpts]);
+  }, [parseResult, updateCache]);
 
   const [{ loading, error }, callAPI] = useAsyncFn(async (endpoint: string, options: IFetchOptions<BodyType, ParamsType>, remove?: boolean) => {
     return await handleFetch(endpoint, options).then(r => handleAPIResult(r, remove));
-  }, [handleFetch]);
+  }, [handleFetch, handleAPIResult]);
 
   const get = useCallback(async (endpoint: string, filter: ParamsType) => {
     return await callAPI(endpoint, { params: filter, method: 'get' });
