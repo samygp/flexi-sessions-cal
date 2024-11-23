@@ -15,6 +15,27 @@ export class EventRuleService {
         private groupedEvents: DateGroupedEntryMap<CalendarEvent>
     ) { }
 
+    private getDaysToAdd = (currDate: Moment, { daysOfWeek }: IEventRule, order: EventRuleOrder): number => {
+        // order asc if looking for next day, desc otherwise
+        const days = daysOfWeek.sort((a, b) => order === 'next' ? a - b : b - a);
+        const currentDayOfWeek = currDate.weekday();
+        // find the next/previous day
+        const compareOp = order === 'next' ? gt : lt;
+        const nextDayOfWeek = days.find(d => compareOp(d, currentDayOfWeek));
+        if (nextDayOfWeek) return nextDayOfWeek - currentDayOfWeek;
+        // If not found, use first element from days (first/last day of next/prev week)
+        const targetDay = days[0];
+        return order === 'next'
+            ? 7 - currentDayOfWeek + targetDay
+            : targetDay - 7 - currentDayOfWeek;
+    }
+
+    private nextDateForEventType = (currentDate: Moment, eventType: EventType, order: EventRuleOrder) => {
+        const rule = this.ruleMap[eventType];
+        const daysToAdd = this.getDaysToAdd(currentDate, rule, order);
+        return currentDate.add(daysToAdd, "days");
+    }
+
     public getDaysOfWeekForEventType(eventType: EventType) {
         return this.ruleMap[eventType].daysOfWeek;
     }
@@ -52,39 +73,30 @@ export class EventRuleService {
             const monkehHasUpcomingEvent = targetDateEvents.some(e => e.monkehId === monkehId);
             if (monkehHasUpcomingEvent) return EventConflict.PushesNextEvent;
         }
-    }
-
-    private getDaysToAdd = (currDate: Moment, { daysOfWeek }: IEventRule, order: EventRuleOrder): number => {
-        // order asc if looking for next day, desc otherwise
-        const days = daysOfWeek.sort((a, b) => order === 'next' ? a - b : b - a);
-        const currentDayOfWeek = currDate.weekday();
-        // find the next/previous day
-        const compareOp = order === 'next' ? gt : lt;
-        const nextDayOfWeek = days.find(d => compareOp(d, currentDayOfWeek));
-        if (nextDayOfWeek) return nextDayOfWeek - currentDayOfWeek;
-        // If not found, use first element from days (first/last day of next/prev week)
-        const targetDay = days[0];
-        return order === 'next'
-            ? 7 - currentDayOfWeek + targetDay
-            : targetDay - 7 - currentDayOfWeek;
-    }
-
-    private nextDateForEventType = (currentDate: Moment, eventType: EventType, order: EventRuleOrder) => {
-        const rule = this.ruleMap[eventType];
-        const daysToAdd = this.getDaysToAdd(currentDate, rule, order);
-        return currentDate.add(daysToAdd, "days");
-    }
+    }    
 
     private nextTargetDateConflictCheck = ({eventType, date, monkehId}: Partial<CalendarEvent>, order: EventRuleOrder) => {     
         const nextDate = this.nextDateForEventType(date!, eventType!, order);
 
         const dateConflict = this.checkEventTypeConflicts(eventType!, nextDate, monkehId);
-        return { dateConflict, nextDate };
+        const result = { dateConflict, nextDate };
+        console.log(result)
+        return result;
     }
 
-    public pushEventLaterCheck = (eventId: string) => this.nextTargetDateConflictCheck(this.groupedEvents.getById(eventId), 'next');
+    public pushEventLater = (eventId: string) => {
+        this.nextTargetDateConflictCheck(this.groupedEvents.getById(eventId), 'next');
+    }
 
-    public pullEventEarlierCheck = (eventId: string) => this.nextTargetDateConflictCheck(this.groupedEvents.getById(eventId), 'prev');
+    public pullEventEarlier = (eventId: string) => {
+        this.nextTargetDateConflictCheck(this.groupedEvents.getById(eventId), 'prev');
+    }
+
+    public checkConflictsForDate = (eventId: string, date: Moment) => {
+        const event = this.groupedEvents.getById(eventId);
+        const order = event.date.isBefore(date) ? 'next' : 'prev';
+        const conflig = this.checkEventTypeConflicts(event.eventType, date, event.monkehId);
+    }
 
     public getNextAvailableDateForEventType(eventType: EventType, fromDate?: Moment) {
         let date = (fromDate ?? moment()).startOf('day');

@@ -9,11 +9,12 @@ import useEventRules from "@/hooks/useEventRules";
 
 interface ISessionDatePickerProps {
     eventType: EventType;
+    disabled?: boolean;
     value: Moment;
     onChange: (date: Moment) => void;
 }
 
-export default function SessionDatePicker({ eventType, value, onChange: setValue }: ISessionDatePickerProps) {
+export default function SessionDatePicker({ eventType, value, onChange: setValue, disabled }: ISessionDatePickerProps) {
     const rules = useEventRules();
     const eventTypeDaysOfWeek = useMemo<number[]>(() => rules.getDaysOfWeekForEventType(eventType), [rules, eventType]);
 
@@ -36,6 +37,7 @@ export default function SessionDatePicker({ eventType, value, onChange: setValue
         value={value}
         minDate={moment().startOf('day')}
         onChange={handleDateChange}
+        disabled={disabled}
         slots={{
             textField: props => <TextField {...props} disabled value={readableDateTime(value)} />,
             day: props => {

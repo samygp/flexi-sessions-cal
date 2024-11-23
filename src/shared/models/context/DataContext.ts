@@ -6,6 +6,7 @@ import { DateGroupedEntryMap } from "@/shared/models/DateGroupedEntryMap";
 import { IMonkeh } from "@/shared/models/Monkeh";
 import { IEventRule } from "@/shared/models/EventRules";
 import { IEventRulesAPI } from "@/hooks/useEventRulesAPI";
+import { IItemCache } from "@/shared/models/Data";
 
 interface IBaseContext {
     loading: boolean;
@@ -14,47 +15,48 @@ interface IBaseContext {
 export interface IEventsContext extends IBaseContext {
     calendarEventMap: Record<string, CalendarEvent>;
     eventsAPI: ICalendarEventAPI;
+    eventsCache: IItemCache<CalendarEvent[]>;
     dateGroupedEventMap: DateGroupedEntryMap<CalendarEvent>;
 }
 
+const defaultEventsContext: IEventsContext = {
+    loading: false,
+    calendarEventMap: {},
+    eventsAPI: {} as ICalendarEventAPI,
+    eventsCache: {} as IItemCache<CalendarEvent[]>,
+    dateGroupedEventMap: new DateGroupedEntryMap<CalendarEvent>({}, e => e.date),
+} as const;
+
 export interface IMonkehsContext extends IBaseContext {
     monkehMap: Record<string, IMonkeh>;
+    monkehCache: IItemCache<IMonkeh[]>;
     monkehAPI: IMonkehAPI;
 }
 
+const defaultMonkehContext: IMonkehsContext = {
+    loading: false,
+    monkehMap: {},
+    monkehCache: {} as IItemCache<IMonkeh[]>,
+    monkehAPI: {} as IMonkehAPI,
+} as const;
+
 export interface IEventRulesContext extends IBaseContext{
     eventRulesMap: Record<EventType, IEventRule>;
+    eventRulesCache: IItemCache<IEventRule[]>;
     eventRulesAPI: IEventRulesAPI;
 }
 
-export interface IDataContext extends IEventsContext, IMonkehsContext, IEventRulesContext {}
+const defaultEventRulesContext: IEventRulesContext = {
+    loading: false,
+    eventRulesMap: {} as Record<EventType, IEventRule>,
+    eventRulesCache: {} as IItemCache<IEventRule[]>,
+    eventRulesAPI: {} as IEventRulesAPI,
+}
 
-const noopPromise = () => Promise.resolve(undefined);
+export interface IDataContext extends IMonkehsContext, IEventsContext, IEventRulesContext {}
 
 export default createContext<IDataContext>({
-    calendarEventMap: {},
-    monkehMap: {},
-    dateGroupedEventMap: new DateGroupedEntryMap<CalendarEvent>({}, e => e.date),
-    eventsAPI: {
-        fetchCalendarEvents: noopPromise,
-        createCalendarEvent: noopPromise,
-        updateCalendarEvent: noopPromise,
-        removeCalendarEvents: noopPromise,
-        fetchYear: noopPromise,
-        loading: false
-    },
-    eventRulesMap: {} as Record<EventType, IEventRule>,
-    eventRulesAPI: {
-        fetchRules: noopPromise,
-        updateRule: noopPromise,
-        loading: false
-    },
-    monkehAPI: {
-        fetchMonkehs: noopPromise,
-        createMonkeh: noopPromise,
-        updateMonkeh: noopPromise,
-        deleteMonkehs: noopPromise,
-        loading: false
-    },
-    loading: false,
+    ...defaultMonkehContext,
+    ...defaultEventsContext,
+    ...defaultEventRulesContext,
 });

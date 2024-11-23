@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { useLocalStorage, useUpdateEffect } from "react-use";
 import { nowSeconds, secondsSince } from "@/shared/utils/dateHelpers";
 import { unix } from "moment";
@@ -22,7 +22,7 @@ const getSerializerOptions = <T>(opts?: ISerializerConfig<T>) => {
  *   - `lastUpdated` is the timestamp (in seconds) of when the value was last updated
  */
 export default function useItemCache<T>(key: string, ttl: number = 3600, opts?: ISerializerConfig<T>): IItemCache<T> {
-    const [value, setValue] = useLocalStorage<T>(key, undefined, getSerializerOptions<T>(opts));
+    const [value, setValue, clearCache] = useLocalStorage<T>(key, undefined, getSerializerOptions<T>(opts));
     const [lastUpdatedSeconds, setLastUpdated] = useLocalStorage<number>(`${key}_lastUpdated`);
 
     const lastUpdated = useMemo(() => {
@@ -34,8 +34,8 @@ export default function useItemCache<T>(key: string, ttl: number = 3600, opts?: 
     }, [lastUpdated, ttl]);
 
     useUpdateEffect(() => {
-        if (value) setLastUpdated(nowSeconds);
+        if (value) setLastUpdated(nowSeconds());
     }, [value]);
 
-    return { value: value!, setValue, lastUpdated, isOutdated };
+    return { value: value!, setValue, lastUpdated, isOutdated, clearCache };
 }

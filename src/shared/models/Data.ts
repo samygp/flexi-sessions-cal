@@ -23,6 +23,7 @@ export interface ISelectOption<T> {
 export interface IItemCache<T> {
     value: T;
     setValue: React.Dispatch<React.SetStateAction<T | undefined>>;
+    clearCache: () => void;
     lastUpdated?: Moment;
     isOutdated: boolean;
 }

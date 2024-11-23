@@ -48,8 +48,8 @@ export default function useCalendarEventAPI(cache?: IItemCache<CalendarEvent[]>)
   const { loading, error, ...crudOps } = useCRUDApiFetch<IPostEventRequest, ICalendarEventQuery, EventsAPIResult, CalendarEvent>(crudAPIOptions);
   const { get, create, update, remove } = crudOps;
 
-  const fetchCalendarEvents = useCallback(async (filter: ICalendarEventQuery) => {
-    return await get(EVENTS_ENDPOINT, filter);
+  const fetchCalendarEvents = useCallback(async (filter: ICalendarEventQuery, noCache?: boolean) => {
+    return await get(EVENTS_ENDPOINT, filter, noCache);
   }, [get]);
 
   const createCalendarEvent = useCallback(async (evt: Omit<CalendarEvent, 'id'>) => {
@@ -69,7 +69,7 @@ export default function useCalendarEventAPI(cache?: IItemCache<CalendarEvent[]>)
     const skip = !force && fetchedYears.has(year);
     if (loading || skip) return;
     const query = { from: beginningOf.year(year), to: endOf.year(year) };
-    await fetchCalendarEvents(query);
+    await fetchCalendarEvents(query, force);
   }, [fetchCalendarEvents, fetchedYears, loading]);
 
 

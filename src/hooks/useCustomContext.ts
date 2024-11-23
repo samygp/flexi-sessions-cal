@@ -11,17 +11,17 @@ export const useHeaderContext = () => useContext(HeaderContext)
 export const useDataContext = () => useContext(DataContext);
 
 export const useEventsContext = (): IEventsContext => {
-    const {eventsAPI, calendarEventMap, dateGroupedEventMap} = useDataContext();
-    return {eventsAPI, calendarEventMap, dateGroupedEventMap, loading: eventsAPI.loading, error: eventsAPI.error};
+    const {eventsAPI, calendarEventMap, dateGroupedEventMap, eventsCache} = useDataContext();
+    return {eventsAPI, calendarEventMap, dateGroupedEventMap, eventsCache, loading: eventsAPI.loading, error: eventsAPI.error};
 
 }
 
 export const useMonkehContext = (): IMonkehsContext => {
-    const {monkehAPI, monkehMap} = useDataContext();
-    return {monkehAPI, monkehMap, loading: monkehAPI.loading, error: monkehAPI.error};
+    const {monkehAPI, monkehMap, monkehCache} = useDataContext();
+    return {monkehAPI, monkehMap, monkehCache, loading: monkehAPI.loading, error: monkehAPI.error};
 }
 
 export const useEventRulesContext = (): IEventRulesContext => {
-    const {eventRulesAPI, eventRulesMap} = useDataContext();
-    return {eventRulesAPI, eventRulesMap, loading: eventRulesAPI.loading, error: eventRulesAPI.error};
+    const {eventRulesAPI, eventRulesMap, eventRulesCache} = useDataContext();
+    return {eventRulesAPI, eventRulesMap, eventRulesCache, loading: eventRulesAPI.loading, error: eventRulesAPI.error};
 }

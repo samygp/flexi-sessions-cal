@@ -10,6 +10,11 @@ interface ICacheOptions<T> {
   cache: IItemCache<T[]>;
 }
 
+interface IUpdateCacheOptions {
+  removeOperation?: boolean;
+  clearCache?: boolean;
+}
+
 type APIResult<T> = T | T[] | void | undefined;
 type APIResultParser<T> = (v: any) => T;
 
@@ -24,10 +29,11 @@ export default function useCRUDApiFetch<BodyType, ParamsType, APIResponseType, S
   const { authState, accessToken: authToken } = useSessionContext();
 
   const {cache, getId: getItemId} = cacheOpts ?? {};
-  const updateCache = useCallback((items: SourceModel[], remove?: boolean) => {
+  const updateCache = useCallback((items: SourceModel[], { removeOperation, clearCache }: IUpdateCacheOptions = {}) => {
     if (!cache || !getItemId) return;
     const updatedIds = new Set<string>(items.map(getItemId));
-    const newValue = (cache.value ?? []).filter(r => !updatedIds.has(getItemId(r))).concat(remove ? [] : items);
+    const initCacheValue = (!clearCache && cache.value) || [];
+    const newValue = initCacheValue.filter(r => !updatedIds.has(getItemId(r))).concat(removeOperation ? [] : items);
     cache.setValue(newValue);
   }, [cache, getItemId]);
 
@@ -54,24 +60,24 @@ export default function useCRUDApiFetch<BodyType, ParamsType, APIResponseType, S
     return fetchPromise;
   }, [authState, authToken, url]);
 
-  const handleAPIResult = useCallback((result: APIResult<APIResponseType>, remove?: boolean) => {
+  const handleAPIResult = useCallback((result: APIResult<APIResponseType>, updateCacheOpts?: IUpdateCacheOptions) => {
     if (!result) return;
 
     const isArrayResult = Array.isArray(result);
     const apiResults: APIResponseType[] = (isArrayResult ? result : [result]);
     const parsedResults: SourceModel[] = apiResults.map(v => parseResult?.(v) ?? v) as unknown as SourceModel[];
 
-    updateCache(parsedResults, remove);
-    
+    updateCache(parsedResults, updateCacheOpts);
+
     return isArrayResult ? parsedResults : parsedResults[0];
   }, [parseResult, updateCache]);
 
-  const [{ loading, error }, callAPI] = useAsyncFn(async (endpoint: string, options: IFetchOptions<BodyType, ParamsType>, remove?: boolean) => {
-    return await handleFetch(endpoint, options).then(r => handleAPIResult(r, remove));
+  const [{ loading, error }, callAPI] = useAsyncFn(async (endpoint: string, options: IFetchOptions<BodyType, ParamsType>, updateCacheOpts?: IUpdateCacheOptions) => {
+    return await handleFetch(endpoint, options).then(r => handleAPIResult(r, updateCacheOpts));
   }, [handleFetch, handleAPIResult]);
 
-  const get = useCallback(async (endpoint: string, filter: ParamsType) => {
-    return await callAPI(endpoint, { params: filter, method: 'get' });
+  const get = useCallback(async (endpoint: string, filter: ParamsType, clearCache?: boolean) => {
+    return await callAPI(endpoint, { params: filter, method: 'get' }, { clearCache });
   }, [callAPI]);
 
   const create = useCallback(async (endpoint: string, body: BodyType) => {
@@ -83,7 +89,7 @@ export default function useCRUDApiFetch<BodyType, ParamsType, APIResponseType, S
   }, [callAPI]);
 
   const remove = useCallback(async (endpoint: string, filter: ParamsType) => {
-    return await callAPI(endpoint, { params: filter, method: 'delete' }, true);
+    return await callAPI(endpoint, { params: filter, method: 'delete' }, { removeOperation: true });
   }, [callAPI]);
 
   return { get, create, update, remove, loading, error };

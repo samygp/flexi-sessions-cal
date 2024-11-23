@@ -20,7 +20,7 @@ interface IEventCalendarViewLeftContentProps {
 
 function EventCalendarViewLeftContent(props: IEventCalendarViewLeftContentProps) {
     const { currMonth, setCurrMonth } = props;
-    const { eventsAPI: { fetchYear }, loading } = useEventsContext();
+    const { eventsAPI: { fetchYear }, loading, } = useEventsContext();
     const labels = useLocale<string>(EventViewLabels);
 
     const onYearChange = useCallback(async (m: Moment, force?: boolean) => {
@@ -31,10 +31,13 @@ function EventCalendarViewLeftContent(props: IEventCalendarViewLeftContentProps)
         return { onMonthChange: setCurrMonth, onYearChange, loading };
     }, [onYearChange, setCurrMonth, loading]);
 
+    const onRefresh = useCallback(() => onYearChange(currMonth, true), [currMonth, onYearChange]);
+
     return (
         <>
             <ButtonGroup fullWidth sx={{ justifyContent: "space-evenly", marginBottom: '1ex' }}>
                 <OpenModalButton<ICalendarEventFormModalProps>
+                    disabled={loading}
                     startIcon={<AddCircleOutline />}
                     Modal={CalendarEventModal}
                     label={labels.AddEvent}
@@ -43,7 +46,7 @@ function EventCalendarViewLeftContent(props: IEventCalendarViewLeftContentProps)
                     size="small"
                     modalProps={{ title: labels.AddEvent, TitleIcon: CalendarIcon, operation: "create" }}
                 />
-                <IconButton onClick={() => onYearChange(currMonth, true)} size="small">
+                <IconButton disabled={loading} onClick={onRefresh} size="small">
                     <Refresh color="primary" />
                     <Typography variant="body2" color={"primary"} >{labels.RefreshEvents}</Typography>
                 </IconButton>
