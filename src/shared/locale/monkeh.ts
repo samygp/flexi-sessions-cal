@@ -1,5 +1,5 @@
 import { LocalizedText } from ".";
-import { IMonkeh } from "../models/Monkeh";
+import { IMonkeh } from "@/shared/models/Monkeh";
 
 export const MonkehViewLabels: Record<string, LocalizedText> = Object.freeze({
     AddMonkeh: {

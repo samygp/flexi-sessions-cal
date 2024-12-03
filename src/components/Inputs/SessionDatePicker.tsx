@@ -11,26 +11,28 @@ interface ISessionDatePickerProps {
     eventType: EventType;
     disabled?: boolean;
     value: Moment;
+    skipConflictCheck?: boolean;
     onChange: (date: Moment) => void;
 }
 
-export default function SessionDatePicker({ eventType, value, onChange: setValue, disabled }: ISessionDatePickerProps) {
-    const rules = useEventRules();
+export default function SessionDatePicker({ eventType, value, onChange: setValue, disabled, skipConflictCheck }: ISessionDatePickerProps) {
+    const {rules} = useEventRules();
     const eventTypeDaysOfWeek = useMemo<number[]>(() => rules.getDaysOfWeekForEventType(eventType), [rules, eventType]);
 
     const handleDateChange = useCallback((date: Moment | null) => {
         if (!date) return
         const conflict = rules.checkEventTypeConflicts(eventType, date);
-        if (!conflict) return setValue(date);
+        if (!conflict || skipConflictCheck) return setValue(date);
         alert(conflict);
     }, [setValue, rules, eventType]);
 
     useEffect(() => {
+        if (skipConflictCheck) return;
         const conflict = rules.checkEventTypeConflicts(eventType, value);
         if (!conflict) return;
         const nextDate = rules.getNextAvailableDateForEventType(eventType, value);
         setValue(nextDate);
-    }, [eventType, setValue, rules, value]);
+    }, [eventType, setValue, rules, value, skipConflictCheck]);
 
 
     return <DatePicker
@@ -45,12 +47,12 @@ export default function SessionDatePicker({ eventType, value, onChange: setValue
                 if (isPastDate(day)) return <PickersDay {...props} disabled />
                 const isFirstVisibleCell = day.day() === 1;
                 const isLastVisibleCell = day.day() === day.daysInMonth();
-                const conflict = rules.checkEventTypeConflicts(eventType, day);
-                const disabled = !eventTypeDaysOfWeek.includes(day.weekday()) || !!conflict;
+                const conflictCheck = rules.checkEventTypeConflicts(eventType, day);
+                const disabled = !eventTypeDaysOfWeek.includes(day.weekday()) || !!conflictCheck;
                 const pickersDay = <PickersDay {...{ ...props, isFirstVisibleCell, isLastVisibleCell, disabled }} />;
-                if (!conflict) return pickersDay;
+                if (!conflictCheck) return pickersDay;
                 return (
-                    <Tooltip title={conflict}>
+                    <Tooltip title={conflictCheck.conflict}>
                         <Badge color="error" overlap="circular">
                             {pickersDay}
                         </Badge>

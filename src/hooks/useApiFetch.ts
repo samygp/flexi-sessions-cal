@@ -84,7 +84,7 @@ export default function useCRUDApiFetch<BodyType, ParamsType, APIResponseType, S
     return await callAPI(endpoint, { body, method: 'post' });
   }, [callAPI]);
 
-  const update = useCallback(async (endpoint: string, body: BodyType) => {
+  const update = useCallback(async (endpoint: string, body: BodyType | BodyType[]) => {
     return await callAPI(endpoint, { body, method: 'put' });
   }, [callAPI]);
 

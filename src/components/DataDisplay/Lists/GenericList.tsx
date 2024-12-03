@@ -16,6 +16,7 @@ export interface IListItemProps {
     icon?: JSX.Element;
     onClick?: () => void;
     divider?: boolean;
+    subtext?: ReactNode;
 }
 
 interface IGenericListItemProps extends IListItemProps {
@@ -44,7 +45,7 @@ function GenericListItem(props: IGenericListItemProps) {
         <ListItem disablePadding onClick={props.onClick}>
             <ListItemButton >
                 <ListItemIcon sx={{ minWidth: 35 }}>{props.icon}</ListItemIcon>
-                <ListItemText primary={props.text} />
+                <ListItemText primary={props.text} secondary={props.subtext} />
             </ListItemButton>
         </ListItem>
     );

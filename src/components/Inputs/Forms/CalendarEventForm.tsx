@@ -9,13 +9,14 @@ import { useMemo } from "react";
 
 interface ICalendarEventFormProps {
     event: CalendarEvent;
-    setCalendarEvent: React.Dispatch<React.SetStateAction<CalendarEvent>>
+    setCalendarEvent?: React.Dispatch<React.SetStateAction<CalendarEvent>>
     readOnly?: boolean;
+    excludeFields?: (keyof CalendarEvent)[];
 }
 
-export default function CalendarEventForm({ setCalendarEvent, readOnly, event }: ICalendarEventFormProps) {
+export default function CalendarEventForm({ setCalendarEvent, readOnly, event, excludeFields }: ICalendarEventFormProps) {
     const labels = useLocale<keyof CalendarEvent>(CalendarEventFieldLabels);
-    const fieldMappings: IFieldMapping<CalendarEvent>[] = useMemo(() => [
+    const fieldMappings = useMemo<IFieldMapping<CalendarEvent>[]>(() => [
         { label: labels.title, fieldType: "text", fieldName: "title" },
         { label: labels.eventType, fieldType: "custom", fieldName: "eventType", CustomFieldComponent: EventTypeDropdown },
         { label: labels.monkehId, fieldType: "custom", fieldName: "monkehId", CustomFieldComponent: MonkehLookup },
@@ -26,6 +27,6 @@ export default function CalendarEventForm({ setCalendarEvent, readOnly, event }:
         readOnly={readOnly}
         entry={event}
         setEntry={setCalendarEvent}
-        fieldMappings={fieldMappings}
+        fieldMappings={fieldMappings.filter(fm => !excludeFields?.includes(fm.fieldName))}
     />
 }

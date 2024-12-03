@@ -24,7 +24,7 @@ const toPostEventRequest = (event: CalendarEvent): IPostEventRequest => {
 export interface ICalendarEventAPI extends IBaseAPIHook {
   fetchCalendarEvents: (filter: ICalendarEventQuery) => Promise<CalendarEvent | CalendarEvent[] | undefined>;
   createCalendarEvent: (evt: Omit<CalendarEvent, 'id'>) => Promise<CalendarEvent | CalendarEvent[] | undefined>;
-  updateCalendarEvent: (evt: CalendarEvent) => Promise<CalendarEvent | CalendarEvent[] | undefined>;
+  updateCalendarEvents: (evt: CalendarEvent | CalendarEvent[]) => Promise<CalendarEvent | CalendarEvent[] | undefined>;
   removeCalendarEvents: (evt: ICalendarEventQuery) => Promise<CalendarEvent | CalendarEvent[] | undefined>;
   fetchYear: (year: number, force?: boolean) => Promise<void>;
 }
@@ -56,8 +56,9 @@ export default function useCalendarEventAPI(cache?: IItemCache<CalendarEvent[]>)
     return await create(EVENTS_ENDPOINT, toPostEventRequest(evt as any));
   }, [create]);
 
-  const updateCalendarEvent = useCallback(async (evt: CalendarEvent) => {
-    return await update(EVENTS_ENDPOINT, toPostEventRequest(evt));
+  const updateCalendarEvents = useCallback(async (evt: CalendarEvent | CalendarEvent[]) => {
+    const body = Array.isArray(evt) ? evt.map(toPostEventRequest) : toPostEventRequest(evt);
+    return await update(EVENTS_ENDPOINT, body);
   }, [update]);
 
   const removeCalendarEvents = useCallback(async (filter: ICalendarEventQuery) => {
@@ -73,5 +74,5 @@ export default function useCalendarEventAPI(cache?: IItemCache<CalendarEvent[]>)
   }, [fetchCalendarEvents, fetchedYears, loading]);
 
 
-  return { fetchCalendarEvents, createCalendarEvent, updateCalendarEvent, removeCalendarEvents, fetchYear, loading, error };
+  return { fetchCalendarEvents, createCalendarEvent, updateCalendarEvents, removeCalendarEvents, fetchYear, loading, error };
 }

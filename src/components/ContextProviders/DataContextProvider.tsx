@@ -1,4 +1,4 @@
-import { PropsWithChildren, useMemo } from "react";
+import { PropsWithChildren, useCallback, useMemo } from "react";
 import { CalendarEvent, deserializeCalendarEvent, EventType } from "@/shared/models/CalendarEvents";
 import useCalendarEventAPI from "@/hooks/useCalendarEventAPI";
 import { DateGroupedEntryMap } from "@/shared/models/DateGroupedEntryMap";
@@ -10,10 +10,8 @@ import useItemCache from "@/hooks/useItemCache";
 import { deserializeMonkehs, IMonkeh } from "@/shared/models/Monkeh";
 import { IEventRule } from "@/shared/models/EventRules";
 import useEventRulesAPI from "@/hooks/useEventRulesAPI";
-
-const createGroupedEventMap = (eventMap: Record<string, CalendarEvent>) => {
-    return new DateGroupedEntryMap<CalendarEvent>(eventMap, e => e.date);
-}
+import { readableDateTime } from "@/shared/utils/dateHelpers";
+import { createGroupedEventMap } from "@/shared/utils/events";
 
 // cache lives for 12 hours before being outdated
 const CACHE_TTL = 3600 * 12;
@@ -41,6 +39,11 @@ export default function DataContextProvider({ children }: PropsWithChildren) {
     const loading = useMemo(() => eventsAPI.loading || monkehAPI.loading, [eventsAPI.loading, monkehAPI.loading]);
     const error = useMemo(() => eventsAPI.error || monkehAPI.error, [eventsAPI.error, monkehAPI.error]);
 
+    const getEventDescription = useCallback((event: CalendarEvent): string => {
+        const monkehName = monkehMap[event.monkehId].name;
+        return `[${monkehName}] - ${event.title} | ${readableDateTime(event.date)}`;
+    }, [monkehMap]);
+
     useMount(() => {
         if (monkehCache.isOutdated) monkehAPI.fetchMonkehs({});
         if (eventsCache.isOutdated) eventsAPI.fetchYear(new Date().getUTCFullYear());
@@ -58,6 +61,7 @@ export default function DataContextProvider({ children }: PropsWithChildren) {
             eventRulesMap,
             eventsAPI,
             monkehAPI,
+            getEventDescription,
             eventRulesAPI,
             loading,
             error

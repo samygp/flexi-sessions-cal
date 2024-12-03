@@ -3,7 +3,7 @@ export type RestMethod = 'get' | 'post' | 'put' | 'delete';
 export interface IFetchOptions<BodyType, QueryType> {
     method: RestMethod;
     authToken?: string;
-    body?: BodyType;
+    body?: BodyType | BodyType[];
     params?: QueryType;
 }
 
