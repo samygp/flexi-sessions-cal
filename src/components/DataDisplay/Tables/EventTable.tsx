@@ -20,7 +20,7 @@ interface IEventTableProps {
 
 type SupportedListAction = 'reschedule' | 'update' | 'delete';
 
-interface IEventRuleActionCellProps {
+interface IActionCellProps {
     ButtonIcon: typeof SvgIcon;
     action: SupportedListAction;
     onClick: () => void;
@@ -41,7 +41,7 @@ const defaultGridProps = {
     disableRowSelectionOnClick: true,
 } as const;
 
-function EventRuleActionCell({ ButtonIcon, action, onClick }: IEventRuleActionCellProps) {
+function ActionCell({ ButtonIcon, action, onClick }: IActionCellProps) {
     const color = action === 'delete' ? 'error' : 'primary';
     return <GridActionsCellItem icon={<ButtonIcon color={color} />} label={action} onClick={onClick} />;
 }
@@ -56,14 +56,26 @@ export default function EventTable({ rows }: IEventTableProps) {
     const { monkehMap, loading } = useDataContext();
     const [actionModalProps, setActionModalProps] = useState<IEventActionsConfirmModalProps>();
 
+    const clearActionModalProps = useCallback(() => setActionModalProps(undefined), [setActionModalProps]);
 
     const fieldLabels = useLocale<keyof CalendarEvent>(CalendarEventFieldLabels);
     const eventTypeLabels = useLocale<EventType>(EventTypeLabels);
 
-    const getMonkehName = useCallback(({ value: monkehId }: GridRenderCellParams<CalendarEvent, string>) => {
+    const MonkehInfoCell = useCallback(({ value: monkehId }: GridRenderCellParams<CalendarEvent, string>) => {
         const { level, name } = monkehMap[monkehId!];
         return <MonkehCell> <MonkehTag level={level} compact /> {name} </MonkehCell>;
     }, [monkehMap]);
+
+    const EventTitleCell = useCallback(({ row }: GridRenderCellParams<CalendarEvent, string>) => {
+        const { title, id: targetEventId } = row;
+        const action = 'update';
+        const ButtonIcon = supportedActionsIcons[action];
+        const onClick = () => setActionModalProps({ targetEventId, action, onClose: clearActionModalProps });
+        return <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <ActionCell {...{ButtonIcon,action}} onClick={onClick} />
+            {title}
+        </Box>;
+    }, [setActionModalProps]);
 
     const sortByMonkeh = useCallback<GridComparatorFn<string>>((id1, id2) => {
         const aMonkeh = getMonkehSortId(monkehMap[id1]);
@@ -73,26 +85,26 @@ export default function EventTable({ rows }: IEventTableProps) {
 
 
     const getActions = useCallback(({ row: { id: targetEventId } }: GridRowParams<CalendarEvent>) => {
-        const onClose = () => setActionModalProps(undefined);
-        return Object.entries(supportedActionsIcons).map(([key, Icon]) => {
-            const action = key as SupportedListAction;
-            const onClick = () => setActionModalProps({targetEventId,action,onClose});
-            return <EventRuleActionCell ButtonIcon={Icon} action={action} onClick={onClick} />;
+        const actions: SupportedListAction[] = ['reschedule', 'delete'];
+        return actions.map(action => {
+            const onClick = () => setActionModalProps({ targetEventId, action, onClose: clearActionModalProps });
+            const Icon = supportedActionsIcons[action];
+            return <ActionCell ButtonIcon={Icon} action={action} onClick={onClick} />;
         });
-    }, [setActionModalProps]);
+    }, [setActionModalProps, clearActionModalProps]);
 
     const columns: GridColDef<CalendarEvent>[] = useMemo(() => [
-        { field: 'title', headerName: fieldLabels.title, flex: 2 },
+        { field: 'title', headerName: fieldLabels.title, flex: 2, renderCell: EventTitleCell },
         { field: 'eventType', headerName: fieldLabels.eventType, flex: 1, valueFormatter: value => eventTypeLabels[value] },
-        { field: 'monkehId', headerName: fieldLabels.monkehId, flex: 1, renderCell: getMonkehName, sortComparator: sortByMonkeh },
+        { field: 'monkehId', headerName: fieldLabels.monkehId, flex: 1, renderCell: MonkehInfoCell, sortComparator: sortByMonkeh },
         { field: 'date', headerName: fieldLabels.date, valueGetter: readableDateTime, width: 190 },
         { field: 'actions', type: 'actions', width: 140, getActions },
-    ], [eventTypeLabels, fieldLabels, getMonkehName, sortByMonkeh, getActions]);
+    ], [eventTypeLabels, fieldLabels, MonkehInfoCell, sortByMonkeh, getActions]);
 
 
     return (
         <Box sx={{ height: 400, width: '100%' }}>
-            {!!actionModalProps && <EventActionsConfirmModal {...actionModalProps}/>}
+            {!!actionModalProps && <EventActionsConfirmModal {...actionModalProps} />}
             <DataGrid {...{ loading, rows, columns, ...defaultGridProps }} />
         </Box>
     );

@@ -48,7 +48,7 @@ function EventShiftStackDetails({ eventShiftStack }: { eventShiftStack: IConflic
                 )
             }
         });
-    }, [eventShiftStack]);
+    }, [eventShiftStack, getEventDescription, parseEventConflictCheckDetails]);
 
     return (
         <Box gap={1} display={"flex"} flexDirection={"column"} padding={2}>
@@ -92,25 +92,10 @@ function EventShiftDetails({ targetEvent, eventShiftStack, order }: IEventShiftS
     );
 }
 
-function EventPushDetails(props: IEventRescheduleProps) {
-    const { targetEvent, setEventShiftStack } = props;
-    const { id: targetEventId } = targetEvent;
-    const { shiftEventConflictCheck } = useEventRules();
-    useEffect(() => {
-        setEventShiftStack(shiftEventConflictCheck(targetEventId, 'next'));
-    }, [targetEventId, shiftEventConflictCheck, setEventShiftStack]);
-
-    return (
-        <Box gap={3} display={"flex"} flexDirection={"column"} padding={2}>
-            <EventShiftDetails {...props} order={'next'} />
-        </Box>
-    );
-}
-
 function EventRescheduleDetails({ targetEvent, setEventShiftStack, ...props }: IEventRescheduleProps) {
     const { date: originalDate } = targetEvent;
     const { shiftEventConflictCheck } = useEventRules();
-    const { calendarEventMap, dateGroupedEventMap } = useEventsContext();
+    const { calendarEventMap, dateGroupedEventMap, loading } = useEventsContext();
     const [targetDate, setTargetDate] = useState<Moment>(originalDate);
 
     const order = useMemo(() => {
@@ -119,7 +104,7 @@ function EventRescheduleDetails({ targetEvent, setEventShiftStack, ...props }: I
     }, [targetDate, originalDate]);
 
     useEffect(() => {
-        if (!order) return;
+        if (!order || loading) return;
         const eventShift = { date: targetDate, originalEvent: targetEvent, skippedDates: [] };
         const eventToDisplace = dateGroupedEventMap.getEntriesForDate(targetDate).find(e => e.id !== targetEvent.id && e.eventType === targetEvent.eventType);
         if (!eventToDisplace) return setEventShiftStack([eventShift]);
@@ -129,7 +114,7 @@ function EventRescheduleDetails({ targetEvent, setEventShiftStack, ...props }: I
         const invertedOrder = order === 'next' ? 'prev' : 'next';
         const eventShiftStack =  shiftEventConflictCheck(eventToDisplace.id, invertedOrder, { dateGroupedEventMap: tempDateGroupedEventMap });
         setEventShiftStack([eventShift, ...eventShiftStack]);
-    }, [targetDate, order]);
+    }, [targetDate, order, loading, targetEvent, dateGroupedEventMap, calendarEventMap, shiftEventConflictCheck, setEventShiftStack]);
 
     return (
         <Box gap={3} display={"flex"} flexDirection={"column"} padding={2}>
@@ -142,7 +127,9 @@ function EventRescheduleDetails({ targetEvent, setEventShiftStack, ...props }: I
 export default function EventActionsConfirmModal(props: IEventActionsConfirmModalProps) {
     const { targetEventId, action, onClose: onModalClose } = props;
     const { calendarEventMap, eventsAPI: { removeCalendarEvents, updateCalendarEvents }, loading } = useEventsContext();
-    const targetEvent = useMemo(() => targetEventId && calendarEventMap[targetEventId] || defaultDummyCalendarEvent, [targetEventId]);
+    const targetEvent = useMemo(() => {
+        return (targetEventId && calendarEventMap[targetEventId]) || defaultDummyCalendarEvent;
+    }, [targetEventId, calendarEventMap]);
 
     const [eventShiftStack, setEventShiftStack] = useState<IConflictingEventsResult[]>([]);
     
@@ -151,24 +138,41 @@ export default function EventActionsConfirmModal(props: IEventActionsConfirmModa
         return eventShiftStack.map(e => ({...e.originalEvent, date: e.date}));
     }, [eventShiftStack]);
 
-    const open = useMemo(() => !!action && !!targetEventId, [action, targetEventId]);
-
     const onClose = useCallback(() => {
         setEventShiftStack([]);
         if (onModalClose) onModalClose();
     }, [onModalClose, setEventShiftStack]);
 
-    const onSubmit = useCallback(async () => {
+    const onUpdate = useCallback(async () => {
         if (action !== 'swap' && action !== 'reschedule') return;
         return await updateCalendarEvents(eventsToUpdate).then(() => onClose());
-    }, [action, targetEvent, eventsToUpdate, removeCalendarEvents, updateCalendarEvents, onClose]);
+    }, [action, eventsToUpdate, updateCalendarEvents, onClose]);
 
-    const title = useMemo(() => `${firstToUpper(action)} Event`, [action]);
+    const onDelete = useCallback(async () => {
+        if (action !== 'delete') return;
+        return await removeCalendarEvents(targetEvent).then(() => onClose());
+    }, [action, targetEvent, removeCalendarEvents, onClose]);
 
-    return action === 'update' || action === 'delete'
-    ? <CalendarEventModal {...props} {...{open, title}} operation={action} excludeFields={action === 'update' ? ["monkehId", "date", "eventType", "id"]: []}/>: (
-        <BaseModal {...props} {...{ open: !!targetEventId, title, onSubmit }} submitDisabled={loading} submitButtonText="Confirm">
+    const modalSharedProps = useMemo<IBaseModalProps>(() => ({
+        open: !!action && !!targetEventId,
+        title: `${firstToUpper(action)} Event`,
+        operation: action !== 'delete' ? 'update' : 'delete',
+        fullWidth: true,
+        maxWidth: 'md',
+        ...props,
+    }), [action, targetEventId, props]);
+
+    const updateSubmitDisabled = useMemo(() => {
+        if (loading) return true;
+        else if (action === 'swap' || action === 'reschedule') return eventShiftStack.length === 0;
+        return false;
+    }, [action, loading, eventShiftStack]);
+
+    return action === 'update'
+    ? <CalendarEventModal {...modalSharedProps} originalEvent={targetEvent} excludeFields={["monkehId", "date", "eventType", "id"]}/>: (
+        <BaseModal {...modalSharedProps} {...{ onUpdate, onDelete }} submitDisabled={updateSubmitDisabled}>
             {action === 'reschedule' && <EventRescheduleDetails {...{ targetEvent, eventShiftStack, setEventShiftStack }} />}
+            {action === 'delete' && <EventDeleteConfirmDetails {...{ deleteEvent: targetEvent }} />}
         </BaseModal>
     );
 }
