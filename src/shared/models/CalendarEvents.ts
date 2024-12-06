@@ -49,7 +49,7 @@ export type CalendarEvent = {
     date: moment.Moment;
     title: string;
     eventType: EventType;
-    monkehId: string;
+    monkehIds: string[];
 };
 
 export interface ICachedEvent extends Omit<CalendarEvent, 'date'> {
@@ -77,7 +77,7 @@ export const defaultDummyCalendarEvent: CalendarEvent = Object.freeze({
     date: moment(),
     title: "",
     eventType: EventType.Biblio,
-    monkehId: "",
+    monkehIds: [],
 })
 
 export const calendarEventKeys: readonly (keyof CalendarEvent)[] = Object.keys(defaultDummyCalendarEvent) as (keyof CalendarEvent)[];

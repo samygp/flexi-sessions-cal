@@ -92,10 +92,10 @@ export const CalendarEventFieldLabels: Record<keyof CalendarEvent, LocalizedText
         fr: "Type",
         es: "Tipo"
     },
-    monkehId: {
-        en: "Monkeh",
-        fr: "Monkeh",
-        es: "Monkeh"
+    monkehIds: {
+        en: "Monkeh(s)",
+        fr: "Monkeh(s)",
+        es: "Monkeh(s)"
     },
 });
 

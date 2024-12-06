@@ -36,7 +36,7 @@ export class EventRuleService {
         return this.ruleMap[eventType].daysOfWeek;
     }
 
-    public checkEventTypeConflicts(eventType: EventType, targetDate: Moment, monkehId?: string): IEventConflictCheck | undefined {
+    public checkEventTypeConflicts(eventType: EventType, targetDate: Moment, monkehIds?: string[]): IEventConflictCheck | undefined {
         if (isPastDate(targetDate)) return { conflict: EventConflict.PastDate };
 
         const { maxDailyEvents, daysOfWeek }: IEventRule = this.ruleMap[eventType];
@@ -55,7 +55,8 @@ export class EventRuleService {
         if (eventCategory === EventCategory.Blocked && sessionEvents.length) {
             return { conflict: EventConflict.PushesEntireDay, conflictingEvents: sessionEvents };
         }
-
+        
+        const monkehIdSet = new Set<string>(monkehIds);
         // For sessions
         if (eventCategory === EventCategory.Session) {
             // If the target date has more than the max daily events
@@ -66,7 +67,7 @@ export class EventRuleService {
 
             // If the target date has a personal event for the same monkeh
             const personalEvents = targetDateEvents.filter(e => {
-                return (e.monkehId !== monkehId) && (EventTypeCategoryMap[e.eventType] === EventCategory.Personal);
+                return (e.monkehIds.find(id => monkehIdSet.has(id))) && (EventTypeCategoryMap[e.eventType] === EventCategory.Personal);
             });
             if (personalEvents.length) {
                 return { conflict: EventConflict.PersonalEvent, conflictingEvents: personalEvents };
@@ -74,14 +75,14 @@ export class EventRuleService {
         }
 
         if (eventCategory === EventCategory.Personal) {
-            const monkehEvents = targetDateEvents.filter(e => e.monkehId === monkehId);
+            const monkehEvents = targetDateEvents.filter(e => e.monkehIds.find(id => monkehIdSet.has(id)));
             if (monkehEvents.length) {
                 return { conflict: EventConflict.PushesNextEvent, conflictingEvents: monkehEvents };
             }
         }
     }
 
-    private subsequentDateConflictCheck = ({ eventType, date, monkehId }: Pick<CalendarEvent, 'date' | 'eventType' | 'monkehId'>, order: EventRuleOrder): Omit<IConflictingEventsResult, 'originalEvent'> => {
+    private subsequentDateConflictCheck = ({ eventType, date, monkehIds }: Pick<CalendarEvent, 'date' | 'eventType' | 'monkehIds'>, order: EventRuleOrder): Omit<IConflictingEventsResult, 'originalEvent'> => {
         const result: Omit<IConflictingEventsResult, 'originalEvent'> = { date, skippedDates: [] };
         let targetDate: Moment = moment(date);
         let keepSearching = true;
@@ -91,7 +92,7 @@ export class EventRuleService {
             // Move target date to prev/next weekday for rule
             targetDate = this.nextDateForEventType(targetDate, eventType, order);
             // Check for conflicts
-            const dateConflict = this.checkEventTypeConflicts(eventType, targetDate, monkehId);
+            const dateConflict = this.checkEventTypeConflicts(eventType, targetDate, monkehIds);
 
             if (dateConflict && isNonNegotiableConflict(dateConflict.conflict)) {
                 result.skippedDates.push(dateConflict);
@@ -114,7 +115,7 @@ export class EventRuleService {
         let date = (fromDate ?? moment()).startOf('day');
         let conflict: EventConflict | undefined = undefined;
         do {
-            const { dateConflict, date: nextDate } = this.subsequentDateConflictCheck({ eventType, date, monkehId: '' }, 'next');
+            const { dateConflict, date: nextDate } = this.subsequentDateConflictCheck({ eventType, date, monkehIds: [] }, 'next');
             conflict = dateConflict?.conflict;
             date = nextDate;
         } while (conflict);

@@ -17,8 +17,8 @@ export default function EventCalendar(props: IEventCalendarProps) {
   const { loading, dateGroupedEventMap, monkehMap } = useDataContext();
 
   const getDescription = useCallback((event: CalendarEvent): string => {
-    const monkehName = monkehMap[event.monkehId].name;
-    return `${readableDateTime(event.date)} | [${monkehName}] - ${event.title}`;
+    const monkehNames = event.monkehIds.map(id => monkehMap[id].name).join(', ');
+    return `${readableDateTime(event.date)} | [${monkehNames}] - ${event.title}`;
   }, [monkehMap]);
 
 

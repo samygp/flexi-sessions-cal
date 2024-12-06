@@ -45,4 +45,9 @@ export const MonkehFieldLabels: Record<keyof IMonkeh, LocalizedText> = Object.fr
         fr: "Anniversaire",
         es: "Fecha de nacimiento"
     },
+    cake: {
+        en: "Preferred cake",
+        fr: "Gâteau préféré",
+        es: "Preferencia de pastel"
+    }
 })

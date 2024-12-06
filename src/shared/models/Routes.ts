@@ -4,7 +4,8 @@ export enum PathName {
     app = 'app',
     monkeh = 'monkeh',
     eventRules = 'event-rules',
-    login = 'login'
+    login = 'login',
+    birthdays = 'birthdays'
 };
 
 // Relates a path with a parent path
@@ -12,6 +13,7 @@ export const PathTrace: Record<PathName, PathName | ''> = {
     [PathName.calendar]: PathName.app,
     [PathName.app]: '',
     [PathName.monkeh]: PathName.app,
+    [PathName.birthdays]: PathName.monkeh,
     [PathName.login]: '',
     [PathName.eventRules]: PathName.app
 } as const;

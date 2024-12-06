@@ -1,10 +1,11 @@
 import { Autocomplete, AutocompleteRenderInputParams, createFilterOptions, TextField } from "@mui/material";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { SyntheticEvent, useCallback, useEffect, useMemo, useState } from "react";
 
 interface ILookupProps<T> {
-    value: string;
-    onChange: (v: string) => void;
+    value: string | string[];
+    onChange: (v: string | string[]) => void;
     label: string;
+    multiple?: boolean;
     entries: T[] | Record<string, T>;
     getCategory?: (e: T) => string;
     getOptionLabel?: (e: T) => string;
@@ -22,7 +23,7 @@ const filterOptions = createFilterOptions({
 });
 
 export default function Lookup<T>(props: ILookupProps<T>) {
-    const { entries, getOptionLabel, getOptionValue, getCategory, value, onChange: setValue, label } = props;
+    const { entries, getOptionLabel, getOptionValue, getCategory, value, onChange: setValue, label, multiple } = props;
 
     const getOptionFromEntry = useCallback((e: T): IOption => {
         const id = getOptionValue(e);
@@ -36,19 +37,24 @@ export default function Lookup<T>(props: ILookupProps<T>) {
         return entryList.map(getOptionFromEntry);
     }, [entries, getOptionFromEntry]);
 
-    const [optionValue, setOptionValue] = useState<IOption | null>(options.find(o => o.id === value) ?? null);
-    const onChange = useCallback((_e: any, v: IOption | null) => setOptionValue(v), [setOptionValue]);
+    const [optionValue, setOptionValue] = useState<IOption | IOption[] | undefined>(multiple ? options.filter(o => value === o.id) : options.find(o => o.id === value));
+    const onChange = useCallback((event: SyntheticEvent<Element, Event>, value: IOption | IOption[] | null) => {
+        event.preventDefault();
+        setOptionValue(value || undefined);
+      }, [setOptionValue]);
 
     useEffect(() => {
-        if (optionValue) setValue(optionValue.id);
-    }, [optionValue, setValue]);
+        if (optionValue) {
+            setValue(multiple ? (optionValue as IOption[]).map(o => o.id) : (optionValue as IOption).id);
+        }
+    }, [optionValue, setValue, multiple]);
 
     const renderInput = useCallback((params: AutocompleteRenderInputParams) => <TextField {...{ ...params, label }} />, [label]);
     const groupBy = useCallback((o: IOption) => o.category ?? '', []);
 
     return (
-        <Autocomplete<IOption> value={optionValue}
-            {...{ options, renderInput, filterOptions, groupBy, onChange }}
+        <Autocomplete value={optionValue}
+            {...{ options, renderInput, filterOptions, groupBy, onChange, multiple }}
         />
     );
 }

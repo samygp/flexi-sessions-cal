@@ -4,8 +4,8 @@ import Lookup from "@/components/Inputs/Dropdowns/Lookup";
 import { useMonkehContext } from "@/hooks/useCustomContext";
 
 interface IMonkehLookupProps {
-    value: string;
-    onChange: (monkehId: string) => void;
+    value: string[];
+    onChange: (monkehIds: string | string[]) => void;
 }
 
 export default function MonkehLookup({value, onChange}: IMonkehLookupProps) {
@@ -16,6 +16,6 @@ export default function MonkehLookup({value, onChange}: IMonkehLookupProps) {
     const getOptionLabel = useCallback((m: IMonkeh) => m.name, []);
 
     return (
-        <Lookup<IMonkeh> label="Monkeh" {...{value, onChange, getCategory, getOptionValue, getOptionLabel, entries}}/>
+        <Lookup<IMonkeh> label="Monkeh" {...{value, onChange, getCategory, getOptionValue, getOptionLabel, entries, multiple: true}}/>
     );
 }

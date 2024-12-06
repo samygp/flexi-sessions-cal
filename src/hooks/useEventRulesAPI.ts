@@ -9,7 +9,7 @@ const RULES_ENDPOINT = 'api/eventRules';
 export type EventRuleAPIResult = IEventRule | IEventRule[] | void | undefined;
 
 export interface IEventRulesAPI extends IBaseAPIHook {
-  fetchRules: (filter: Partial<IEventRule>) => Promise<IEventRule | IEventRule[] | undefined>;
+  fetchRules: (filter: Partial<IEventRule>, force?: boolean) => Promise<IEventRule | IEventRule[] | undefined>;
   updateRule: (rule: IEventRule) => Promise<IEventRule | IEventRule[] | undefined>;
 }
 
@@ -21,8 +21,8 @@ export default function useEventRulesAPI(cache?: IItemCache<IEventRule[]>): IEve
 
   const { loading, error, get, update } = useCRUDApiFetch<IEventRule, Partial<IEventRule>, IEventRule, IEventRule>(crudAPIOptions);
 
-  const fetchRules = useCallback(async (filter: Partial<IEventRule>) => {
-    return await get(RULES_ENDPOINT, filter);
+  const fetchRules = useCallback(async (filter: Partial<IEventRule>, force?: boolean) => {
+    return await get(RULES_ENDPOINT, filter, force);
   }, [get]);
 
   const updateRule = useCallback(async (rule: IEventRule) => {

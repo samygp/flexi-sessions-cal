@@ -15,6 +15,7 @@ export interface IMonkeh {
     email: string;
     level: ErreLevel;
     birthday: Moment;
+    cake: string;
 };
 
 interface ISerializedMonkeh extends Omit<IMonkeh, 'birthday'> {
@@ -35,6 +36,7 @@ export const defaultDummyMonkeh: IMonkeh = Object.freeze({
     email: "",
     level: 1,
     birthday: moment('1972-01-01'),
+    cake: "",
 })
 
 export interface IMonkehRequest extends Partial<Omit<IMonkeh, 'birthday'>> {

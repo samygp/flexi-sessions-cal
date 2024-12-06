@@ -59,11 +59,11 @@ export const DrawerItemsConfigMap: Record<DrawerSection, IDrawerItemConfig[]> = 
             IconComponent: SportsKabaddi,
             path: getPath(PathName.monkeh),
         },
-        // {
-        //     item: DrawerItem.Birthdays,
-        //     IconComponent: Cake,
-        //     path: getPath(PathName.monkeh),
-        // },
+        {
+            item: DrawerItem.Birthdays,
+            IconComponent: Cake,
+            path: getPath(PathName.birthdays),
+        },
     ],
     [DrawerSection.EventConfig]: [
         {

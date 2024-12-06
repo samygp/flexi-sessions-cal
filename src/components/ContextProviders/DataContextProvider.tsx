@@ -1,7 +1,6 @@
 import { PropsWithChildren, useCallback, useMemo } from "react";
 import { CalendarEvent, deserializeCalendarEvent, EventType } from "@/shared/models/CalendarEvents";
 import useCalendarEventAPI from "@/hooks/useCalendarEventAPI";
-import { DateGroupedEntryMap } from "@/shared/models/DateGroupedEntryMap";
 import { keyBy } from "lodash";
 import useMonkehAPI from "@/hooks/useMonkehAPI";
 import EventCalendarContext from "@/shared/models/context/DataContext";
@@ -40,12 +39,13 @@ export default function DataContextProvider({ children }: PropsWithChildren) {
     const error = useMemo(() => eventsAPI.error || monkehAPI.error, [eventsAPI.error, monkehAPI.error]);
 
     const getEventDescription = useCallback((event: CalendarEvent): string => {
-        const monkehName = monkehMap[event.monkehId].name;
-        return `[${monkehName}] - ${event.title} | ${readableDateTime(event.date)}`;
+        const monkehNames = event.monkehIds.map(id => monkehMap[id].name).join(', ');
+        return `[${monkehNames}] - ${event.title} | ${readableDateTime(event.date)}`;
     }, [monkehMap]);
 
-    useMount(() => {
-        if (monkehCache.isOutdated) monkehAPI.fetchMonkehs({});
+    useMount(async () => {
+        // only required to be awaited are monkehs
+        if (monkehCache.isOutdated) await monkehAPI.fetchMonkehs({});
         if (eventsCache.isOutdated) eventsAPI.fetchYear(new Date().getUTCFullYear());
         if (eventRulesCache.isOutdated) eventRulesAPI.fetchRules({});
     });

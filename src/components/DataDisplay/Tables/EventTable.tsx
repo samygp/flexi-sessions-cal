@@ -1,18 +1,16 @@
 import Box from '@mui/material/Box';
 import { DataGrid, GridActionsCellItem, GridColDef, GridComparatorFn, GridRenderCellParams, GridRowParams, GridSortingInitialState } from '@mui/x-data-grid';
-import { ArrowRight, EditCalendar, Edit, DeleteForeverOutlined } from '@mui/icons-material';
+import { EditCalendar, Edit, DeleteForeverOutlined } from '@mui/icons-material';
 import { useCallback, useMemo, useState } from 'react';
 import { CalendarEvent, EventType } from '@/shared/models/CalendarEvents';
 import { readableDateTime } from '@/shared/utils/dateHelpers';
 import { useDataContext } from '@/hooks/useCustomContext';
-import MonkehTag from '@/components/DataDisplay/Tags/MonkehTag';
 import { getMonkehSortId } from '@/shared/models/Monkeh';
 import { CalendarEventFieldLabels, EventTypeLabels } from '@/shared/locale/events';
 import { useLocale } from '@/hooks/useLocale';
-import useEventRules from '@/hooks/useEventRules';
-import { EventRuleOrder, IConflictingEventsResult } from '@/shared/models/EventRules';
-import { styled, SvgIcon } from '@mui/material';
+import { SvgIcon } from '@mui/material';
 import EventActionsConfirmModal, { IEventActionsConfirmModalProps } from '@/components/Layout/Modals/EventActionsModal';
+import { MonkehCell } from '@/components/DataDisplay/Tables/CellRenders/MonkehCell';
 
 interface IEventTableProps {
     rows: CalendarEvent[];
@@ -25,8 +23,6 @@ interface IActionCellProps {
     action: SupportedListAction;
     onClick: () => void;
 }
-
-const MonkehCell = styled('div')(() => ({ height: '100%', width: '100%', display: 'flex', alignItems: 'center' }));
 
 const defaultGridProps = {
     initialState: {
@@ -61,9 +57,10 @@ export default function EventTable({ rows }: IEventTableProps) {
     const fieldLabels = useLocale<keyof CalendarEvent>(CalendarEventFieldLabels);
     const eventTypeLabels = useLocale<EventType>(EventTypeLabels);
 
-    const MonkehInfoCell = useCallback(({ value: monkehId }: GridRenderCellParams<CalendarEvent, string>) => {
-        const { level, name } = monkehMap[monkehId!];
-        return <MonkehCell> <MonkehTag level={level} compact /> {name} </MonkehCell>;
+    const MonkehInfoCell = useCallback(({ value: monkehIds }: GridRenderCellParams<CalendarEvent, string[]>) => {
+        return (<Box display={"flex"}>
+            {monkehIds!.map(monkehId => <MonkehCell key={monkehId} {...monkehMap[monkehId!]} />)}
+        </Box>);
     }, [monkehMap]);
 
     const EventTitleCell = useCallback(({ row }: GridRenderCellParams<CalendarEvent, string>) => {
@@ -75,7 +72,7 @@ export default function EventTable({ rows }: IEventTableProps) {
             <ActionCell {...{ButtonIcon,action}} onClick={onClick} />
             {title}
         </Box>;
-    }, [setActionModalProps]);
+    }, [setActionModalProps, clearActionModalProps]);
 
     const sortByMonkeh = useCallback<GridComparatorFn<string>>((id1, id2) => {
         const aMonkeh = getMonkehSortId(monkehMap[id1]);
@@ -94,12 +91,12 @@ export default function EventTable({ rows }: IEventTableProps) {
     }, [setActionModalProps, clearActionModalProps]);
 
     const columns: GridColDef<CalendarEvent>[] = useMemo(() => [
-        { field: 'title', headerName: fieldLabels.title, flex: 2, renderCell: EventTitleCell },
-        { field: 'eventType', headerName: fieldLabels.eventType, flex: 1, valueFormatter: value => eventTypeLabels[value] },
-        { field: 'monkehId', headerName: fieldLabels.monkehId, flex: 1, renderCell: MonkehInfoCell, sortComparator: sortByMonkeh },
+        { field: 'title', headerName: fieldLabels.title, flex: 1, renderCell: EventTitleCell },
+        { field: 'eventType', headerName: fieldLabels.eventType, flex: 0.5, valueFormatter: value => eventTypeLabels[value] },
+        { field: 'monkehIds', headerName: fieldLabels.monkehIds, flex: 1, renderCell: MonkehInfoCell, sortComparator: sortByMonkeh },
         { field: 'date', headerName: fieldLabels.date, valueGetter: readableDateTime, width: 190 },
         { field: 'actions', type: 'actions', width: 140, getActions },
-    ], [eventTypeLabels, fieldLabels, MonkehInfoCell, sortByMonkeh, getActions]);
+    ], [eventTypeLabels, fieldLabels, MonkehInfoCell, sortByMonkeh, getActions, EventTitleCell]);
 
 
     return (
