@@ -27,7 +27,7 @@ function MonkehViewMainContent({ selectedMonkeh: monkeh, setSelectedMonkeh: setM
 
     const { calendarEventMap } = useEventsContext();
     const monkehEvents = useMemo<CalendarEvent[]>((() => {
-        return Object.values(calendarEventMap).filter(e => e.monkehId === monkeh.id);
+        return Object.values(calendarEventMap).filter(e => e.monkehIds.includes(monkeh.id));
     }), [calendarEventMap, monkeh]);
 
     const [eventMessage, setEventMessage] = useState<IEventSnackProps>({ message: '', severity: "success" });

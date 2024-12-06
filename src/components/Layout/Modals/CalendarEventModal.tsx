@@ -11,7 +11,7 @@ export interface ICalendarEventFormModalProps extends IBaseModalProps {
     excludeFields?: (keyof CalendarEvent)[];
 }
 
-const mandatoryFields: (keyof CalendarEvent)[] = ["title", "date", "eventType", "monkehId"];
+const mandatoryFields: (keyof CalendarEvent)[] = ["title", "date", "eventType", "monkehIds"];
 const hasMissingValues = (event: Partial<CalendarEvent>) => mandatoryFields.some(field => !event[field]);
 
 export default function CalendarEventModal({ originalEvent = defaultDummyCalendarEvent, ...props }: ICalendarEventFormModalProps) {

@@ -19,7 +19,7 @@ export default function CalendarEventForm({ setCalendarEvent, readOnly, event, e
     const fieldMappings = useMemo<IFieldMapping<CalendarEvent>[]>(() => [
         { label: labels.title, fieldType: "text", fieldName: "title" },
         { label: labels.eventType, fieldType: "custom", fieldName: "eventType", CustomFieldComponent: EventTypeDropdown },
-        { label: labels.monkehId, fieldType: "custom", fieldName: "monkehId", CustomFieldComponent: MonkehLookup },
+        { label: labels.monkehIds, fieldType: "custom", fieldName: "monkehIds", CustomFieldComponent: MonkehLookup },
         { label: labels.date, fieldType: "custom", fieldName: "date", CustomFieldComponent: SessionDatePicker, customProps: { eventType: event.eventType, disabled: !!event.id } },
     ], [labels, event]);
 

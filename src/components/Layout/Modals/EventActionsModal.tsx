@@ -172,7 +172,7 @@ export default function EventActionsConfirmModal(props: IEventActionsConfirmModa
     }, [action, loading, eventShiftStack]);
 
     return action === 'update'
-    ? <CalendarEventModal {...modalSharedProps} originalEvent={targetEvent} excludeFields={["monkehId", "date", "eventType", "id"]}/>: (
+    ? <CalendarEventModal {...modalSharedProps} originalEvent={targetEvent} excludeFields={["monkehIds", "date", "eventType", "id"]}/>: (
         <BaseModal {...modalSharedProps} {...{ onUpdate, onDelete }} submitDisabled={updateSubmitDisabled}>
             {action === 'reschedule' && <EventRescheduleDetails {...{ targetEvent, eventShiftStack, setEventShiftStack }} />}
             {action === 'delete' && <EventDeleteConfirmDetails {...{ deleteEvent: targetEvent }} />}

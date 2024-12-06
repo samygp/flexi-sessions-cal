@@ -39,8 +39,8 @@ export default function DataContextProvider({ children }: PropsWithChildren) {
     const error = useMemo(() => eventsAPI.error || monkehAPI.error, [eventsAPI.error, monkehAPI.error]);
 
     const getEventDescription = useCallback((event: CalendarEvent): string => {
-        const monkehName = monkehMap[event.monkehId].name;
-        return `[${monkehName}] - ${event.title} | ${readableDateTime(event.date)}`;
+        const monkehNames = event.monkehIds.map(id => monkehMap[id].name).join(', ');
+        return `[${monkehNames}] - ${event.title} | ${readableDateTime(event.date)}`;
     }, [monkehMap]);
 
     useMount(async () => {

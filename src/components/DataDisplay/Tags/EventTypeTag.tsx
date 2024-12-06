@@ -16,10 +16,6 @@ export default function EventTypeTag({eventType}: CalendarEvent) {
     const eventCategory = useMemo(() => EventTypeCategoryMap[eventType], [eventType]);
     const color = useMemo(() => EventCategoryColorMap[eventCategory], [eventCategory]);
 
-    console.log('eventType', eventType);
-    console.log('labels', labels);
-    console.log('title', title);
-
     return (
         <Tooltip title={title}>
             <Chip label={<ChipText variant="h6">{title[0]}</ChipText>} color={color} />
