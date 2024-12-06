@@ -1,9 +1,10 @@
-import { CalendarEvent } from '../../../shared/models/CalendarEvents';
+import { CalendarEvent } from '@/shared/models/CalendarEvents';
 import { Moment } from 'moment';
-import { readableDateTime } from '../../../shared/utils/dateHelpers';
-import { useEventsContext } from '../../../hooks/useCustomContext';
-import Calendar from './Calendar';
-import EventTypeTag from '../Tags/EventTypeTag';
+import { readableDateTime } from '@/shared/utils/dateHelpers';
+import { useDataContext } from '@/hooks/useCustomContext';
+import Calendar from '@/components/DataDisplay/Calendars/Calendar';
+import EventTypeTag from '@/components/DataDisplay/Tags/EventTypeTag';
+import { useCallback } from 'react';
 
 // types
 interface IEventCalendarProps {
@@ -12,16 +13,17 @@ interface IEventCalendarProps {
   onDaySelect?: (day: Moment) => void;
 };
 
-// helpers
-const getDescription = (event: CalendarEvent): string => {
-  return `${readableDateTime(event.date)} | [${event.monkehId}] - ${event.title}`;
-}
+export default function EventCalendar(props: IEventCalendarProps) {
+  const { loading, dateGroupedEventMap, monkehMap } = useDataContext();
 
-export default function EventCalendar({ onYearChange, onDaySelect }: IEventCalendarProps) {
-  const { loading, dateGroupedEventMap } = useEventsContext();
+  const getDescription = useCallback((event: CalendarEvent): string => {
+    const monkehName = monkehMap[event.monkehId].name;
+    return `${readableDateTime(event.date)} | [${monkehName}] - ${event.title}`;
+  }, [monkehMap]);
+
 
   return <Calendar<CalendarEvent>
-    {...{ onDaySelect, onYearChange, loading, getDescription }}
+    {...{ ...props, loading, getDescription }}
     entryMap={dateGroupedEventMap}
     getAvatar={EventTypeTag}
   />

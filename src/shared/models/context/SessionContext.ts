@@ -1,5 +1,6 @@
 import { createContext } from "react";
-import { IOAuthTokens, AuthState } from "../Auth";
+import { IOAuthTokens, AuthState } from "@/shared/models/Auth";
+import { SupportedLocale } from "@/shared/locale";
 
 interface ISessionContext {
     accessToken?: string,
@@ -12,6 +13,8 @@ interface ISessionContext {
     isAuthenticated: boolean;
     logout: () => void;
     refreshSession: () => void;
+    locale: SupportedLocale;
+    setLocale: (l: SupportedLocale) => void;
 }
 
 export default createContext<ISessionContext>({
@@ -22,4 +25,6 @@ export default createContext<ISessionContext>({
     clearSession: () => {},
     logout: () => {},
     refreshSession: () => {},
+    locale: SupportedLocale.EN,
+    setLocale: (_l: SupportedLocale) => {}
 });

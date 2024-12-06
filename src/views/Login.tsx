@@ -5,11 +5,15 @@ import Grid from '@mui/material/Grid';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Doge from "../assets/doge_splash.png";
-import LoginForm from '../components/Inputs/Forms/LoginForm';
-import { useHeaderContext } from '../hooks/useCustomContext';
+import LoginForm from '@/components/Inputs/Forms/LoginForm';
+import { useHeaderContext } from '@/hooks/useCustomContext';
+import { useMount } from 'react-use';
 
 export default function Login() {
-  useHeaderContext().setTitle('Login');
+  const {setTitle} = useHeaderContext();
+  useMount(() => {
+    setTitle('Login');
+});
   return (
       <Grid container component="main" sx={{ height: '100vh' }}>
         <Grid

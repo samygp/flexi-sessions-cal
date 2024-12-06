@@ -1,13 +1,17 @@
 import { Moment } from "moment";
-import { destructureDate } from "../utils/dateHelpers";
+import { destructureDate } from "@/shared/utils/dateHelpers";
 
-type GroupedEntryMap = Map<number, Map<number, Map<number, Set<string>>>>;
+type DayEntryMap = Map<number, Set<string>>;
+type MonthEntryMap = Map<number, DayEntryMap>;
 
-const hasYear = (groupedEntries: GroupedEntryMap, year: number) => !!groupedEntries.has(year);
-const hasMonth = (groupedEntries: GroupedEntryMap, year: number, month: number) => !!groupedEntries.get(year)?.has(month);
-const hasDay = (groupedEntries: GroupedEntryMap, year: number, month: number, day: number) => !!groupedEntries.get(year)?.get(month)?.has(day);
+// ************************ year ****** month ***** day ****** entryIDs
+type YearEntryMap = Map<number, MonthEntryMap>;
 
-const initializeDate = (entryMap: GroupedEntryMap, year: number, month: number, day: number) => {
+const hasYear = (groupedEntries: YearEntryMap, year: number) => !!groupedEntries.has(year);
+const hasMonth = (groupedEntries: YearEntryMap, year: number, month: number) => !!groupedEntries.get(year)?.has(month);
+const hasDay = (groupedEntries: YearEntryMap, year: number, month: number, day: number) => !!groupedEntries.get(year)?.get(month)?.has(day);
+
+const initializeDate = (entryMap: YearEntryMap, year: number, month: number, day: number) => {
     if (!hasYear(entryMap, year)) entryMap.set(year, new Map<number, Map<number, Set<string>>>());
     if (!hasMonth(entryMap, year, month)) entryMap.get(year)!.set(month, new Map<number, Set<string>>());
     if (!hasDay(entryMap, year, month, day)) entryMap.get(year)!.get(month)!.set(day, new Set<string>());
@@ -15,8 +19,10 @@ const initializeDate = (entryMap: GroupedEntryMap, year: number, month: number, 
 
 export class DateGroupedEntryMap<T> {
     private entries: Record<string, T>;
-    // ************************ year ****** month ***** day ****** entryIDs
-    private groupedEntries: GroupedEntryMap;
+    
+    private groupedEntries: YearEntryMap;
+
+    public getById = (id: string): T => this.entries[id];
 
     public getIdsForDate = (date: Moment): string[] => {
         const { year, month, day } = destructureDate(date);
@@ -51,11 +57,7 @@ export class DateGroupedEntryMap<T> {
 
     constructor(entries: Record<string, T>, getEntryDate: (e: T) => Moment) {
         this.entries = entries;
-        const groupedEntries = new Map<number,
-            Map<number,
-                Map<number, Set<string>>
-            >
-        >();
+        const groupedEntries = new Map<number, MonthEntryMap>();
 
         Object.keys(entries).forEach(id => {
             const entry = entries[id]!;

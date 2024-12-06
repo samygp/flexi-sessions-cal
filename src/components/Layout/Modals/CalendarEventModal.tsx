@@ -1,34 +1,50 @@
 import { useCallback, useMemo, useState } from "react";
-import BaseModal, { IBaseModalProps } from "./BaseModal";
-import { useEventsContext } from "../../../hooks/useCustomContext";
-import { CalendarEvent, defaultDummyCalendarEvent } from "../../../shared/models/CalendarEvents";
-import CalendarEventForm from "../../Inputs/Forms/CalendarEventForm";
+import BaseModal, { IBaseModalProps } from "@/components/Layout/Modals/BaseModal";
+import { useEventsContext } from "@/hooks/useCustomContext";
+import { CalendarEvent, defaultDummyCalendarEvent } from "@/shared/models/CalendarEvents";
+import CalendarEventForm from "@/components/Inputs/Forms/CalendarEventForm";
+import EventSnackbar, { IEventSnackProps } from "@/components/DataDisplay/EventSnackbar";
 
 
 export interface ICalendarEventFormModalProps extends IBaseModalProps {
     originalEvent?: CalendarEvent;
+    excludeFields?: (keyof CalendarEvent)[];
 }
 
-export default function CalendarEventModal({ originalEvent = defaultDummyCalendarEvent, readOnly, ...props }: ICalendarEventFormModalProps) {
-    const [event, setCalendarEvent] = useState<CalendarEvent>(originalEvent);
-    const { eventsAPI: { createCalendarEvent, updateCalendarEvent, removeCalendarEvents }, loading } = useEventsContext();
+const mandatoryFields: (keyof CalendarEvent)[] = ["title", "date", "eventType", "monkehId"];
+const hasMissingValues = (event: Partial<CalendarEvent>) => mandatoryFields.some(field => !event[field]);
 
-    const actions = useMemo(() => {
-        return {
-            onCreate: async () => await createCalendarEvent(event),
-            onUpdate: async () => await updateCalendarEvent(event),
-            onDelete: async () => await removeCalendarEvents(event),
-        }
-    }, [event, createCalendarEvent, updateCalendarEvent, removeCalendarEvents]);
+export default function CalendarEventModal({ originalEvent = defaultDummyCalendarEvent, ...props }: ICalendarEventFormModalProps) {
+    const {readOnly, excludeFields, onClose: onModalClose} = props;
+    const [eventMessage, setEventMessage] = useState<IEventSnackProps>({ message: '', severity: "success" });
+    const [event, setCalendarEvent] = useState<CalendarEvent>(originalEvent);
+    const { eventsAPI: { createCalendarEvent, updateCalendarEvents, removeCalendarEvents }, loading } = useEventsContext();
 
     const onClose = useCallback(() => {
         setCalendarEvent(originalEvent);
-        if (props.onClose) props.onClose();
+        if (onModalClose) onModalClose();
     }, [setCalendarEvent, originalEvent, props]);
+
+    const onSuccess = useCallback((event: CalendarEvent|CalendarEvent[], action: string) => {
+        const message = Array.isArray(event) ? `Events ${action}` : `Event ${event.title} ${action}`;
+        setEventMessage({ message, severity: "success" });
+        onClose();
+    }, [setEventMessage, onModalClose, onClose]);
+
+    const actions = useMemo(() => {
+        const submitDisabled = readOnly || hasMissingValues(event);
+        return {
+            submitDisabled,
+            onCreate: async () => await createCalendarEvent(event).then(evt => onSuccess(evt!, "created")),
+            onUpdate: async () => await updateCalendarEvents(event).then(evt => onSuccess(evt!, "updated")),
+            onDelete: async () => await removeCalendarEvents(event).then(evt => onSuccess(evt!, "deleted")),
+        }
+    }, [event, createCalendarEvent, updateCalendarEvents, removeCalendarEvents, readOnly, onSuccess]);    
 
     return (
         <BaseModal {...{ ...props, ...actions, onClose, loading }}>
-            <CalendarEventForm {...{ event, setCalendarEvent, readOnly }} />
+            <EventSnackbar {...eventMessage}/>
+            <CalendarEventForm {...{ event, setCalendarEvent, readOnly, excludeFields }} />
         </BaseModal>
     )
 }

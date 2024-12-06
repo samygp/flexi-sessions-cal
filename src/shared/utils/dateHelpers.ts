@@ -17,7 +17,7 @@ export const endOf = Object.freeze({
 const ymdFormat = 'YYYY-MM-DD';
 export const getDayID = (date: Moment) => date.format(ymdFormat);
 
-export const readableDateTime = (date: Moment) => date.local(true).format('ddd YYYY-MM-DD');
+export const readableDateTime = (date: Moment) => date.local(true).format('YYYY-MM-DD (dddd)');
 
 export const destructureDate = (date: Moment) => {
     return {
@@ -32,3 +32,9 @@ export const getMonthDate = (date: Moment) => date.local(true).format('MMM-DD (d
 export const nowSeconds = () => Math.floor(Date.now() / 1000);
 
 export const secondsSince = (date: Moment) => nowSeconds() - date.unix();
+
+export const getDayOfWeekName = (dayOfWeekNumber: number, locale?: string) => {
+    return moment().weekday(dayOfWeekNumber).locale(locale ?? true).format('ddd');
+}
+
+export const isPastDate = (date: Moment) => date.isBefore(moment().startOf('day'));

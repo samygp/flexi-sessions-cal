@@ -1,26 +1,47 @@
-import { colors } from '@mui/material';
+import { EventBusy, PersonSearch, Biotech, Class, SvgIconComponent, RotateRight, BeachAccess, AcUnit } from '@mui/icons-material';
+import { ChipOwnProps } from '@mui/material';
 import moment from 'moment';
 
 export enum EventType {
-    Session = "session",
-    TimeOff = "timeoff",
-    OnCall = "oncall",
+    Biblio = "biblio",
+    Clinic = "clinic",
+    Rotation = "rotation",
+    Vacation = "vacation",
+    Holiday = "holiday",
+    Consultation = "consultation",
+    Override = "override",
 };
 
 export enum EventCategory {
-    // TODO
+    Personal = "personal",
+    Session = "session",
+    Blocked = "blocked",
 };
 
-export const EventColorMap: Record<EventType, string> = Object.freeze({
-    [EventType.Session]: colors.green[300],
-    [EventType.TimeOff]: colors.deepPurple[200],
-    [EventType.OnCall]: colors.deepOrange[300],
-});
+export const EventTypeCategoryMap: Record<EventType, EventCategory> = {
+    [EventType.Biblio]: EventCategory.Session,
+    [EventType.Clinic]: EventCategory.Session,
+    [EventType.Consultation]: EventCategory.Personal,
+    [EventType.Rotation]: EventCategory.Personal,
+    [EventType.Vacation]: EventCategory.Personal,
+    [EventType.Holiday]: EventCategory.Blocked,
+    [EventType.Override]: EventCategory.Blocked,
+}
 
-export const EventTypeLabels: Record<EventType, string> = Object.freeze({
-    [EventType.Session]: "Sesión",
-    [EventType.TimeOff]: "Vacaciones",
-    [EventType.OnCall]: "Guardia",
+export const EventTypeIconMap: Record<EventType, SvgIconComponent> = {
+    [EventType.Biblio]: Class,
+    [EventType.Clinic]: Biotech,
+    [EventType.Rotation]: RotateRight,
+    [EventType.Vacation]: BeachAccess,
+    [EventType.Holiday]: AcUnit,
+    [EventType.Consultation]: PersonSearch,
+    [EventType.Override]: EventBusy,
+}
+
+export const EventCategoryColorMap: Record<EventCategory, ChipOwnProps['color']> = Object.freeze({
+    [EventCategory.Session]: "success",
+    [EventCategory.Blocked]:  "warning",
+    [EventCategory.Personal]: "secondary",
 });
 
 export type CalendarEvent = {
@@ -55,7 +76,7 @@ export const defaultDummyCalendarEvent: CalendarEvent = Object.freeze({
     id: "",
     date: moment(),
     title: "",
-    eventType: EventType.Session,
+    eventType: EventType.Biblio,
     monkehId: "",
 })
 
@@ -64,4 +85,8 @@ export const calendarEventKeys: readonly (keyof CalendarEvent)[] = Object.keys(d
 export const deserializeCalendarEvent = (cacheString: string): CalendarEvent[] => {
     const events: ICachedEvent[] = JSON.parse(cacheString);
     return events.map(evt => ({ ...evt, date: moment(evt.date) }));
+}
+
+export const getCategoryEventTypes = (category: EventCategory): EventType[] => {
+    return Object.values(EventType).filter(evt => EventTypeCategoryMap[evt] === category);
 }

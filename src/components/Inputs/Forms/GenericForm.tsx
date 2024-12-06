@@ -1,8 +1,8 @@
-import { Box, FormControl, FormControlOwnProps, TextField } from "@mui/material";
+import { Box, FormControl, FormControlOwnProps, SxProps, TextField } from "@mui/material";
 import { useCallback, useMemo } from "react";
 import { DateField, DatePicker } from "@mui/x-date-pickers";
-import { firstToUpper } from "../../../shared/utils/stringHelpers";
-import MonthDayPicker from "../Dropdowns/MonthDayPicker";
+import { firstToUpper } from "@/shared/utils/stringHelpers";
+import MonthDayPicker from "@/components/Inputs/Dropdowns/MonthDayPicker";
 
 type SupportedFieldTypes = "date" | "text" | "hidden" | "number" | "custom" | "monthday";
 
@@ -17,9 +17,10 @@ export interface IFieldMapping<T> {
 
 interface IGenericFormProps<T> {
     entry: T;
-    setEntry: React.Dispatch<React.SetStateAction<T>>
+    setEntry?: React.Dispatch<React.SetStateAction<T>>
     readOnly?: boolean;
     fieldMappings: IFieldMapping<T>[];
+    layoutProps?: SxProps;
 }
 
 interface IFormFieldProps<T> extends Pick<IGenericFormProps<T>, "entry" | "readOnly"> {
@@ -34,10 +35,11 @@ function GenericFieldInput<T>({ entry, updateEntryValue, fieldMapping, readOnly 
     const fieldProps = useMemo(() => {
         return {
             readOnly,
-            ...customProps,
-            value: entry[fieldName],
             onChange,
+            disabled: readOnly,
+            value: entry[fieldName],
             label: fieldLabel,
+            ...customProps,
         }
     }, [fieldLabel, onChange, readOnly, customProps, entry, fieldName]);
 
@@ -57,16 +59,16 @@ function GenericFieldInput<T>({ entry, updateEntryValue, fieldMapping, readOnly 
 }
 
 export default function GenericForm<T>(props: IGenericFormProps<T>) {
-    const { fieldMappings, readOnly, entry, setEntry } = props;
+    const { layoutProps, fieldMappings, readOnly, entry, setEntry } = props;
 
     const updateEntryValue = useCallback(async (k: keyof T, v: T[keyof T]) => {
-        setEntry((prev: T) => ({ ...prev, [k]: v }));
-    }, [setEntry]);
+        if(setEntry && !readOnly) setEntry((prev: T) => ({ ...prev, [k]: v }));
+    }, [setEntry, readOnly]);
 
     const fieldProps = useMemo(() => ({ ...props, readOnly, entry, setEntry, updateEntryValue }), [props, readOnly, entry, setEntry, updateEntryValue]);
 
     return (
-        <Box component="form" sx={{ display: 'flex', flexDirection: 'column' }} minWidth={window.innerWidth / 3}>
+        <Box component="form" sx={{ display: 'flex', flexDirection: 'column', ...layoutProps }} minWidth={window.innerWidth / 3}>
             {Object.entries(fieldMappings).map(([, fieldMapping]) => {
                 const { fieldName, margin } = fieldMapping;
                 return (

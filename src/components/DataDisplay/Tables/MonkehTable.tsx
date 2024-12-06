@@ -2,8 +2,8 @@ import Box from '@mui/material/Box';
 import { DataGrid, GridActionsCellItem, GridColDef } from '@mui/x-data-grid';
 import { Delete, Edit } from '@mui/icons-material';
 import { useMemo } from 'react';
-import { getMonthDate } from '../../../shared/utils/dateHelpers';
-import { IMonkeh } from '../../../shared/models/Monkeh';
+import { getMonthDate } from '@/shared/utils/dateHelpers';
+import { IMonkeh } from '@/shared/models/Monkeh';
 
 interface IMonkehTableProps {
     rows: IMonkeh[];

@@ -16,17 +16,24 @@ export interface IListItemProps {
     icon?: JSX.Element;
     onClick?: () => void;
     divider?: boolean;
+    subtext?: ReactNode;
 }
 
 interface IGenericListItemProps extends IListItemProps {
     selected?: boolean;
 }
 
+interface IGenericListProps {
+    items: IListItemProps[];
+    defaultSelectedIndex?: number;
+    loading?: boolean;
+}
+
 function ListDivider({ icon, text, align }: IListItemProps) {
     return (
-        <Divider textAlign={align} >
-            {icon}
-            <Typography variant="body1" display={!!text ? "inline-flex" : "none"}>{text}</Typography>
+        <Divider textAlign={align} flexItem sx={{ margin: 1 }}>
+                {icon}
+                <Typography variant="body1" display={!!text ? "inherit" : "none"}>{text}</Typography>
         </Divider>
     );
 };
@@ -38,30 +45,30 @@ function GenericListItem(props: IGenericListItemProps) {
         <ListItem disablePadding onClick={props.onClick}>
             <ListItemButton >
                 <ListItemIcon sx={{ minWidth: 35 }}>{props.icon}</ListItemIcon>
-                <ListItemText primary={props.text} />
+                <ListItemText primary={props.text} secondary={props.subtext} />
             </ListItemButton>
         </ListItem>
     );
 }
 
-export default function GenericList({ items, loading }: { items: IListItemProps[], loading?: boolean }) {
-    const [selectedItem, setSelectedItem] = useState<number>();
+export default function GenericList({ items, loading, defaultSelectedIndex }: IGenericListProps) {
+    const [selectedItem, setSelectedItem] = useState<number>(0);
 
     return (
         <List>
-            {loading 
+            {loading
                 ? <CircularProgress />
                 : items.map((item, index) => (
-                <GenericListItem key={index} {...item} selected={selectedItem === index}
-                    onClick={() => {
-                        if (item.onClick) {
-                            setSelectedItem(index);
-                            item.onClick();
-                        }
-                    }}
-                />
-            )
-            )}
+                    <GenericListItem key={index} {...item} selected={selectedItem === index}
+                        onClick={() => {
+                            if (item.onClick) {
+                                setSelectedItem(index);
+                                item.onClick();
+                            }
+                        }}
+                    />
+                )
+                )}
         </List>
     );
 }

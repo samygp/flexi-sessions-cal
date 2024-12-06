@@ -1,6 +1,6 @@
 import { PropsWithChildren, useState } from "react";
 import { useTitle } from "react-use";
-import HeaderContext from "../../shared/models/context/HeaderContext";
+import HeaderContext from "@/shared/models/context/HeaderContext";
 
 export const HeadercontextProvider = ({children}: PropsWithChildren) => {
     const [title, setTitle] = useState<string>(document.title);

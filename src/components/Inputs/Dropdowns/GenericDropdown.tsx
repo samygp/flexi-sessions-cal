@@ -1,6 +1,7 @@
-import { FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, SelectProps } from "@mui/material";
-import { useCallback } from "react";
-import { ISelectOption } from "../../../shared/models/Data";
+import { FormControl, InputLabel, ListSubheader, MenuItem, Select, SelectChangeEvent, SelectProps } from "@mui/material";
+import { useCallback, useMemo } from "react";
+import { ISelectOption } from "@/shared/models/Data";
+import { groupBy } from "lodash";
 
 interface IGenericDropdownProps<T extends string | number> extends Omit<SelectProps, "onChange" | "defaultValue"> {
     options: ISelectOption<T>[];
@@ -17,14 +18,23 @@ export default function GenericDropdown<T extends string | number>(props: IGener
         setValue(typeSafeValue ? typeSafeValue(value) : value as T);
     }, [typeSafeValue, setValue]);
 
+    const groupedOptions = useMemo(() => groupBy(options, 'category'), [options]);
+
     return (
         <FormControl>
             {label && <InputLabel id={`${label}-label`} variant="outlined">{label}</InputLabel>}
 
             <Select<T> {...{ ...rest, value, onChange }} label={label} required>
-                {options.map(({ label: l, value }) => {
-                    return <MenuItem key={value} value={value}>{l ?? value}</MenuItem>
-                })}
+                {
+                    Object.entries(groupedOptions).flatMap(([category, options], i) => {
+                        return [
+                            <ListSubheader key={i} sx={{cursor: 'default'}}>{category === 'undefined' ? '' : category}</ListSubheader>,
+                            ...options.map(({ label: l, value }) => {
+                                return <MenuItem key={value} value={value}>{l ?? value}</MenuItem>
+                            })
+                        ];
+                    })
+                }
             </Select>
         </FormControl>
     );

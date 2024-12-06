@@ -1,6 +1,6 @@
 import { Button, ButtonOwnProps } from "@mui/material";
 import { ReactNode, useCallback, useMemo, useState } from "react";
-import { IBaseModalProps } from "../../Layout/Modals/BaseModal";
+import { IBaseModalProps } from "@/components/Layout/Modals/BaseModal";
 
 interface IOpenModalButtonProps<T extends IBaseModalProps> extends ButtonOwnProps {
     label: ReactNode;

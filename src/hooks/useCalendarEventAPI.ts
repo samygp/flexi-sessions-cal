@@ -1,10 +1,10 @@
 import { useCallback, useMemo } from 'react';
-import { CalendarEvent, ICalendarEventQuery, IPostEventRequest } from '../shared/models/CalendarEvents';
-import useCRUDApiFetch from './useApiFetch';
-import config from '../config.json';
+import { CalendarEvent, ICalendarEventQuery, IPostEventRequest } from '@/shared/models/CalendarEvents';
+import useCRUDApiFetch, { ICrudAPIFetchOptions } from '@/hooks/useApiFetch';
+import config from '@/config.json';
 import { unix } from 'moment';
-import { beginningOf, endOf } from '../shared/utils/dateHelpers';
-import { IItemCache } from './useItemCache';
+import { beginningOf, endOf } from '@/shared/utils/dateHelpers';
+import { IBaseAPIHook, IItemCache } from '@/shared/models/Data';
 
 interface IAPICalendarEvent extends Omit<CalendarEvent, 'date'> {
   date: number;
@@ -21,20 +21,12 @@ const toPostEventRequest = (event: CalendarEvent): IPostEventRequest => {
   return { ...event, date: event.date.unix() };
 }
 
-const apiResultToCalendarEvent = <T>(result: EventsAPIResult) => {
-  if (!result) return result;
-  else if (Array.isArray(result)) return result.map(withTypeSafeDate) as T;
-  return withTypeSafeDate(result) as T;
-}
-
-export interface ICalendarEventAPI {
+export interface ICalendarEventAPI extends IBaseAPIHook {
   fetchCalendarEvents: (filter: ICalendarEventQuery) => Promise<CalendarEvent | CalendarEvent[] | undefined>;
   createCalendarEvent: (evt: Omit<CalendarEvent, 'id'>) => Promise<CalendarEvent | CalendarEvent[] | undefined>;
-  updateCalendarEvent: (evt: CalendarEvent) => Promise<CalendarEvent | CalendarEvent[] | undefined>;
+  updateCalendarEvents: (evt: CalendarEvent | CalendarEvent[]) => Promise<CalendarEvent | CalendarEvent[] | undefined>;
   removeCalendarEvents: (evt: ICalendarEventQuery) => Promise<CalendarEvent | CalendarEvent[] | undefined>;
-  fetchYear: (year: number) => Promise<void>;
-  loading: boolean;
-  error?: Error;
+  fetchYear: (year: number, force?: boolean) => Promise<void>;
 }
 
 const getDistinctYearSet = (calendarEvents: CalendarEvent[]) => {
@@ -47,45 +39,40 @@ const getDistinctYearSet = (calendarEvents: CalendarEvent[]) => {
 
 export default function useCalendarEventAPI(cache?: IItemCache<CalendarEvent[]>): ICalendarEventAPI {
   const fetchedYears = useMemo(() => getDistinctYearSet(cache?.value ?? []), [cache]);
+  const crudAPIOptions = useMemo<ICrudAPIFetchOptions<CalendarEvent>>(() => ({
+    cacheOpts: cache && { cache, getId: (evt: CalendarEvent) => evt.id },
+    parseResult: withTypeSafeDate,
+    url: config.calendarEventsUrl,
+  }), [cache])
 
-  const handleAPIResult = useCallback(<T extends (CalendarEvent | CalendarEvent[])>(result: EventsAPIResult, remove?: boolean) => {
-    const typeSafeResult = apiResultToCalendarEvent<T>(result);
-    if (!typeSafeResult) return;
+  const { loading, error, ...crudOps } = useCRUDApiFetch<IPostEventRequest, ICalendarEventQuery, EventsAPIResult, CalendarEvent>(crudAPIOptions);
+  const { get, create, update, remove } = crudOps;
 
-    if (cache) {
-      const events: CalendarEvent[] = Array.isArray(typeSafeResult) ? typeSafeResult : [typeSafeResult];
-      const newIDs = new Set<string>(events.map(e => e.id));
-      cache.setValue(prev => (prev ?? []).filter(e => !newIDs.has(e.id)).concat(remove ? [] : events));
-    }
-
-    return typeSafeResult;
-  }, [cache]);
-
-  const { loading, error, get, create, update, remove } = useCRUDApiFetch<IPostEventRequest, ICalendarEventQuery>(config.calendarEventsUrl);
-
-  const fetchCalendarEvents = useCallback(async (filter: ICalendarEventQuery) => {
-    return await get<EventsAPIResult>(EVENTS_ENDPOINT, filter).then(handleAPIResult);
-  }, [get, handleAPIResult]);
+  const fetchCalendarEvents = useCallback(async (filter: ICalendarEventQuery, noCache?: boolean) => {
+    return await get(EVENTS_ENDPOINT, filter, noCache);
+  }, [get]);
 
   const createCalendarEvent = useCallback(async (evt: Omit<CalendarEvent, 'id'>) => {
-    return await create<EventsAPIResult>(EVENTS_ENDPOINT, toPostEventRequest(evt as any)).then(handleAPIResult);
-  }, [create, handleAPIResult]);
+    return await create(EVENTS_ENDPOINT, toPostEventRequest(evt as any));
+  }, [create]);
 
-  const updateCalendarEvent = useCallback(async (evt: CalendarEvent) => {
-    return await update<EventsAPIResult>(EVENTS_ENDPOINT, toPostEventRequest(evt)).then(handleAPIResult);
-  }, [update, handleAPIResult]);
+  const updateCalendarEvents = useCallback(async (evt: CalendarEvent | CalendarEvent[]) => {
+    const body = Array.isArray(evt) ? evt.map(toPostEventRequest) : toPostEventRequest(evt);
+    return await update(EVENTS_ENDPOINT, body);
+  }, [update]);
 
   const removeCalendarEvents = useCallback(async (filter: ICalendarEventQuery) => {
-    return await remove<EventsAPIResult>(EVENTS_ENDPOINT, filter).then(r => handleAPIResult(r, true));
-  }, [remove, handleAPIResult]);
+    return await remove(EVENTS_ENDPOINT, filter);
+  }, [remove]);
 
 
-  const fetchYear = useCallback(async (year: number) => {
-    if (loading || fetchedYears.has(year)) return;
+  const fetchYear = useCallback(async (year: number, force?: boolean) => {
+    const skip = !force && fetchedYears.has(year);
+    if (loading || skip) return;
     const query = { from: beginningOf.year(year), to: endOf.year(year) };
-    await fetchCalendarEvents(query);
+    await fetchCalendarEvents(query, force);
   }, [fetchCalendarEvents, fetchedYears, loading]);
 
 
-  return { fetchCalendarEvents, createCalendarEvent, updateCalendarEvent, removeCalendarEvents, fetchYear, loading, error };
+  return { fetchCalendarEvents, createCalendarEvent, updateCalendarEvents, removeCalendarEvents, fetchYear, loading, error };
 }

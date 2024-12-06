@@ -2,8 +2,8 @@ import { FormGroup } from "@mui/material";
 import moment from "moment";
 import { Moment } from "moment";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { ISelectOption } from "../../../shared/models/Data";
-import GenericDropdown from "./GenericDropdown";
+import { ISelectOption } from "@/shared/models/Data";
+import GenericDropdown from "@/components/Inputs/Dropdowns/GenericDropdown";
 
 interface IMonthDayPickerProps {
     value: Moment;

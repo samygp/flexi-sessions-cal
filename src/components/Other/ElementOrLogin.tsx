@@ -1,6 +1,6 @@
 import { Navigate } from "react-router-dom";
-import { useSessionContext } from "../../hooks/useCustomContext";
-import { getPath, PathName } from "../../shared/models/Routes";
+import { useSessionContext } from "@/hooks/useCustomContext";
+import { getPath, PathName } from "@/shared/models/Routes";
 
 interface IElementOrLoginProps {
     element: JSX.Element;

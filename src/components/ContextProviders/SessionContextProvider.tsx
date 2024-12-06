@@ -1,14 +1,22 @@
-import { PropsWithChildren, useCallback, useMemo } from "react";
+import { PropsWithChildren, useCallback, useMemo, useState } from "react";
 import { useAsync, useSessionStorage } from "react-use";
-import AuthService from "../../services/auth/AuthService";
-import { IOAuthTokens, AuthState } from "../../shared/models/Auth";
-import SessionContext from "../../shared/models/context/SessionContext";
+import AuthService from "@/services/auth/AuthService";
+import { IOAuthTokens, AuthState } from "@/shared/models/Auth";
+import SessionContext from "@/shared/models/context/SessionContext";
+import { SupportedLocale } from "@/shared/locale";
+
+const getDefaultLocale = (): SupportedLocale => {
+    const navLocale = navigator.language.slice(0, 2);
+    if (navLocale in SupportedLocale) return navLocale as SupportedLocale;
+    return SupportedLocale.EN;
+}
 
 export default function SessionContextProvider({ children }: PropsWithChildren) {
     const [accessToken, setAccessToken] = useSessionStorage<string>('accessToken', '');
     const [, setIdToken] = useSessionStorage<string>('idToken', '');
     const [refreshToken, setRefreshToken] = useSessionStorage<string>('refreshToken', '');
     const [session, setSession] = useSessionStorage<string>('session', '');
+    const [locale, setLocale] = useState<SupportedLocale>(getDefaultLocale());
 
     const setTokens = useCallback(({ accessToken, idToken, refreshToken }: IOAuthTokens) => {
         if (accessToken) setAccessToken(accessToken);
@@ -65,6 +73,8 @@ export default function SessionContextProvider({ children }: PropsWithChildren) 
             clearSession,
             logout,
             refreshSession,
+            locale,
+            setLocale,
         }}>
             {children}
         </SessionContext.Provider>

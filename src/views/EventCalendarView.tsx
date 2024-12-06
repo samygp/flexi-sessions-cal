@@ -1,14 +1,17 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import moment, { Moment } from "moment";
-import OpenModalButton from "../components/Inputs/Buttons/OpenModalButton";
-import EventCalendar from "../components/DataDisplay/Calendars/EventCalendar";
-import EventTable from "../components/DataDisplay/Tables/EventTable";
-import CalendarEventModal, { ICalendarEventFormModalProps } from "../components/Layout/Modals/CalendarEventModal";
-import { useEventsContext, useHeaderContext } from "../hooks/useCustomContext";
-import BaseViewLayout from "./BaseViewLayout";
+import OpenModalButton from "@/components/Inputs/Buttons/OpenModalButton";
+import EventCalendar from "@/components/DataDisplay/Calendars/EventCalendar";
+import EventTable from "@/components/DataDisplay/Tables/EventTable";
+import CalendarEventModal, { ICalendarEventFormModalProps } from "@/components/Layout/Modals/CalendarEventModal";
+import { useEventsContext, useHeaderContext } from "@/hooks/useCustomContext";
+import BaseViewLayout from "@/views/BaseViewLayout";
 import { CalendarIcon } from "@mui/x-date-pickers";
 import { ButtonGroup, Divider, IconButton, Typography } from "@mui/material";
 import { Refresh, AddCircleOutline } from "@mui/icons-material";
+import { useLocale } from "@/hooks/useLocale";
+import { HeaderLabels } from "@/shared/locale/appUI";
+import { EventViewLabels } from "@/shared/locale/events";
 
 interface IEventCalendarViewLeftContentProps {
     currMonth: Moment;
@@ -17,30 +20,35 @@ interface IEventCalendarViewLeftContentProps {
 
 function EventCalendarViewLeftContent(props: IEventCalendarViewLeftContentProps) {
     const { currMonth, setCurrMonth } = props;
-    const { eventsAPI: { fetchYear }, loading } = useEventsContext();
+    const { eventsAPI: { fetchYear }, loading, } = useEventsContext();
+    const labels = useLocale<string>(EventViewLabels);
 
-    const onYearChange = useCallback(async (m: Moment) => {
-        await fetchYear(m.year());
+    const onYearChange = useCallback(async (m: Moment, force?: boolean) => {
+        await fetchYear(m.year(), force);
     }, [fetchYear]);
 
     const calendarProps = useMemo(() => {
         return { onMonthChange: setCurrMonth, onYearChange, loading };
     }, [onYearChange, setCurrMonth, loading]);
 
+    const onRefresh = useCallback(() => onYearChange(currMonth, true), [currMonth, onYearChange]);
+
     return (
         <>
             <ButtonGroup fullWidth sx={{ justifyContent: "space-evenly", marginBottom: '1ex' }}>
                 <OpenModalButton<ICalendarEventFormModalProps>
+                    disabled={loading}
                     startIcon={<AddCircleOutline />}
                     Modal={CalendarEventModal}
-                    label="New Event"
+                    label={labels.AddEvent}
                     sx={{ width: "fit-content" }}
                     variant="text"
-                    modalProps={{ title: "Create Event", TitleIcon: CalendarIcon, operation: "create" }}
+                    size="small"
+                    modalProps={{ title: labels.AddEvent, TitleIcon: CalendarIcon, operation: "create" }}
                 />
-                <IconButton onClick={() => onYearChange(currMonth)} size="small">
+                <IconButton disabled={loading} onClick={onRefresh} size="small">
                     <Refresh color="primary" />
-                    <Typography variant="body2" color={"primary"} >Refresh Events</Typography>
+                    <Typography variant="body2" color={"primary"} >{labels.RefreshEvents}</Typography>
                 </IconButton>
             </ButtonGroup>
             <Divider />
@@ -53,9 +61,11 @@ export default function EventCalendarView() {
     const [currMonth, setCurrMonth] = useState<Moment>(moment());
     const { setTitle } = useHeaderContext();
 
+    const { Calendar: calendarHeaderLabel } = useLocale<string>(HeaderLabels);
+
     const currYear = useMemo(() => currMonth.year(), [currMonth]);
 
-    useEffect(() => setTitle(`Eventotes ${currYear}`), [currYear, setTitle]);
+    useEffect(() => setTitle(`${calendarHeaderLabel} ${currYear}`), [currYear, setTitle, calendarHeaderLabel]);
 
     const { error, dateGroupedEventMap } = useEventsContext();
     const tableRows = useMemo(() => {
