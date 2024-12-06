@@ -23,13 +23,13 @@ export default function CalendarEventModal({ originalEvent = defaultDummyCalenda
     const onClose = useCallback(() => {
         setCalendarEvent(originalEvent);
         if (onModalClose) onModalClose();
-    }, [setCalendarEvent, originalEvent, props]);
+    }, [setCalendarEvent, originalEvent, onModalClose]);
 
     const onSuccess = useCallback((event: CalendarEvent|CalendarEvent[], action: string) => {
         const message = Array.isArray(event) ? `Events ${action}` : `Event ${event.title} ${action}`;
         setEventMessage({ message, severity: "success" });
         onClose();
-    }, [setEventMessage, onModalClose, onClose]);
+    }, [setEventMessage, onClose]);
 
     const actions = useMemo(() => {
         const submitDisabled = readOnly || hasMissingValues(event);

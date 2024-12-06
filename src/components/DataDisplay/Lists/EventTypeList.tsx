@@ -23,7 +23,7 @@ export default function EventTypeList({ onChange }: IEventTypeListProps) {
     const typeLabels = useLocale<EventType>(EventTypeLabels);
     const categoryLabels = useLocale<EventCategory>(EventCategoryLabels);
     const viewLabels = useLocale<string>(EventRuleViewLabels);
-    const { eventRulesAPI: { fetchRules } } = useEventRulesContext();
+    const { eventRulesAPI: { fetchRules }, loading } = useEventRulesContext();
 
     const getEventTypeEntry = useCallback((evtType: EventType): IListItemProps => {
         const EventIcon = EventTypeIconMap[evtType];
@@ -48,10 +48,10 @@ export default function EventTypeList({ onChange }: IEventTypeListProps) {
     }, [getCategoryEntries]);
 
     return <>
-        <IconButton onClick={() => fetchRules({})} size="small">
+        <IconButton onClick={() => fetchRules({}, true)} size="small">
             <Refresh color="primary" />
             <Typography variant="body2" color={"primary"} >{viewLabels.RefreshEventrules}</Typography>
         </IconButton>
-        <GenericList loading={false} items={items} />
+        <GenericList loading={loading} items={items} />
     </>;
 }

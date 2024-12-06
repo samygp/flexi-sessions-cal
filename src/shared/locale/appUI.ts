@@ -12,6 +12,11 @@ export const HeaderLabels: Record<string, LocalizedText> = Object.freeze({
         fr: "Monkeh",
         es: "Monkeh"
     },
+    MonkehBirthday: {
+        en: "Monkeh Birthdays",
+        fr: "Anniversaires Des Monkehs",
+        es: "Cumpleanos De Monkehs"
+    },
     Logout: {
         en: "Logout",
         fr: "Deconnexion",

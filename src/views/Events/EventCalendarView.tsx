@@ -1,10 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import moment, { Moment } from "moment";
 import OpenModalButton from "@/components/Inputs/Buttons/OpenModalButton";
 import EventCalendar from "@/components/DataDisplay/Calendars/EventCalendar";
 import EventTable from "@/components/DataDisplay/Tables/EventTable";
 import CalendarEventModal, { ICalendarEventFormModalProps } from "@/components/Layout/Modals/CalendarEventModal";
-import { useEventsContext, useHeaderContext } from "@/hooks/useCustomContext";
+import { useEventsContext } from "@/hooks/useCustomContext";
 import BaseViewLayout from "@/views/BaseViewLayout";
 import { CalendarIcon } from "@mui/x-date-pickers";
 import { ButtonGroup, Divider, IconButton, Typography } from "@mui/material";
@@ -59,13 +59,8 @@ function EventCalendarViewLeftContent(props: IEventCalendarViewLeftContentProps)
 
 export default function EventCalendarView() {
     const [currMonth, setCurrMonth] = useState<Moment>(moment());
-    const { setTitle } = useHeaderContext();
-
     const { Calendar: calendarHeaderLabel } = useLocale<string>(HeaderLabels);
-
-    const currYear = useMemo(() => currMonth.year(), [currMonth]);
-
-    useEffect(() => setTitle(`${calendarHeaderLabel} ${currYear}`), [currYear, setTitle, calendarHeaderLabel]);
+    const headerTitle = useMemo(() => `${calendarHeaderLabel} ${currMonth.year()}`, [currMonth, calendarHeaderLabel]);
 
     const { error, dateGroupedEventMap } = useEventsContext();
     const tableRows = useMemo(() => {
@@ -82,7 +77,7 @@ export default function EventCalendarView() {
     }, [currMonth]);
 
     return (
-        <BaseViewLayout error={error} leftContent={<EventCalendarViewLeftContent {...leftContentProps} />} >
+        <BaseViewLayout {...{error, headerTitle}} leftContent={<EventCalendarViewLeftContent {...leftContentProps} />} >
             <EventTable rows={tableRows} />
         </BaseViewLayout>
     );

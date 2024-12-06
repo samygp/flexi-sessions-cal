@@ -1,51 +1,57 @@
 import Box from '@mui/material/Box';
-import { DataGrid, GridActionsCellItem, GridColDef } from '@mui/x-data-grid';
-import { Delete, Edit } from '@mui/icons-material';
+import { DataGrid, GridColDef, GridValidRowModel } from '@mui/x-data-grid';
 import { useMemo } from 'react';
 import { getMonthDate } from '@/shared/utils/dateHelpers';
 import { IMonkeh } from '@/shared/models/Monkeh';
+import { useMonkehContext } from '@/hooks/useCustomContext';
+import { MonkehCell } from './CellRenders/MonkehCell';
+import { useLocale } from '@/hooks/useLocale';
+import { MonkehFieldLabels } from '@/shared/locale/monkeh';
+import { styled } from '@mui/material';
+import moment from 'moment';
 
-interface IMonkehTableProps {
-    rows: IMonkeh[];
-}
+const StyledDataGrid = styled(DataGrid)(({theme}) => ({
+    '& .current-month': {
+        backgroundColor: theme.palette.secondary.main,
+        color: theme.palette.secondary.contrastText,
+    }
+}));
 
-export default function MonkehTable({ rows }: IMonkehTableProps) {
+const currMonth = moment().month();
 
-    const columns: GridColDef<IMonkeh>[] = useMemo(() => [
-        { field: 'id', headerName: 'ID', hideable: true },
-        { field: 'level', headerName: 'R', width: 10, valueGetter: ({ row: { level } }) => `R${level}` },
-        { field: 'name', headerName: 'Name', width: 100 },
-        { field: 'birthday', headerName: 'Date', valueGetter: getMonthDate, width: 170 },
-        {
-            field: 'actions', type: 'actions', width: 80, getActions: ({ row: { id } }) => [
-                <GridActionsCellItem
-                    icon={<Edit />}
-                    label="Edit"
-                    onClick={() => console.log(id)}
-                />,
-                <GridActionsCellItem
-                    icon={<Delete />}
-                    label="Delete"
-                    onClick={() => console.log(id)}
-                />,
-            ]
-        },
-    ], []);
+export default function MonkehTable() {
+    const {monkehMap, loading} = useMonkehContext();
+    const monkehLabels = useLocale(MonkehFieldLabels);
+
+    const columns: GridColDef<GridValidRowModel & IMonkeh>[] = useMemo(() => [
+        { field: 'name', headerName: monkehLabels.name, flex: 1, renderCell: ({row}) => <MonkehCell {...row}/> },
+        { field: 'birthday', headerName: monkehLabels.birthday, valueGetter: getMonthDate, width: 170 },
+        { field: 'cake', headerName: monkehLabels.cake, flex: 2, },
+    ], [monkehLabels]);
 
     return (
         <Box sx={{ height: 400, width: '100%' }}>
-            <DataGrid
-                rows={rows}
-                columns={columns}
+            <StyledDataGrid
+                rows={Object.values(monkehMap)}
+                loading={loading}
+                columns={columns as any}
+                getRowClassName={({row}) => row.birthday.month() === currMonth ? 'current-month' : ''}
                 initialState={{
                     pagination: {
                         paginationModel: {
-                            pageSize: 5,
+                            pageSize: 10,
                         },
                     },
+                    sorting: {
+                        sortModel: [
+                            {
+                                field: 'birthday',
+                                sort: 'asc',
+                            },
+                        ],
+                    }
                 }}
-                pageSizeOptions={[5]}
-                checkboxSelection
+                pageSizeOptions={[5, 10, 25]}
                 disableRowSelectionOnClick
             />
         </Box>

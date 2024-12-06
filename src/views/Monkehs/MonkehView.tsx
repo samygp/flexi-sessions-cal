@@ -1,14 +1,14 @@
 import MonkehList from "@/components/DataDisplay/Lists/MonkehList";
 import { defaultDummyMonkeh, IMonkeh } from "@/shared/models/Monkeh";
 import Face5Icon from '@mui/icons-material/Face5';
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import BaseViewLayout from "@/views/BaseViewLayout";
 import { EditMonkehForm } from "@/components/Inputs/Forms/MonkehForm";
 import { Grid } from "@mui/material";
 import EventSnackbar, { IEventSnackProps } from "@/components/DataDisplay/EventSnackbar";
 import MonkehDetails from "@/components/DataDisplay/Details/MonkehDetails";
 
-import { useEventsContext, useHeaderContext } from "@/hooks/useCustomContext";
+import { useEventsContext } from "@/hooks/useCustomContext";
 import { CalendarEvent } from "@/shared/models/CalendarEvents";
 import EventTable from "@/components/DataDisplay/Tables/EventTable";
 import { useLocale } from "@/hooks/useLocale";
@@ -63,15 +63,11 @@ function MonkehViewMainContent({ selectedMonkeh: monkeh, setSelectedMonkeh: setM
 
 export default function MonkehView() {
     const [selectedMonkeh, setSelectedMonkeh] = useState<IMonkeh>(defaultDummyMonkeh);
-    const { setTitle } = useHeaderContext();
     const { Monkeh: monkehHeaderLabel } = useLocale<string>(HeaderLabels);
     const { SelectMonkehPlaceholder } = useLocale<string>(MonkehViewLabels);
-    useEffect(() => {
-        setTitle(monkehHeaderLabel);
-    }, [setTitle, monkehHeaderLabel]);
 
     return (
-        <BaseViewLayout leftContent={<MonkehList onMonkehSelect={setSelectedMonkeh} />}>
+        <BaseViewLayout leftContent={<MonkehList onMonkehSelect={setSelectedMonkeh} />} headerTitle={monkehHeaderLabel}>
             {!!selectedMonkeh.id
                 ? <MonkehViewMainContent {...{ selectedMonkeh, setSelectedMonkeh }} />
                 : <><Face5Icon sx={{ marginBottom: '-6px', marginRight: 1 }} />{SelectMonkehPlaceholder}</>}

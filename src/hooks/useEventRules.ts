@@ -58,7 +58,7 @@ export default function useEventRules() {
         }
         return eventShiftStack;
 
-    }, [eventRulesMap, dateGroupedEventMap, parseEventConflictCheckDetails]);
+    }, [eventRulesMap, dateGroupedEventMap]);
 
     return {shiftEventConflictCheck, parseEventConflictCheckDetails, eventRulesMap, dateGroupedEventMap, rules };
 }

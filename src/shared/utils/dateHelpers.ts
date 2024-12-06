@@ -27,7 +27,7 @@ export const destructureDate = (date: Moment) => {
     }
 }
 
-export const getMonthDate = (date: Moment) => date.local(true).format('MMM-DD (dddd)');
+export const getMonthDate = (date: Moment) => date.local(true).format('MM-DD (dddd)');
 
 export const nowSeconds = () => Math.floor(Date.now() / 1000);
 

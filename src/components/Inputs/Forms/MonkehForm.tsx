@@ -57,6 +57,7 @@ export default function MonkehForm({ setMonkeh, readOnly, monkeh }: IMonkehFormP
         { label: labels.email, fieldType: "text", fieldName: "email" },
         { label: labels.level, fieldType: "custom", fieldName: "level", CustomFieldComponent: ErreDropdown },
         { label: labels.birthday, fieldType: "monthday", fieldName: "birthday" },
+        { label: labels.cake, fieldType: "text", fieldName: "cake" },
     ];
 
     return <GenericForm<IMonkeh>
