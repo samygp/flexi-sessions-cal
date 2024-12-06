@@ -24,7 +24,7 @@ export default function SessionDatePicker({ eventType, value, onChange: setValue
         const conflict = rules.checkEventTypeConflicts(eventType, date);
         if (!conflict || skipConflictCheck) return setValue(date);
         alert(conflict);
-    }, [setValue, rules, eventType]);
+    }, [setValue, rules, eventType, skipConflictCheck]);
 
     useEffect(() => {
         if (skipConflictCheck) return;
@@ -47,7 +47,7 @@ export default function SessionDatePicker({ eventType, value, onChange: setValue
                 if (isPastDate(day)) return <PickersDay {...props} disabled />
                 const isFirstVisibleCell = day.day() === 1;
                 const isLastVisibleCell = day.day() === day.daysInMonth();
-                const conflictCheck = rules.checkEventTypeConflicts(eventType, day);
+                const conflictCheck = skipConflictCheck ? undefined : rules.checkEventTypeConflicts(eventType, day);
                 const disabled = !eventTypeDaysOfWeek.includes(day.weekday()) || !!conflictCheck;
                 const pickersDay = <PickersDay {...{ ...props, isFirstVisibleCell, isLastVisibleCell, disabled }} />;
                 if (!conflictCheck) return pickersDay;

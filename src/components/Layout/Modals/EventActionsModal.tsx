@@ -105,15 +105,18 @@ function EventRescheduleDetails({ targetEvent, setEventShiftStack, ...props }: I
 
     useEffect(() => {
         if (!order || loading) return;
+
         const eventShift = { date: targetDate, originalEvent: targetEvent, skippedDates: [] };
         const eventToDisplace = dateGroupedEventMap.getEntriesForDate(targetDate).find(e => e.id !== targetEvent.id && e.eventType === targetEvent.eventType);
         if (!eventToDisplace) return setEventShiftStack([eventShift]);
         
-        const modifiedEvent = { ...targetEvent, date: targetDate };
-        const tempDateGroupedEventMap = createGroupedEventMap({ ...calendarEventMap, [targetEvent.id]: modifiedEvent });
-        const invertedOrder = order === 'next' ? 'prev' : 'next';
-        const eventShiftStack =  shiftEventConflictCheck(eventToDisplace.id, invertedOrder, { dateGroupedEventMap: tempDateGroupedEventMap });
-        setEventShiftStack([eventShift, ...eventShiftStack]);
+        const filteredEventMap = { ...calendarEventMap };
+        delete filteredEventMap[targetEvent.id];
+
+        const tempDateGroupedEventMap = createGroupedEventMap(filteredEventMap);
+        const eventShiftStack =  [eventShift, ...shiftEventConflictCheck(eventToDisplace.id, order, { dateGroupedEventMap: tempDateGroupedEventMap })];
+
+        setEventShiftStack(eventShiftStack.sort((a, b) => order === 'next' ? a.date.diff(b.date) : b.date.diff(a.date)));
     }, [targetDate, order, loading, targetEvent, dateGroupedEventMap, calendarEventMap, shiftEventConflictCheck, setEventShiftStack]);
 
     return (

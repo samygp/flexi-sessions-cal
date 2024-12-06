@@ -4,7 +4,7 @@ import { Biotech, Cake, Class, MenuBook, SportsKabaddi, Face5, SettingsApplicati
 import { getPath, PathName } from "./Routes";
 
 export enum DrawerSection {
-    Sessions = "sessions",
+    Events = "events",
     Monkeh = "monkeh",
     EventConfig = "event-config"
 }
@@ -26,10 +26,10 @@ export interface IDrawerItemConfig {
 }
 
 export const DrawerItemsConfigMap: Record<DrawerSection, IDrawerItemConfig[]> = Object.freeze({
-    [DrawerSection.Sessions]: [
+    [DrawerSection.Events]: [
         {
             item: DrawerItem.Divider,
-            IconComponent: MenuBook,
+            IconComponent: CalendarIcon,
             path: getPath(PathName.calendar),
         },
         {
@@ -37,16 +37,16 @@ export const DrawerItemsConfigMap: Record<DrawerSection, IDrawerItemConfig[]> = 
             IconComponent: CalendarIcon,
             path: getPath(PathName.calendar),
         },
-        {
-            item: DrawerItem.Biblio,
-            IconComponent: Class,
-            path: getPath(PathName.calendar),
-        },
-        {
-            item: DrawerItem.Clinic,
-            IconComponent: Biotech,
-            path: getPath(PathName.calendar),
-        },
+        // {
+        //     item: DrawerItem.Biblio,
+        //     IconComponent: Class,
+        //     path: getPath(PathName.calendar),
+        // },
+        // {
+        //     item: DrawerItem.Clinic,
+        //     IconComponent: Biotech,
+        //     path: getPath(PathName.calendar),
+        // },
     ],
     [DrawerSection.Monkeh]: [
         {
@@ -59,11 +59,11 @@ export const DrawerItemsConfigMap: Record<DrawerSection, IDrawerItemConfig[]> = 
             IconComponent: SportsKabaddi,
             path: getPath(PathName.monkeh),
         },
-        {
-            item: DrawerItem.Birthdays,
-            IconComponent: Cake,
-            path: getPath(PathName.monkeh),
-        },
+        // {
+        //     item: DrawerItem.Birthdays,
+        //     IconComponent: Cake,
+        //     path: getPath(PathName.monkeh),
+        // },
     ],
     [DrawerSection.EventConfig]: [
         {

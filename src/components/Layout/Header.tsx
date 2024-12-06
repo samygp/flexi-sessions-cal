@@ -54,16 +54,16 @@ function DrawerButton({ onClick }: IDrawerProps) {
 
 function useDrawerItems(onClick: () => void) {
     const navigate = useNavigate();
-    const sessionLabels = useLocale<DrawerItem>(DrawerLabels[DrawerSection.Sessions]);
+    const eventsLabels = useLocale<DrawerItem>(DrawerLabels[DrawerSection.Events]);
     const monkehsLabels = useLocale<DrawerItem>(DrawerLabels[DrawerSection.Monkeh]);
     const eventCfgLabels = useLocale<DrawerItem>(DrawerLabels[DrawerSection.EventConfig]);
     const labels = useMemo<Record<DrawerSection, Record<DrawerItem, string>>>(() => {
         return {
-            [DrawerSection.Sessions]: sessionLabels,
+            [DrawerSection.Events]: eventsLabels,
             [DrawerSection.Monkeh]: monkehsLabels,
             [DrawerSection.EventConfig]: eventCfgLabels,
         };
-    }, [sessionLabels, monkehsLabels, eventCfgLabels]);
+    }, [eventsLabels, monkehsLabels, eventCfgLabels]);
 
     const navigateCallback = useCallback((path: string) => {
         return () => {

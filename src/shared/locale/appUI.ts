@@ -27,7 +27,7 @@ export const HeaderLabels: Record<string, LocalizedText> = Object.freeze({
 type DrawerSectionLabels = Partial<Record<DrawerItem, LocalizedText>>;
 
 export const DrawerLabels: Record<DrawerSection, DrawerSectionLabels> = Object.freeze({
-    [DrawerSection.Sessions]: {
+    [DrawerSection.Events]: {
         [DrawerItem.Divider]: {
             en: "Sessions",
             fr: "Sessions",
