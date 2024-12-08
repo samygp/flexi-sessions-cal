@@ -59,7 +59,7 @@ export default function EventTable({ rows }: IEventTableProps) {
 
     const MonkehInfoCell = useCallback(({ value: monkehIds }: GridRenderCellParams<CalendarEvent, string[]>) => {
         return (<Box display={"flex"}>
-            {monkehIds!.map(monkehId => <MonkehCell key={monkehId} {...monkehMap[monkehId!]} />)}
+            {(monkehIds ?? []).map(monkehId => <MonkehCell key={monkehId} {...monkehMap[monkehId!]} />)}
         </Box>);
     }, [monkehMap]);
 
