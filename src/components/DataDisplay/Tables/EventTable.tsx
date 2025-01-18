@@ -57,9 +57,10 @@ export default function EventTable({ rows }: IEventTableProps) {
     const fieldLabels = useLocale<keyof CalendarEvent>(CalendarEventFieldLabels);
     const eventTypeLabels = useLocale<EventType>(EventTypeLabels);
 
-    const MonkehInfoCell = useCallback(({ value: monkehIds }: GridRenderCellParams<CalendarEvent, string[]>) => {
+    const MonkehInfoCell = useCallback(({ value }: GridRenderCellParams<CalendarEvent, string[]>) => {
+        const monkehIds = value?.filter(id => !!monkehMap[id]) ?? [];
         return (<Box display={"flex"}>
-            {(monkehIds ?? []).map(monkehId => <MonkehCell key={monkehId} {...monkehMap[monkehId!]} />)}
+            {monkehIds.map(id => <MonkehCell key={id} {...monkehMap[id]} />)}
         </Box>);
     }, [monkehMap]);
 

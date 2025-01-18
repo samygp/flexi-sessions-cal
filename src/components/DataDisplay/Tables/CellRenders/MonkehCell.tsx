@@ -5,5 +5,5 @@ import { IMonkeh } from "@/shared/models/Monkeh";
 const MonkehDiv = styled('div')(() => ({ height: '100%', width: '100%', display: 'flex', alignItems: 'center' }));
 
 export const MonkehCell = ({ name, level }: IMonkeh) => {
-    return <MonkehDiv> <MonkehTag level={level} compact /> {name} </MonkehDiv>;
+    return <MonkehDiv> <MonkehTag level={level} compact /> {name || ''} </MonkehDiv>;
 }
